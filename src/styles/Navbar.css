@@ -1,0 +1,131 @@
+.navbar {
+  width: 100%;
+  top: 0;
+  left: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fff;
+  color: #000;
+  z-index: 10;
+}
+
+/* --- Banner freeship --- */
+.navbar-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --- Navbar top (Đăng nhập / Đăng ký) --- */
+.navbar-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 32px;
+  font-size: 14px;
+  background-color: #f5f5f5;
+}
+
+.navbar-top button {
+  background-color: #c00;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* --- Thanh tìm kiếm --- */
+.navbar-search {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 32px;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.navbar-search-input {
+  width: 400px;
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  border-radius: 24px;
+  font-size: 14px;
+}
+
+.navbar-search-icon {
+  position: absolute;
+  right: 36px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* --- Navbar chính: logo + icon --- */
+.navbar-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  border-bottom: 1px solid #eee;
+}
+
+.navbar-logo img {
+  height: 40px;
+  object-fit: contain;
+}
+
+/* --- Icons kiểm tra, yêu thích, giỏ hàng --- */
+.navbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navbar-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.navbar-icon svg {
+  font-size: 24px;
+}
+
+.navbar-icon-badge {
+  position: absolute;
+  top: -4px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* --- Navbar Menu --- */
+.navbar-menu {
+  background-color: #b11116;
+}
+
+.navbar-menu ul {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  justify-content: center;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.navbar-menu li {
+  color: white;
+  margin: 0 16px;
+  font-size: 15px;
+  cursor: pointer;
+  position: relative;
+}
+
+.navbar-menu li:hover {
+  text-decoration: underline;
+}

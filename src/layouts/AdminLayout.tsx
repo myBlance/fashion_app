@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { Link, Outlet } from 'react-router-dom'; // Thêm Outlet ở đây
+import { Link, Outlet } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -147,7 +147,7 @@ const AdminLayout: React.FC = () => {
       {/* Main content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <Outlet /> {/* Dùng Outlet để hiển thị các page con */}
+        <Outlet /> 
       </Box>
     </Box>
   );

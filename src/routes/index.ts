@@ -11,6 +11,8 @@ import Login from './../layouts/Login';
 
 import Dashboard from '../pages/admin/Dashboard';
 import OrderPage from '../pages/admin/Orders';
+import ProductDetail from '../pages/client/ProductDetail';
+import CartPage from '../pages/client/CartPage';
 // import Products from '../pages/admin/Products';
 // import AddProduct from '../pages/admin/AddProduct';
 // import Orders from '../pages/admin/Orders';
@@ -24,11 +26,11 @@ type RouteItem = {
 
 export const clientRoutes: RouteItem[] = [
     { path: '/', element: React.createElement(Home), auth: 'client' },
-    // { path: '/shop', element: <Shop />, auth: 'client' },
-    // { path: '/product/:id', element: <ProductDetail />, auth: 'client' },
-    // { path: '/cart', element: <Cart />, auth: 'client' },
-    // { path: '/checkout', element: <Checkout />, auth: 'client' },
     { path: '/login', element: React.createElement(Login), auth: 'client' },
+    { path: '/product/:id', element: React.createElement(ProductDetail) , auth: 'client' },
+    // { path: '/shop', element: <Shop />, auth: 'client' },
+    { path: '/cart', element: React.createElement(CartPage), auth: 'client' },
+    // { path: '/checkout', element: <Checkout />, auth: 'client' },
     // { path: '/register', element: <Register />, auth: 'client' },
 ];
 

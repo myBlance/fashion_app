@@ -4,19 +4,72 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import '/src/styles/Navbar.css'; 
+import { useEffect, useState } from 'react';
+
+const textList = [
+    'Dola Style xin chào bạn!',
+    'Vô vàn khuyến mãi hấp dẫn đang chờ bạn!',
+    'Nhanh tay chọn cho mình những sản phẩm ưng ý nhất!',
+];
+
+const placeholders = [
+    'Áo', 
+    'Quần jeans', 
+    'Giày sneaker',
+    'Váy',
+];
 
 const Navbar: React.FC = () => {
+    const [currentTextIndex, setCurrentTextIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+        setCurrentTextIndex((prevIndex) => (prevIndex + 1) % textList.length);
+        }, 2500); // Mỗi 2.5 giây đổi một lần
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const [placeholderIndex, setPlaceholderIndex] = useState(0);
+    const [typedPlaceholder, setTypedPlaceholder] = useState('');
+
+    useEffect(() => {
+        const currentText = placeholders[placeholderIndex];
+        let charIndex = 0;
+
+        // Set lại `typedPlaceholder` trước khi bắt đầu gõ mới.
+        setTypedPlaceholder(''); 
+
+        const typingInterval = setInterval(() => {
+            setTypedPlaceholder((prev) => prev + currentText[charIndex]);
+            charIndex++;
+
+            if (charIndex >= currentText.length) {
+                clearInterval(typingInterval);
+                setTimeout(() => {
+                    // Sau khi gõ xong, đợi 3s rồi chuyển sang placeholder khác
+                    setTypedPlaceholder('');
+                    setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+                }, 3000); // Chờ 3s trước khi chuyển placeholder
+            }
+        }, 150); // Mỗi ký tự gõ cách nhau 150ms
+
+        return () => clearInterval(typingInterval);
+    }, [placeholderIndex]);
+
+
     return (
         <div className="navbar">
             {/* Banner Freeship */}
             <div className="navbar-banner">
                 <img src="/assets/images/banner_top.webp" alt="" />
             </div>
+
             {/* Navbar Top */}
             <div className="navbar-top"> 
                 <div className="navbar-top-left">
                     <div>
-                        <p>hhhh</p>
+                        <p className='text-list'>{textList[currentTextIndex]}</p>
                     </div>
                 </div>
                 <div className="navbar-top-right">
@@ -25,21 +78,20 @@ const Navbar: React.FC = () => {
                 </div>
             </div>
 
-            
-
             {/* Navbar Main */}
             <div className="navbar-main">
                 {/* Search */}
                 <div className="navbar-search">
                     <input
                         type="text"
-                        placeholder="Áo"
+                        placeholder={typedPlaceholder}
                         className="navbar-search-input"
                     />
-                        <span className="navbar-search-icon">
-                        <SearchIcon/>
+                    <span className="navbar-search-icon">
+                        <SearchIcon />
                     </span>
                 </div>
+
                 {/* Logo */}
                 <div className="navbar-logo">
                     <img src="/assets/images/logo.webp" alt="" />
@@ -48,22 +100,21 @@ const Navbar: React.FC = () => {
                 {/* Icons */}
                 <div className="navbar-icons">
                     <div className="navbar-icon">
-                        <AssignmentTurnedInOutlinedIcon/>
+                        <AssignmentTurnedInOutlinedIcon />
                         <span>Kiểm tra</span>
                     </div>
                     <div className="navbar-icon">
-                        <FavoriteBorderIcon/>
+                        <FavoriteBorderIcon />
                         <span>Yêu thích</span>
                         <span className="navbar-icon-badge">0</span>
                     </div>
                     <div className="navbar-icon">
-                        <ShoppingCartOutlinedIcon/>
+                        <ShoppingCartOutlinedIcon />
                         <span>Giỏ hàng</span>
                         <span className="navbar-icon-badge">0</span>
                     </div>
                 </div>
             </div>
-        
 
             {/* Menu Links */}
             <nav className="navbar-menu">

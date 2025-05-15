@@ -1,0 +1,171 @@
+.cart-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.breadcrumb .active {
+  color: #bb0c0c;
+  font-weight: 600;
+}
+
+.cart-content {
+  display: flex;
+  gap: 24px;
+}
+
+.cart-table {
+  border-collapse: collapse;
+  width: 70%;
+  border: 1px solid #ddd;
+}
+
+.cart-table th,
+.cart-table td {
+  border: 1px solid #ddd;
+  padding: 12px 16px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.cart-table thead th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.product-info img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-name {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.product-variant {
+  color: #666;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #bb0c0c;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.price {
+  color: #bb0c0c;
+  font-weight: 600;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-qty {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #bb0c0c;
+  background-color: white;
+  color: #bb0c0c;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  user-select: none;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.btn-qty:hover {
+  background-color: #bb0c0c;
+  color: white;
+}
+
+.total-price {
+  font-weight: 600;
+  color: #bb0c0c;
+}
+
+.cart-summary {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.shipping-time label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.shipping-time input[type="date"],
+.shipping-time select {
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.shipping-time div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  user-select: none;
+}
+
+.checkout {
+  text-align: right;
+}
+
+.total {
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.total-amount {
+  color: #bb0c0c;
+}
+
+.checkout-btn {
+  background-color: #bb0c0c;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.checkout-btn:hover {
+  background-color: #990808;
+}

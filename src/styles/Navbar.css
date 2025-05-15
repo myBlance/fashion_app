@@ -1,62 +1,95 @@
 .navbar {
-  width: 100%;
-  top: 0;
-  left: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fff;
-  color: #000;
-  z-index: 10;
+    width: 100%;
+    top: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    color: #000;
 }
 
 /* --- Banner freeship --- */
 .navbar-banner img {
-  width: 100%;
-  height: auto;
-  display: block;
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* --- Navbar top (Đăng nhập / Đăng ký) --- */
 .navbar-top {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 32px;
-  font-size: 14px;
-  background-color: #f5f5f5;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 32px;
+    font-size: 14px;
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #b11116;
+}
+
+.text-list {
+    margin-left: 45px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    transition: opacity 1s ease-in-out;
+}
+
+.text-list.hide {
+  opacity: 0;
 }
 
 .navbar-top button {
-  background-color: #c00;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  margin-left: 8px;
-  border-radius: 4px;
-  cursor: pointer;
+    background-color: #c00;
+    color: #fff;
+    border: none;
+    padding: 14px 12px;
+    margin: 8px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 /* --- Thanh tìm kiếm --- */
 .navbar-search {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px 32px;
-  border-bottom: 1px solid #eee;
-  position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 32px;
+    position: relative;
 }
 
 .navbar-search-input {
-  width: 400px;
-  padding: 10px 16px;
-  border: 1px solid #ccc;
-  border-radius: 24px;
-  font-size: 14px;
+    width: 250px;
+    padding: 10px 16px;
+    border: 2px solid #626262;
+    border-radius: 40px;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out; /* Mượt mà khi thay đổi */
+}
+
+.navbar-search-input::placeholder {
+    color: #888;
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 3s steps(30, end) infinite; /* Tạo hiệu ứng typing */
+}
+
+/* Animation cho placeholder */
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 .navbar-search-icon {
-  position: absolute;
-  right: 36px;
-  cursor: pointer;
-  color: #333;
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    cursor: pointer;
+    color: #333;
 }
 
 /* --- Navbar chính: logo + icon --- */
@@ -69,8 +102,10 @@
 }
 
 .navbar-logo img {
-  height: 40px;
-  object-fit: contain;
+    margin-top: 5px;
+    width: 350px;
+    height: 55px;
+    object-fit: contain;
 }
 
 /* --- Icons kiểm tra, yêu thích, giỏ hàng --- */
@@ -95,8 +130,8 @@
 
 .navbar-icon-badge {
   position: absolute;
-  top: -4px;
-  right: -10px;
+  top: -6px;
+  right: 6px;
   background-color: red;
   color: white;
   font-size: 10px;

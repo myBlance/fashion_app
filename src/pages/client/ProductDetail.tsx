@@ -5,12 +5,26 @@ import { products } from '../../data/products';
 import { addToCart } from '../../store/cartSlice';
 import '../../styles/ProductDetail.css';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
+import { Favorite, FavoriteBorder} from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import { toggleWishlist } from '../../store/wishlistSlice';
+import { useAppSelector } from '../../store/hooks';
+
+
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const product = products.find((p) => p.id === id);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const wishlist = useAppSelector((state) => state.wishlist.items);
+    const isFavorite = wishlist.includes(product!.id);
+
+    const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(toggleWishlist(product!.id));
+    };
 
     // State chọn ảnh thumbnail hiện tại
     const [selectedImage, setSelectedImage] = useState('');
@@ -48,199 +62,216 @@ const ProductDetail: React.FC = () => {
 
     return (
         <div>
-
-        <DynamicBreadcrumbs />
-        <div className="product-detail">
-        {/* Cột 1: thumbnails ảnh nhỏ */}
-            <div className="left-column">
-                {product.images.map((img, i) => (
-                    <img
-                        src={img}
-                        alt={`thumb-${i}`}
-                        key={i}
-                        className={`thumbnail ${selectedImage === img ? 'active' : ''}`}
-                        onClick={() => setSelectedImage(img)}
-                    />
-                ))}
-            </div>
-
-        {/* Cột 2: ảnh lớn */}
-            <div className="middle-column">
-                <img src={selectedImage} alt={product.name} className="main-image" />
-            </div>
-
-        {/* Cột 3: thông tin chi tiết */}
-            <div className="right-column">
-                <h2>{product.name}</h2>
-
-                <div className="info-row">
-                    <div>
-                        Loại: <span className="highlight">
-                            {product.category}
-                        </span>
-                            <br />
-                        Tình trạng:{' '}
-                        <span className={`highlight status ${product.status.toLowerCase()}`}>
-                            {product.status}
-                        </span>
-                    </div>
-                    <div>
-                        Thương hiệu: <span className="highlight">{product.brand}</span>
-                        <br />
-                        Mã sản phẩm: <span className="highlight code">{product.code}</span>
-                    </div>
-                </div>
-
-                <div className="price-section">
-                    <div className="price-label">Giá bán:</div>
-                    <div className="price-row">
-                        <span className="price">{product.price.toLocaleString()}₫</span>
-                        <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
-                    </div>
-                </div>
-
-
-                <div className="promotion-list">
-                    <div className="promotion-header">
-                        <span className="icon">⚡</span> Danh sách khuyến mãi
-                    </div>
-                    <ul>
-                        <li>✅ Áp dụng Phiếu quà tặng/ Mã giảm giá theo sản phẩm.</li>
-                        <li>✅ Giảm giá 10% khi mua từ 5 sản phẩm trở lên.</li>
-                        <li>🎁 Tặng 100.000₫ mua hàng tại website thành viên Dola Style, áp dụng khi mua Online tại Hồ Chí Minh và 1 số khu vực khác.</li>
-                    </ul>
-                </div>
-
-                <div className="vouchers">
-                    {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((code) => (
-                        <button
-                            key={code}
-                            className="voucher-btn"
-                            onClick={() => handleVoucherClick(code)}
-                        >
-                            {code}
-                        </button>
+            <DynamicBreadcrumbs />
+            <div className="product-detail">
+            {/* Cột 1: thumbnails ảnh nhỏ */}
+                <div className="left-column">
+                    {product.images.map((img, i) => (
+                        <img
+                            src={img}
+                            alt={`thumb-${i}`}
+                            key={i}
+                            className={`thumbnail ${selectedImage === img ? 'active' : ''}`}
+                            onClick={() => setSelectedImage(img)}
+                        />
                     ))}
                 </div>
 
-                <div className="voucher-note">Tặng voucher trị giá 50k cho đơn hàng tiếp theo</div>
-
-                <div className="colors-section">
-                    <strong>Màu sắc:</strong>
-                    <div className="color-options">
-                        {product.images.map((img, idx) => (
-                            <label
-                                key={idx}
-                                className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
-                                onClick={() => {
-                                    setSelectedColorIndex(idx);
-                
-                                }}
-                            >
-
-                                <img src={img} alt={`Màu ${idx === 0 ? 'Trắng' : 'Đen'}`} />
-                                <span>{idx === 0 ? 'Trắng' : 'Đen'}</span>
-                                {selectedColorIndex === idx && <div className="corner-icon">🏷️</div>}
-                            </label>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="sizes-section">
-                    <div className="size-label">
-                        <strong>Size: 
-                            <span> {selectedSize}</span>
-                        </strong>
-                    </div>
-                <div className="size-options">
-                    {sizes.map((size) => (
-                        <button
-                            key={size}
-                            className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
-                            onClick={() => setSelectedSize(size)}
-                        >
-                            {size}
-                            {selectedSize === size && <div className="corner-icon">🏷️</div>}
-                        </button>
-                    ))}
-        
-                </div>
-                </div>
-
-                <button className="size-hint-btn" onClick={() => alert('Gợi ý tìm size')}>
-                    <span className="icon">📐</span> Gợi ý tìm size
-                </button>
-
-                <div className="quantity-section">
-                    <label>Số lượng:</label>
-                    <div className="quantity-controls">
-                        <button className="quantity-btn" onClick={decreaseQuantity}>
-                        −
-                        </button>
-                        <input type="text" value={quantity} readOnly />
-                        <button className="quantity-btn" onClick={increaseQuantity}>
-                        +
-                        </button>
-                    </div>
-                </div>
-
-                <div className="action-buttons">
-                    <button
-                        className="btn add-to-cart"
-                        onClick={() => {
-                            dispatch(
-                                addToCart({
-                                    id: product.id,
-                                    name: product.name,
-                                    color: selectedColorIndex === 0 ? 'Trắng' : 'Đen',
-                                    size: selectedSize,
-                                    price: product.price,
-                                    quantity,
-                                    image: product.images[selectedColorIndex],
-                                })
-                            );
-                            alert('Đã thêm vào giỏ!');
-                            navigate('/cart'); // chuyển sang trang giỏ hàng
+            {/* Cột 2: ảnh lớn */}
+                <div className="middle-column">
+                    <img src={selectedImage} alt={product.name} className="main-image" />
+                    <IconButton
+                        onClick={handleToggleWishlist}
+                        sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        zIndex: 2,
+                        backgroundColor: 'white',
+                            '&:hover': {
+                                backgroundColor: '#e2004b',
+                            },
                         }}
                     >
-                        THÊM VÀO GIỎ
-                    </button>
-                    <button className="btn buy-now" onClick={() => alert('Chuyển đến thanh toán')}>
-                        MUA NGAY
-                    </button>
+                        {isFavorite ? (
+                            <Favorite sx={{ color: '#e91e63' }} />
+                        ) : (
+                            <FavoriteBorder sx={{ color: '#999' }} />
+                        )}
+                    </IconButton>
                 </div>
 
-                <div className="commitment-section">
-                    <h3>Cam kết của chúng tôi</h3>
-                    <div className="commitment-list">
-                        <div className="commitment-item">
-                            <div className="icon">✔️</div>
-                            <div>Cam kết 100% chính hãng</div>
+            {/* Cột 3: thông tin chi tiết */}
+                <div className="right-column">
+                    <h2>{product.name}</h2>
+
+                    <div className="info-row">
+                        <div>
+                            Loại: <span className="highlight">
+                                {product.category}
+                            </span>
+                                <br />
+                            Tình trạng:{' '}
+                            <span className={`highlight status ${product.status.toLowerCase()}`}>
+                                {product.status}
+                            </span>
                         </div>
-                        <div className="commitment-item">
-                            <div className="icon">✔️</div>
-                            <div>Giao tận tay khách hàng</div>
+                        <div>
+                            Thương hiệu: <span className="highlight">{product.brand}</span>
+                            <br />
+                            Mã sản phẩm: <span className="highlight code">{product.code}</span>
                         </div>
-                        <div className="commitment-item">
-                            <div className="icon">✔️</div>
-                            <div>Hỗ trợ 24/7</div>
+                    </div>
+
+                    <div className="price-section">
+                        <div className="price-label">Giá bán:</div>
+                        <div className="price-row">
+                            <span className="price">{product.price.toLocaleString()}₫</span>
+                            <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
                         </div>
-                        <div className="commitment-item">
-                            <div className="icon">✔️</div>
-                            <div>Hoàn tiền 111% nếu hàng kém chất lượng</div>
+                    </div>
+
+
+                    <div className="promotion-list">
+                        <div className="promotion-header">
+                            <span className="icon">⚡</span> Danh sách khuyến mãi
                         </div>
-                        <div className="commitment-item">
-                            <div className="icon">✔️</div>
-                            <div>Mở hộp kiểm tra nhận hàng</div>
+                        <ul>
+                            <li>✅ Áp dụng Phiếu quà tặng/ Mã giảm giá theo sản phẩm.</li>
+                            <li>✅ Giảm giá 10% khi mua từ 5 sản phẩm trở lên.</li>
+                            <li>🎁 Tặng 100.000₫ mua hàng tại website thành viên Dola Style, áp dụng khi mua Online tại Hồ Chí Minh và 1 số khu vực khác.</li>
+                        </ul>
+                    </div>
+
+                    <div className="vouchers">
+                        {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((code) => (
+                            <button
+                                key={code}
+                                className="voucher-btn"
+                                onClick={() => handleVoucherClick(code)}
+                            >
+                                {code}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="voucher-note">Tặng voucher trị giá 50k cho đơn hàng tiếp theo</div>
+
+                    <div className="colors-section">
+                        <strong>Màu sắc:</strong>
+                        <div className="color-options">
+                            {product.images.map((img, idx) => (
+                                <label
+                                    key={idx}
+                                    className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
+                                    onClick={() => {
+                                        setSelectedColorIndex(idx);
+                    
+                                    }}
+                                >
+
+                                    <img src={img} alt={`Màu ${idx === 0 ? 'Trắng' : 'Đen'}`} />
+                                    <span>{idx === 0 ? 'Trắng' : 'Đen'}</span>
+                                    {selectedColorIndex === idx && <div className="corner-icon">🏷️</div>}
+                                </label>
+                            ))}
                         </div>
-                        <div className="commitment-item">
-                            <div className="icon">✔️</div>
-                            <div>Đổi trả trong 7 ngày</div>
+                    </div>
+
+                    <div className="sizes-section">
+                        <div className="size-label">
+                            <strong>Size: 
+                                <span> {selectedSize}</span>
+                            </strong>
+                        </div>
+                        <div className="size-options">
+                            {sizes.map((size) => (
+                                <button
+                                    key={size}
+                                    className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
+                                    onClick={() => setSelectedSize(size)}
+                                >
+                                    {size}
+                                    {selectedSize === size && <div className="corner-icon">🏷️</div>}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button className="size-hint-btn" onClick={() => alert('Gợi ý tìm size')}>
+                        <span className="icon">📐</span> Gợi ý tìm size
+                    </button>
+
+                    <div className="quantity-section">
+                        <label>Số lượng:</label>
+                        <div className="quantity-controls">
+                            <button className="quantity-btn" onClick={decreaseQuantity}>
+                            −
+                            </button>
+                            <input type="text" value={quantity} readOnly />
+                            <button className="quantity-btn" onClick={increaseQuantity}>
+                            +
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="action-buttons">
+                        <button
+                            className="btn add-to-cart"
+                            onClick={() => {
+                                dispatch(
+                                    addToCart({
+                                        id: product.id,
+                                        name: product.name,
+                                        color: selectedColorIndex === 0 ? 'Trắng' : 'Đen',
+                                        size: selectedSize,
+                                        price: product.price,
+                                        quantity,
+                                        image: product.images[selectedColorIndex],
+                                    })
+                                );
+                                alert('Đã thêm vào giỏ!');
+                                navigate('/cart'); // chuyển sang trang giỏ hàng
+                            }}
+                        >
+                            THÊM VÀO GIỎ
+                        </button>
+                        <button className="btn buy-now" onClick={() => alert('Chuyển đến thanh toán')}>
+                            MUA NGAY
+                        </button>
+                    </div>
+
+                    <div className="commitment-section">
+                        <h3>Cam kết của chúng tôi</h3>
+                        <div className="commitment-list">
+                            <div className="commitment-item">
+                                <div className="icon">✔️</div>
+                                <div>Cam kết 100% chính hãng</div>
+                            </div>
+                            <div className="commitment-item">
+                                <div className="icon">✔️</div>
+                                <div>Giao tận tay khách hàng</div>
+                            </div>
+                            <div className="commitment-item">
+                                <div className="icon">✔️</div>
+                                <div>Hỗ trợ 24/7</div>
+                            </div>
+                            <div className="commitment-item">
+                                <div className="icon">✔️</div>
+                                <div>Hoàn tiền 111% nếu hàng kém chất lượng</div>
+                            </div>
+                            <div className="commitment-item">
+                                <div className="icon">✔️</div>
+                                <div>Mở hộp kiểm tra nhận hàng</div>
+                            </div>
+                            <div className="commitment-item">
+                                <div className="icon">✔️</div>
+                                <div>Đổi trả trong 7 ngày</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     );
 };

@@ -6,6 +6,7 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import '/src/styles/Navbar.css'; 
 import { useEffect, useState } from 'react';
+import { useAppSelector } from '../../store/hooks';
 
 const textList = [
     'Dola Style xin chào bạn!',
@@ -22,7 +23,13 @@ const placeholders = [
 
 const Navbar: React.FC = () => {
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
-        const navigate = useNavigate();
+    const navigate = useNavigate();
+    // ví dụ state.cart.items là mảng chứa các sản phẩm trong giỏ hàng
+    const cartItems = useAppSelector((state) => state.cart.items);
+    const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    const wishlistItems = useAppSelector((state) => state.wishlist.items);
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -110,7 +117,7 @@ const Navbar: React.FC = () => {
                     >
                         <FavoriteBorderIcon />
                         <span>Yêu thích</span>
-                        <span className="navbar-icon-badge">0</span>
+                        <span className="navbar-icon-badge">{wishlistItems.length}</span>
                     </div>
 
                     <div className="navbar-icon"
@@ -118,7 +125,7 @@ const Navbar: React.FC = () => {
                     >
                         <ShoppingCartOutlinedIcon />
                         <span>Giỏ hàng</span>
-                        <span className="navbar-icon-badge">0</span>
+                        <span className="navbar-icon-badge">{totalQuantity}</span>
                     </div>
                 </div>
             </div>

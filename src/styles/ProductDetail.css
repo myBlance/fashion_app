@@ -32,16 +32,14 @@
 
 /* Cột ảnh lớn */
 .middle-column {
-  flex: 1 1 400px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-  background: #f9f9f9;
-  padding: 10px;
-
-  width: 400px;
-  height: 800px; /* Cố định chiều cao */
+    position: relative;
+    flex: 1 1 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    width: 400px;
+    height: 800px; /* Cố định chiều cao */
 }
 
 .main-image {
@@ -220,7 +218,7 @@
 }
 
 .size-btn {
-  padding: 6px 16px;
+  padding: 10px 20px;
   border: 1.5px solid #777;
   background: white;
   border-radius: 6px;
@@ -241,13 +239,14 @@
   right: 4px;
 }
 
-.size-hint {
-  margin-top: 8px;
-  font-size: 14px;
-  color: #555;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.size-hint-btn {
+    width: 250px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
 }
 
 .quantity-section {
@@ -264,6 +263,7 @@
 
 .quantity-btn {
   width: 32px;
+  padding: 2px 2px 4px;
   height: 32px;
   background: white;
   border: 1.5px solid #ccc;
@@ -287,7 +287,7 @@
   font-size: 16px;
   border: 1.5px solid #ccc;
   border-radius: 6px;
-  padding: 4px 0;
+  padding: 6px 0;
   pointer-events: none;
   background: #f9f9f9;
   user-select: none;

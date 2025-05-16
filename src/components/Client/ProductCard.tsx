@@ -85,6 +85,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         image={displayedImage}
         alt={product.name}
         sx={{ transition: '0.3s' }}
+        draggable={false}      // Ngăn kéo ảnh mặc định
+  onDragStart={(e) => e.preventDefault()} // Ngăn kéo ảnh
+  style={{ userSelect: 'none' }}
       />
       <CardContent>
         <Chip label={product.label} color="warning" size="small" sx={{ mb: 1 }} />

@@ -30,7 +30,7 @@ export const products: Product[] = [
     sold: 14,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
-    images: ['/assets/images/xanh1.webp', '/public/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
   },
   {
     id: 'DOLA3901',
@@ -46,7 +46,7 @@ export const products: Product[] = [
     sold: 14,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
-    images: ['/assets/images/xanh1.webp', '/public/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
   },
   {
     id: 'DOLA3902',
@@ -62,7 +62,7 @@ export const products: Product[] = [
     sold: 14,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
-    images: ['/assets/images/xanh1.webp', '/public/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
   },
   {
     id: 'DOLA3903',
@@ -78,7 +78,7 @@ export const products: Product[] = [
     sold: 14,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
-   images: ['/assets/images/xanh1.webp', '/public/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+   images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
   },
   {
     id: 'DOLA3904',
@@ -94,7 +94,7 @@ export const products: Product[] = [
     sold: 14,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
-    images: ['/assets/images/xanh1.webp', '/public/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
   },
   {
     id: 'DOLA3905',
@@ -110,6 +110,6 @@ export const products: Product[] = [
     sold: 14,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
-    images: ['/assets/images/xanh1.webp', '/public/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
   },
 ];

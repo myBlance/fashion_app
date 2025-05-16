@@ -21,7 +21,7 @@ const FeaturedCategories = () => {
         sx={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: 2, // Khoảng cách giữa các mục
+          gap: 2,
         }}
       >
         {categories.map((category, index) => (
@@ -33,33 +33,40 @@ const FeaturedCategories = () => {
             }}
           >
             <Paper
-              elevation={3}
-              sx={{
-                p: 2,
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: '0.3s',
-                '&:hover': {
-                  boxShadow: 6,
-                  transform: 'translateY(-4px)',
-                },
-              }}
-            >
-              <Box
-                component="img"
-                src={category.image}
-                alt={category.name}
+                elevation={3}
                 sx={{
-                  width: '100%',
-                  height: 150,
-                  objectFit: 'cover',
-                  borderRadius: 1,
-                  mb: 1.5,
+                    '&.MuiPaper-root': {
+                        boxShadow: 'none', // loại bỏ shadow
+                    },
+                    p: 2,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    '&:hover': {
+                        color: '#52b2b5'
+                    },
                 }}
-              />
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                {category.name}
-              </Typography>
+            >
+                <Box
+                    component="img"
+                    src={category.image}
+                    alt={category.name}
+                    sx={{
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        transition: '0.3s',
+                        '&:hover': {
+                            transform: 'scale(1.1)',
+                        },
+                        border: '2px solid #ccc',
+                        borderRadius: 50,
+                        width: 150,
+                        height: 150,
+                        objectFit: 'cover',
+                    }}
+                />
+                <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                    {category.name}
+                </Typography>
             </Paper>
           </Box>
         ))}

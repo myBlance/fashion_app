@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
@@ -21,6 +22,7 @@ const placeholders = [
 
 const Navbar: React.FC = () => {
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
+        const navigate = useNavigate();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -93,9 +95,9 @@ const Navbar: React.FC = () => {
                 </div>
 
                 {/* Logo */}
-                <div className="navbar-logo">
+                <Link to="/" className="navbar-logo">
                     <img src="/assets/images/logo.webp" alt="" />
-                </div>
+                </Link>
 
                 {/* Icons */}
                 <div className="navbar-icons">
@@ -103,12 +105,17 @@ const Navbar: React.FC = () => {
                         <AssignmentTurnedInOutlinedIcon />
                         <span>Kiểm tra</span>
                     </div>
-                    <div className="navbar-icon">
+                    <div className="navbar-icon" 
+                        onClick={() => {navigate('/wishlist'); }}
+                    >
                         <FavoriteBorderIcon />
                         <span>Yêu thích</span>
                         <span className="navbar-icon-badge">0</span>
                     </div>
-                    <div className="navbar-icon">
+
+                    <div className="navbar-icon"
+                        onClick={() => {navigate('/cart'); }}
+                    >
                         <ShoppingCartOutlinedIcon />
                         <span>Giỏ hàng</span>
                         <span className="navbar-icon-badge">0</span>
@@ -119,7 +126,11 @@ const Navbar: React.FC = () => {
             {/* Menu Links */}
             <nav className="navbar-menu">
                 <ul>
-                    <li>Trang chủ</li>
+                    <li>
+                        <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
+                            Trang chủ
+                        </Link>
+                    </li>
                     <li>Giới thiệu</li>
                     <li>Sản phẩm</li>
                     <li>Tin tức</li>

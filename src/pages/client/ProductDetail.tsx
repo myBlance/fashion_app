@@ -4,12 +4,13 @@ import { useDispatch } from 'react-redux';
 import { products } from '../../data/products';
 import { addToCart } from '../../store/cartSlice';
 import '../../styles/ProductDetail.css';
+import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 
 const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const product = products.find((p) => p.id === id);
-      const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     // State chọn ảnh thumbnail hiện tại
     const [selectedImage, setSelectedImage] = useState('');
@@ -46,6 +47,9 @@ const ProductDetail: React.FC = () => {
     };
 
     return (
+        <div>
+
+        <DynamicBreadcrumbs />
         <div className="product-detail">
         {/* Cột 1: thumbnails ảnh nhỏ */}
             <div className="left-column">
@@ -89,78 +93,78 @@ const ProductDetail: React.FC = () => {
 
                 <div className="price-section">
                     <div className="price-label">Giá bán:</div>
-                        <div className="price-row">
-                            <span className="price">{product.price.toLocaleString()}₫</span>
-                            <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
-                        </div>
+                    <div className="price-row">
+                        <span className="price">{product.price.toLocaleString()}₫</span>
+                        <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
                     </div>
+                </div>
 
 
-                    <div className="promotion-list">
-                        <div className="promotion-header">
-                            <span className="icon">⚡</span> Danh sách khuyến mãi
-                        </div>
-                        <ul>
-                            <li>✅ Áp dụng Phiếu quà tặng/ Mã giảm giá theo sản phẩm.</li>
-                            <li>✅ Giảm giá 10% khi mua từ 5 sản phẩm trở lên.</li>
-                            <li>🎁 Tặng 100.000₫ mua hàng tại website thành viên Dola Style, áp dụng khi mua Online tại Hồ Chí Minh và 1 số khu vực khác.</li>
-                        </ul>
+                <div className="promotion-list">
+                    <div className="promotion-header">
+                        <span className="icon">⚡</span> Danh sách khuyến mãi
                     </div>
+                    <ul>
+                        <li>✅ Áp dụng Phiếu quà tặng/ Mã giảm giá theo sản phẩm.</li>
+                        <li>✅ Giảm giá 10% khi mua từ 5 sản phẩm trở lên.</li>
+                        <li>🎁 Tặng 100.000₫ mua hàng tại website thành viên Dola Style, áp dụng khi mua Online tại Hồ Chí Minh và 1 số khu vực khác.</li>
+                    </ul>
+                </div>
 
-                    <div className="vouchers">
-                        {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((code) => (
-                            <button
-                                key={code}
-                                className="voucher-btn"
-                                onClick={() => handleVoucherClick(code)}
+                <div className="vouchers">
+                    {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((code) => (
+                        <button
+                            key={code}
+                            className="voucher-btn"
+                            onClick={() => handleVoucherClick(code)}
+                        >
+                            {code}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="voucher-note">Tặng voucher trị giá 50k cho đơn hàng tiếp theo</div>
+
+                <div className="colors-section">
+                    <strong>Màu sắc:</strong>
+                    <div className="color-options">
+                        {product.images.map((img, idx) => (
+                            <label
+                                key={idx}
+                                className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
+                                onClick={() => {
+                                    setSelectedColorIndex(idx);
+                
+                                }}
                             >
-                                {code}
-                            </button>
+
+                                <img src={img} alt={`Màu ${idx === 0 ? 'Trắng' : 'Đen'}`} />
+                                <span>{idx === 0 ? 'Trắng' : 'Đen'}</span>
+                                {selectedColorIndex === idx && <div className="corner-icon">🏷️</div>}
+                            </label>
                         ))}
                     </div>
+                </div>
 
-                    <div className="voucher-note">Tặng voucher trị giá 50k cho đơn hàng tiếp theo</div>
-
-                    <div className="colors-section">
-                        <strong>Màu sắc:</strong>
-                        <div className="color-options">
-                            {product.images.map((img, idx) => (
-                                <label
-                                    key={idx}
-                                    className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
-                                    onClick={() => {
-                                        setSelectedColorIndex(idx);
-                    
-                                    }}
-                                >
-
-                                    <img src={img} alt={`Màu ${idx === 0 ? 'Trắng' : 'Đen'}`} />
-                                    <span>{idx === 0 ? 'Trắng' : 'Đen'}</span>
-                                    {selectedColorIndex === idx && <div className="corner-icon">🏷️</div>}
-                                </label>
-                            ))}
-                        </div>
+                <div className="sizes-section">
+                    <div className="size-label">
+                        <strong>Size: 
+                            <span> {selectedSize}</span>
+                        </strong>
                     </div>
-
-                    <div className="sizes-section">
-                        <div className="size-label">
-                            <strong>Size: 
-                                <span> {selectedSize}</span>
-                            </strong>
-                        </div>
-                    <div className="size-options">
-                        {sizes.map((size) => (
-                            <button
-                                key={size}
-                                className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
-                                onClick={() => setSelectedSize(size)}
-                            >
-                                {size}
-                                {selectedSize === size && <div className="corner-icon">🏷️</div>}
-                            </button>
-                        ))}
-            
-                    </div>
+                <div className="size-options">
+                    {sizes.map((size) => (
+                        <button
+                            key={size}
+                            className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
+                            onClick={() => setSelectedSize(size)}
+                        >
+                            {size}
+                            {selectedSize === size && <div className="corner-icon">🏷️</div>}
+                        </button>
+                    ))}
+        
+                </div>
                 </div>
 
                 <button className="size-hint-btn" onClick={() => alert('Gợi ý tìm size')}>
@@ -182,25 +186,25 @@ const ProductDetail: React.FC = () => {
 
                 <div className="action-buttons">
                     <button
-        className="btn add-to-cart"
-        onClick={() => {
-          dispatch(
-            addToCart({
-              id: product.id,
-              name: product.name,
-              color: selectedColorIndex === 0 ? 'Trắng' : 'Đen',
-              size: selectedSize,
-              price: product.price,
-              quantity,
-              image: product.images[selectedColorIndex],
-            })
-          );
-          alert('Đã thêm vào giỏ!');
-          navigate('/cart'); // chuyển sang trang giỏ hàng
-        }}
-      >
-        THÊM VÀO GIỎ
-      </button>
+                        className="btn add-to-cart"
+                        onClick={() => {
+                            dispatch(
+                                addToCart({
+                                    id: product.id,
+                                    name: product.name,
+                                    color: selectedColorIndex === 0 ? 'Trắng' : 'Đen',
+                                    size: selectedSize,
+                                    price: product.price,
+                                    quantity,
+                                    image: product.images[selectedColorIndex],
+                                })
+                            );
+                            alert('Đã thêm vào giỏ!');
+                            navigate('/cart'); // chuyển sang trang giỏ hàng
+                        }}
+                    >
+                        THÊM VÀO GIỎ
+                    </button>
                     <button className="btn buy-now" onClick={() => alert('Chuyển đến thanh toán')}>
                         MUA NGAY
                     </button>
@@ -236,6 +240,7 @@ const ProductDetail: React.FC = () => {
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 };

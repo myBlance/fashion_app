@@ -1,26 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardMedia,
   CardContent,
-  Chip,
   Typography,
   Box,
+  IconButton,
+  Chip,
   LinearProgress,
 } from '@mui/material';
+import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-
-interface Product {
-  id: string;
-  title: string;
-  imageUrl: string;
-  originalPrice: number;
-  salePrice: number;
-  colors: string[];
-  sold: number;
-  label: string;
-}
-
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { toggleWishlist } from '../../store/wishlistSlice';
+import { Product } from '../../data/products';
 
 interface ProductCardProps {
   product: Product;
@@ -28,10 +21,23 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const wishlist = useAppSelector((state) => state.wishlist.items);
+  const isFavorite = wishlist.includes(product.id);
+
+  const [hovered, setHovered] = useState(false);
   const soldPercentage = (product.sold / 25) * 100;
+
+  // Nếu có ảnh thứ 2 thì hiển thị khi hover, còn không thì ảnh đầu tiên
+  const displayedImage = hovered ? product.images[1] || product.images[0] : product.images[0];
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(toggleWishlist(product.id));
   };
 
   return (
@@ -44,31 +50,49 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         '&:hover': { boxShadow: 6 },
       }}
       onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <Chip
         label="-49%"
         color="error"
         size="small"
-        sx={{ position: 'absolute', top: 8, left: 8 }}
+        sx={{ position: 'absolute', top: 8, left: 8, zIndex: 2 }}
       />
+      <IconButton
+        onClick={handleToggleWishlist}
+        sx={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          zIndex: 2,
+          backgroundColor: 'white',
+          '&:hover': {
+            backgroundColor: '#fce4ec',
+          },
+        }}
+      >
+        {isFavorite ? (
+          <Favorite sx={{ color: '#e91e63' }} />
+        ) : (
+          <FavoriteBorder sx={{ color: '#999' }} />
+        )}
+      </IconButton>
+
       <CardMedia
         component="img"
         height="260"
-        image={product.imageUrl}
-        alt={product.title}
+        image={displayedImage}
+        alt={product.name}
+        sx={{ transition: '0.3s' }}
       />
       <CardContent>
-        <Chip
-          label={product.label}
-          color="warning"
-          size="small"
-          sx={{ mb: 1 }}
-        />
+        <Chip label={product.label} color="warning" size="small" sx={{ mb: 1 }} />
         <Typography variant="body1" fontWeight="bold">
-          {product.title.toUpperCase()}
+          {product.name.toUpperCase()}
         </Typography>
         <Typography variant="body2" color="error" fontWeight="bold">
-          {product.salePrice.toLocaleString()}đ{' '}
+          {product.price.toLocaleString()}đ{' '}
           <Typography
             component="span"
             variant="body2"

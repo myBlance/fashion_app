@@ -139,7 +139,11 @@ const Navbar: React.FC = () => {
                         </Link>
                     </li>
                     <li>Giới thiệu</li>
-                    <li>Sản phẩm</li>
+                    <li>
+                        <Link to="/shop">
+                            Sản phẩm
+                        </Link>
+                    </li>
                     <li>Tin tức</li>
                     <li>Flash sale đồng giá</li>
                     <li>Instagram</li>

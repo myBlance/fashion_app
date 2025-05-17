@@ -13,6 +13,7 @@ export interface Product {
   thumbnail: string;
   images: string[];
   label: string;
+  delivery: string,
 }
 
 export const products: Product[] = [
@@ -31,6 +32,7 @@ export const products: Product[] = [
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    delivery: "free",
   },
   {
     id: 'DOLA3901',
@@ -47,6 +49,7 @@ export const products: Product[] = [
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    delivery: "free",
   },
   {
     id: 'DOLA3902',
@@ -63,6 +66,7 @@ export const products: Product[] = [
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    delivery: "free",
   },
   {
     id: 'DOLA3903',
@@ -79,6 +83,7 @@ export const products: Product[] = [
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+   delivery: "free",
   },
   {
     id: 'DOLA3904',
@@ -95,6 +100,7 @@ export const products: Product[] = [
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    delivery: "free",
   },
   {
     id: 'DOLA3905',
@@ -111,5 +117,6 @@ export const products: Product[] = [
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
+    delivery: "free",
   },
 ];

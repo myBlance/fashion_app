@@ -5,7 +5,7 @@ export interface Product {
   price: number;
   category: string;
   originalPrice: number;
-  status: string;
+  status: boolean;
   code: string;
   colors: string[];
   sizes: string[];
@@ -14,6 +14,7 @@ export interface Product {
   images: string[];
   label: string;
   delivery: string,
+
 }
 
 export const products: Product[] = [
@@ -24,7 +25,7 @@ export const products: Product[] = [
     price: 299000,
     category: 'Quần',
     originalPrice: 500000,
-    status: 'Còn hàng',
+    status: true,
     code: 'DOLA3900',
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
@@ -41,7 +42,7 @@ export const products: Product[] = [
     price: 299000,
     category: 'Quần',
     originalPrice: 500000,
-    status: 'Còn hàng',
+    status: true,
     code: 'DOLA3900',
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
@@ -58,7 +59,7 @@ export const products: Product[] = [
     price: 299000,
     category: 'Quần',
     originalPrice: 500000,
-    status: 'Còn hàng',
+    status: true,
     code: 'DOLA3900',
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
@@ -75,7 +76,7 @@ export const products: Product[] = [
     price: 299000,
     category: 'Quần',
     originalPrice: 500000,
-    status: 'Còn hàng',
+    status: true,
     code: 'DOLA3900',
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
@@ -92,7 +93,7 @@ export const products: Product[] = [
     price: 299000,
     category: 'Quần',
     originalPrice: 500000,
-    status: 'Còn hàng',
+    status: true,
     code: 'DOLA3900',
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
@@ -109,7 +110,7 @@ export const products: Product[] = [
     price: 299000,
     category: 'Quần',
     originalPrice: 500000,
-    status: 'Còn hàng',
+    status: true,
     code: 'DOLA3900',
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],

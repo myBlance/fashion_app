@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { products } from '../../data/products';
 import { addToCart } from '../../store/cartSlice';
@@ -16,7 +16,7 @@ const ProductDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const product = products.find((p) => p.id === id);
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const wishlist = useAppSelector((state) => state.wishlist.items);
     const isFavorite = wishlist.includes(product!.id);
@@ -112,8 +112,8 @@ const ProductDetail: React.FC = () => {
                             </span>
                                 <br />
                             Tình trạng:{' '}
-                            <span className={`highlight status ${product.status.toLowerCase()}`}>
-                                {product.status}
+                            <span className={`highlight status ${product.status ? 'available' : 'unavailable'}`}>
+                                {product.status ? 'Còn hàng' : 'Hết hàng'}
                             </span>
                         </div>
                         <div>
@@ -231,7 +231,7 @@ const ProductDetail: React.FC = () => {
                                     })
                                 );
                                 alert('Đã thêm vào giỏ!');
-                                navigate('/cart'); // chuyển sang trang giỏ hàng
+                                // navigate('/cart'); // chuyển sang trang giỏ hàng
                             }}
                         >
                             THÊM VÀO GIỎ

@@ -101,15 +101,18 @@ const HotDeals: React.FC = () => {
             },
           }}
         >
-          {products.map((product) => (
-            <Box
-              key={product.id}
-              flex="0 0 auto"
-              sx={{ minWidth: productWidth, mr: 2 }}
-            >
-              <ProductCard product={product} />
-            </Box>
-          ))}
+          {products
+  .filter(product => product.sale === true)
+  .map(product => (
+    <Box
+      key={product.id}
+      flex="0 0 auto"
+      sx={{ minWidth: productWidth, mr: 2 }}
+    >
+      <ProductCard product={product} />
+    </Box>
+  ))}
+
         </Box>
 
         <IconButton

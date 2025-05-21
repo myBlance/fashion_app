@@ -1,4 +1,3 @@
-// components/FilterSelect.tsx
 import React from 'react';
 import {
   Checkbox,

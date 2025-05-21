@@ -4,13 +4,13 @@ export const priceOptions = [
 ];
 
 export const typeOptions = [
-  { value: 'ao', label: 'Áo' },
-  { value: 'quan', label: 'Quần' },
+  { value: 'áo', label: 'Áo' },
+  { value: 'quần', label: 'Quần' },
 ];
 
 export const styleOptions = [
-  { value: 'basic', label: 'Basic' },
-  { value: 'nangdong', label: 'Năng động' },
+  { value: 'trẻ trung', label: 'Trẻ trung' },
+  { value: 'gợi cảm', label: 'Gợi cảm' },
 ];
 
 export const sizeOptions = [

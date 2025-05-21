@@ -160,7 +160,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </Box>
 
         <CardContent>
-          <Chip label={product.label} color="warning" size="small" sx={{ mb: 1 }} />
+          {product.sale && (
+  <Chip 
+    label="Khuyến mãi đặc biệt" 
+    color="warning" 
+    size="small" 
+    sx={{ mb: 1 }} 
+  />
+)}
           <Typography variant="body1" fontWeight="bold">
             {product.name.toUpperCase()}
           </Typography>

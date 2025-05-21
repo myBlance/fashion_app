@@ -4,38 +4,39 @@ import { clientRoutes, adminRoutes } from './routes';
 import ClientLayout from './layouts/ClientLayout';
 import AdminLayout from './layouts/AdminLayout';
 import PrivateRoute from './components/Client/PrivateRoute';
-import Login from './layouts/Login'; // Đã có trong routes nhưng vẫn cần import
+import Login from './layouts/Login';
 
 const App: React.FC = () => {
     return (
         <Routes>
-            {/* Đường dẫn login không dùng layout */}
+            {/* Đăng nhập không cần layout */}
             <Route path="/login" element={<Login />} />
 
-            {/* Routes cho Client có layout dùng Outlet */}
-            <Route
-                path="/"
-                element={
-                    <PrivateRoute element={<ClientLayout />} auth="client" />
-                }
-            >
-                {clientRoutes
-                    .filter(route => route.path !== '/login')
-                    .map(({ path, element }, index) => (
+            {/* Client layout cho các route client */}
+            <Route path="/" element={<ClientLayout />}>
+                {clientRoutes.map(({ path, element, auth }, index) => {
+                    const routePath = path === '/' ? '' : path.slice(1);
+                    const routeElement =
+                        auth === 'client' && (path === '/wishlist' || path === '/cart') ? (
+                            <PrivateRoute element={element} auth="client" />
+                        ) : (
+                            element
+                        );
+
+                    return (
                         <Route
                             key={index}
-                            path={path === '/' ? '' : path.slice(1)}
-                            element={element}
+                            path={routePath}
+                            element={routeElement}
                         />
-                    ))}
+                    );
+                })}
             </Route>
 
-            {/* Routes cho Admin có layout dùng Outlet */}
+            {/* Admin layout + bảo vệ bằng PrivateRoute */}
             <Route
                 path="/admin"
-                element={
-                    <PrivateRoute element={<AdminLayout />} auth="admin" />
-                }
+                element={<PrivateRoute element={<AdminLayout />} auth="admin" />}
             >
                 {adminRoutes.map(({ path, element }, index) => (
                     <Route

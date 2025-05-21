@@ -6,32 +6,15 @@ import {
     colorOptions,
     deliveryOptions,
 } from "../constants/filterOptions";
-
-export interface Product {
-  id: string;
-  name: string;
-  brand: string;
-  price: number;
-  category: string;
-  originalPrice: number;
-  status: boolean;
-  code: string;
-  colors: string[];
-  sizes: string[];
-  sold: number;
-  thumbnail: string;
-  images: string[];
-  label: string;
-  delivery: string;
-}
+import { Product } from "../data/products";
 
 export interface Filters {
   price: string[];
-  type: string[];
-  style: string[];
+  type: string;
+  style: string;
   size: string[];
   color: string[];
-  delivery: string[];
+  delivery: string;
 }
 
 export const getLabel = (key: string, value: string) => {
@@ -72,8 +55,8 @@ export const filterProducts = (products: Product[], filters: Filters) => {
         return true;
       });
 
-    const matchType = type.length === 0 || type.includes(product.category.toLowerCase());
-    const matchStyle = style.length === 0 || style.includes(product.label.toLowerCase());
+    const matchType = type.length === 0 || type.includes(product.type.toLowerCase());
+    const matchStyle = style.length === 0 || style.includes(product.style.toLowerCase());
     const matchSize = size.length === 0 || size.some((s) => product.sizes.includes(s));
     const matchColor = color.length === 0 || color.some((c) => product.colors.includes(c));
     const matchDelivery = delivery.length === 0 || delivery.includes(product.delivery);

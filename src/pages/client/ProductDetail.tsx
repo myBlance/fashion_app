@@ -56,8 +56,8 @@ const ProductDetail: React.FC = () => {
         setQuantity((prev) => prev + 1);
     };
 
-    const handleVoucherClick = (code: string) => {
-        alert(`Bạn đã chọn voucher: ${code}`);
+    const handleVoucherClick = (id: string) => {
+        alert(`Bạn đã chọn voucher: ${id}`);
     };
 
     return (
@@ -119,7 +119,7 @@ const ProductDetail: React.FC = () => {
                         <div>
                             Thương hiệu: <span className="highlight">{product.brand}</span>
                             <br />
-                            Mã sản phẩm: <span className="highlight code">{product.code}</span>
+                            Mã sản phẩm: <span className="highlight code">{product.id}</span>
                         </div>
                     </div>
 
@@ -144,13 +144,13 @@ const ProductDetail: React.FC = () => {
                     </div>
 
                     <div className="vouchers">
-                        {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((code) => (
+                        {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((id) => (
                             <button
-                                key={code}
+                                key={id}
                                 className="voucher-btn"
-                                onClick={() => handleVoucherClick(code)}
+                                onClick={() => handleVoucherClick(id)}
                             >
-                                {code}
+                                {id}
                             </button>
                         ))}
                     </div>
@@ -158,24 +158,37 @@ const ProductDetail: React.FC = () => {
                     <div className="voucher-note">Tặng voucher trị giá 50k cho đơn hàng tiếp theo</div>
 
                     <div className="colors-section">
-                        <strong>Màu sắc:</strong>
-                        <div className="color-options">
-                            {product.images.map((img, idx) => (
-                                <label
-                                    key={idx}
-                                    className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
-                                    onClick={() => {
-                                        setSelectedColorIndex(idx);
-                    
-                                    }}
-                                >
+                        <strong>Màu sắc: {product.colors[selectedColorIndex] || 'Chưa chọn'}</strong>
 
-                                    <img src={img} alt={`Màu ${idx === 0 ? 'Trắng' : 'Đen'}`} />
-                                    <span>{idx === 0 ? 'Trắng' : 'Đen'}</span>
-                                    {selectedColorIndex === idx && <div className="corner-icon">🏷️</div>}
-                                </label>
-                            ))}
-                        </div>
+                        <div className="color-options" style={{ display: 'flex', gap: 8 }}>
+  {product.colors.map((color, idx) => (
+    <label
+      key={idx}
+      className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
+      onClick={() => setSelectedColorIndex(idx)}
+      style={{ cursor: 'pointer', textAlign: 'center' }}
+    >
+      {/* Vòng tròn màu */}
+      <div
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          backgroundColor: color,
+          border: selectedColorIndex === idx ? '2px solid black' : '1px solid #ccc',
+          marginBottom: 4,
+        }}
+      />
+      {/* Tên màu */}
+      <span style={{ fontSize: 12 }}>{color}</span>
+
+      {/* Biểu tượng đánh dấu màu đang chọn */}
+      {selectedColorIndex === idx && <div className="corner-icon"></div>}
+    </label>
+  ))}
+</div>
+
+
                     </div>
 
                     <div className="sizes-section">

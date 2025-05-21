@@ -7,6 +7,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import '/src/styles/Navbar.css'; 
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../store/hooks';
+import { useAuth } from '../../contexts/AuthContext';
+import { Button } from '@mui/material';
 
 const textList = [
     'Dola Style xin chào bạn!',
@@ -22,6 +24,7 @@ const placeholders = [
 ];
 
 const Navbar: React.FC = () => {
+    const { role, logout } = useAuth();
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const navigate = useNavigate();
     // ví dụ state.cart.items là mảng chứa các sản phẩm trong giỏ hàng
@@ -82,8 +85,25 @@ const Navbar: React.FC = () => {
                     </div>
                 </div>
                 <div className="navbar-top-right">
-                    <button>Đăng nhập</button>
-                    <button>Đăng ký</button>
+
+                    {role === 'client' ? (
+                        <>
+                            <Button onClick={logout}>Đăng xuất</Button>
+                            <Button>
+                                <Link to="/profile">Tài khoản</Link>
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button>
+                                <Link to="/login">Đăng nhập</Link>
+                            </Button>                            
+                                
+                            <Button>
+                                <Link to="/register">Đăng ký</Link>
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
 

@@ -29,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const isFavorite = wishlist.includes(product.id);
 
   const [hovered, setHovered] = useState(false);
-  const soldPercentage = (product.sold / 25) * 100;
+  const soldPercentage = (product.sold / product.total) * 100;
 
   const displayedImage = hovered ? product.images[1] || product.images[0] : product.images[0];
 
@@ -71,12 +71,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <Chip
-          label="-49%"
-          color="error"
-          size="small"
-          sx={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}
-        />
+        {product.originalPrice > product.price && (
+  <Chip
+    label={`-${Math.round(
+      ((product.originalPrice - product.price) / product.originalPrice) * 100
+    )}%`}
+    color="error"
+    size="small"
+    sx={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}
+  />
+)}
+
         <IconButton
           onClick={handleToggleWishlist}
           sx={{
@@ -184,9 +189,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             ))}
           </Box>
           <Box mt={1}>
-            <LinearProgress variant="determinate" value={soldPercentage} />
-            <Typography variant="caption">Đã bán {product.sold}</Typography>
-          </Box>
+  <LinearProgress variant="determinate" value={soldPercentage} />
+  <Typography variant="caption">
+    Đã bán {product.sold}
+  </Typography>
+</Box>
+
         </CardContent>
       </Card>
 

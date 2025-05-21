@@ -138,15 +138,16 @@ const Navbar: React.FC = () => {
                             Trang chủ
                         </Link>
                     </li>
-                    <li>Giới thiệu</li>
                     <li>
-                        <Link to="/shop">
+                        <Link to="/about" style={{ textDecoration: 'none', color: '#fff' }}>
+                            Giới thiệu
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/shop" style={{ textDecoration: 'none', color: '#fff' }}>
                             Sản phẩm
                         </Link>
                     </li>
-                    <li>Tin tức</li>
-                    <li>Flash sale đồng giá</li>
-                    <li>Instagram</li>
                     <li>Câu hỏi thường gặp</li>
                     <li>Liên hệ</li>
                 </ul>

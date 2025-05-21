@@ -10,6 +10,7 @@ export interface Product {
   colors: string[];
   sizes: string[];
   sold: number;
+  total: number;
   thumbnail: string;
   images: string[];
   label: string;
@@ -30,6 +31,7 @@ export const products: Product[] = [
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
     sold: 14,
+    total: 50,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
@@ -47,6 +49,7 @@ export const products: Product[] = [
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
     sold: 14,
+    total: 55,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
@@ -64,6 +67,7 @@ export const products: Product[] = [
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
     sold: 14,
+    total: 15,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
@@ -81,6 +85,7 @@ export const products: Product[] = [
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
     sold: 14,
+    total: 50,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
    images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
@@ -90,7 +95,7 @@ export const products: Product[] = [
     id: 'DOLA3904',
     name: 'QUẦN DÀI ỐNG SUÔNG',
     brand: 'Dola Style',
-    price: 299000,
+    price: 199000,
     category: 'Quần',
     originalPrice: 500000,
     status: true,
@@ -98,6 +103,7 @@ export const products: Product[] = [
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
     sold: 14,
+    total: 50,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],
@@ -107,7 +113,7 @@ export const products: Product[] = [
     id: 'DOLA3905',
     name: 'QUẦN DÀI ỐNG SUÔNG',
     brand: 'Dola Style',
-    price: 299000,
+    price: 99000,
     category: 'Quần',
     originalPrice: 500000,
     status: true,
@@ -115,6 +121,7 @@ export const products: Product[] = [
     colors: ['#fff', '#000'],
     sizes: ['S', 'M', 'L'],
     sold: 14,
+    total: 50,
     label: 'Khuyến mãi đặc biệt',
     thumbnail: '/assets/images/xanh.webp',
     images: ['/assets/images/xanh1.webp', '/assets/images/kem.jpg', '/assets/images/xanh.webp'],

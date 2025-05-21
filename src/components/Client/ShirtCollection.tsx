@@ -1,14 +1,19 @@
 import React, { useRef, useState } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  IconButton,
+} from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ProductCard from './ProductCard';
 import { products } from '../../data/products';
+import ProductCard from './ProductCard';
 
-const HotDeals: React.FC = () => {
+const ShirtCollection: React.FC = () => {
   const productWidth = 220;
   const productMarginRight = 16;
-  const visibleCount = 5;
+  const visibleCount = 4;
   const containerWidth = visibleCount * (productWidth + productMarginRight);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -37,7 +42,7 @@ const HotDeals: React.FC = () => {
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDown.current || !scrollRef.current) return;
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1;
+    const walk = x - startX.current;
     scrollRef.current.scrollLeft = scrollLeft.current - walk;
 
     if (Math.abs(walk) > 5) {
@@ -55,22 +60,16 @@ const HotDeals: React.FC = () => {
   const scrollByOneProduct = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
     const scrollAmount = productWidth + productMarginRight;
-    if (direction === 'left') {
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
+    scrollRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
   };
 
   return (
-    <Box p={4}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Deal nổi bật 🔥
-      </Typography>
-      <Typography variant="body2" mb={3}>
-        Chương trình đã kết thúc, hẹn gặp lại trong thời gian sớm nhất!
-      </Typography>
-
+    <Box display="flex" gap={2} p={2}>
+      
+      {/* Danh sách sản phẩm */}
       <Box display="flex" alignItems="center" gap={1}>
         <IconButton
           onClick={() => scrollByOneProduct('left')}
@@ -120,8 +119,51 @@ const HotDeals: React.FC = () => {
           <ChevronRightIcon />
         </IconButton>
       </Box>
+      {/* Banner bên phải */}
+      <Box
+        sx={{
+          position: 'relative',
+          width: '320px',
+          height: '480px',
+          borderRadius: 2,
+          overflow: 'hidden',
+          backgroundImage: 'url(/assets/images/banner.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          flexShrink: 0,
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '40%',
+            left: '20%',
+            color: '#fff',
+            textShadow: '0 0 10px rgba(0,0,0,0.6)',
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="h5" fontWeight="bold">
+            Bộ sưu tập
+          </Typography>
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            color="red"
+            sx={{ textTransform: 'uppercase', mt: 1 }}
+          >
+            Quần
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{ mt: 3, backgroundColor: 'white', color: 'black' }}
+          >
+            Xem ngay
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
 };
 
-export default HotDeals;
+export default ShirtCollection;

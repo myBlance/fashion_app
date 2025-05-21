@@ -5,7 +5,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from './ProductCard';
 import { products } from '../../data/products';
 
-const HotDeals: React.FC = () => {
+const NewProducts: React.FC = () => {
   const productWidth = 220;
   const productMarginRight = 16;
   const visibleCount = 5;
@@ -55,28 +55,23 @@ const HotDeals: React.FC = () => {
   const scrollByOneProduct = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
     const scrollAmount = productWidth + productMarginRight;
-    if (direction === 'left') {
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
+    scrollRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
   };
 
   return (
     <Box p={4}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Deal nổi bật 🔥
+        Sản phẩm mới ✨
       </Typography>
       <Typography variant="body2" mb={3}>
-        Chương trình đã kết thúc, hẹn gặp lại trong thời gian sớm nhất!
+        Cập nhật những mẫu thiết kế mới nhất từ Dola Style!
       </Typography>
 
       <Box display="flex" alignItems="center" gap={1}>
-        <IconButton
-          onClick={() => scrollByOneProduct('left')}
-          aria-label="scroll left"
-          size="large"
-        >
+        <IconButton onClick={() => scrollByOneProduct('left')} size="large">
           <ChevronLeftIcon />
         </IconButton>
 
@@ -96,27 +91,17 @@ const HotDeals: React.FC = () => {
             WebkitUserDrag: 'none',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            '&::-webkit-scrollbar': {
-              display: 'none',
-            },
+            '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
           {products.map((product) => (
-            <Box
-              key={product.id}
-              flex="0 0 auto"
-              sx={{ minWidth: productWidth, mr: 2 }}
-            >
+            <Box key={product.id} flex="0 0 auto" sx={{ minWidth: productWidth, mr: 2 }}>
               <ProductCard product={product} />
             </Box>
           ))}
         </Box>
 
-        <IconButton
-          onClick={() => scrollByOneProduct('right')}
-          aria-label="scroll right"
-          size="large"
-        >
+        <IconButton onClick={() => scrollByOneProduct('right')} size="large">
           <ChevronRightIcon />
         </IconButton>
       </Box>
@@ -124,4 +109,4 @@ const HotDeals: React.FC = () => {
   );
 };
 
-export default HotDeals;
+export default NewProducts;

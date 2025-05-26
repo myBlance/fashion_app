@@ -10,11 +10,11 @@ import { Product } from "../data/products";
 
 export interface Filters {
   price: string[];
-  type: string;
-  style: string;
+  type: string[];
+  style: string[];
   size: string[];
   color: string[];
-  delivery: string;
+  delivery: string[];
 }
 
 export const getLabel = (key: string, value: string) => {

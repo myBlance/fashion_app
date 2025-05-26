@@ -200,10 +200,6 @@
   margin-bottom: 4px;
 }
 
-.color-label.selected {
-  border-color: #007bff;
-}
-
 .corner-icon {
   position: absolute;
   top: 4px;

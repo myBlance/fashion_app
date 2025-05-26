@@ -3,17 +3,8 @@ import { Box, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../store/cartSlice';
+import { Product } from '../../data/products';
 
-interface Product {
-  id: string;               // bổ sung id
-  name: string;
-  price: number;
-  originalPrice: number;
-  images: string[];
-  status: boolean;
-  colors: string[];
-  sizes: string[];
-}
 
 interface QuickViewProps {
   open: boolean;

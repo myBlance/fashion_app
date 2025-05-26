@@ -39,46 +39,81 @@ const sections = [
   },
 ];
 
+const sections1 = [
+    {
+        title: 'Chính sách tại Dola Style',
+        content:
+          'Với cam kết đem lại sự hài lòng tuyệt đối cho khách hàng, Dola Style xây dựng hệ thống chăm sóc khách hàng uy tín và chính sách đổi trả rõ ràng, minh bạch.',
+    }
+];
 const AboutPage: React.FC = () => {
-  return (
-    <Box p={4}>
-      {sections.map((section, index) => (
-        <Box
-          key={index}
-          display="flex"
-          flexDirection={section.reverse ? 'row-reverse' : 'row'}
-          alignItems="center"
-          justifyContent="space-between"
-          gap={4}
-          mb={6}
-          flexWrap="wrap"
-        >
-          {/* Image */}
-          <Box
-            component="img"
-            src={section.image}
-            alt={section.title}
-            sx={{
-              width: { xs: '100%', md: '40%' },
-              borderRadius: 2,
-              objectFit: 'cover',
-              maxHeight: 400,
-            }}
-          />
+    return (
+        <Box p={4}>
+            {sections.map((section, index) => (
+                <Box
+                    key={index}
+                    display="flex"
+                    flexDirection={section.reverse ? 'row-reverse' : 'row'}
+                    alignItems="center"
+                    justifyContent="space-between"
+                    gap={4}
+                    mb={6}
+                    flexWrap="wrap"
+                    width='75%'
+                    justifySelf='center'
+                >
+                    {/* Image */}
+                    <Box
+                        component="img"
+                        src={section.image}
+                        alt={section.title}
+                        sx={{
+                        width: { xs: '100%', md: '40%' },
+                        borderRadius: 2,
+                        objectFit: 'cover',
+                        maxHeight: 400,
+                        }}
+                    />
 
-          {/* Text */}
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h5" fontWeight="bold" color="primary" mb={1}>
-              {section.title}
-            </Typography>
-            <Typography variant="body1" whiteSpace="pre-line">
-              {section.content}
-            </Typography>
-          </Box>
+                    {/* Text */}
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="h5" fontWeight="bold" color="#e92424" mb={1}>
+                            {section.title}
+                        </Typography>
+                        <Typography variant="body1" whiteSpace="pre-line">
+                            {section.content}
+                        </Typography>
+                    </Box>
+                </Box>
+            ))}
+            
+            <Box sx={{ flex: 1 }}>
+                {sections1.map((section1, index) => (
+                    <Box
+                        key={index}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        gap='3px'
+                        mb={6}
+                        flexWrap="wrap"
+                        width='35%'
+                        justifySelf='center'
+                        textAlign='center'
+                    >
+
+                        <Typography variant="h5" fontWeight="bold" color="#e92424"  mb={1} align='center'>
+                            {section1.title}
+                        </Typography>
+                        <Typography variant="body1" whiteSpace="pre-line">
+                            {section1.content}
+                        </Typography>
+                    </Box>
+                ))}
+            </Box>
+
         </Box>
-      ))}
-    </Box>
-  );
+    );
 };
 
 export default AboutPage;

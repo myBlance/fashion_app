@@ -64,7 +64,7 @@ const ProductDetail: React.FC = () => {
         <div>
             <DynamicBreadcrumbs />
             <div className="product-detail">
-            {/* Cột 1: thumbnails ảnh nhỏ */}
+                {/* Cột 1: thumbnails ảnh nhỏ */}
                 <div className="left-column">
                     {product.images.map((img, i) => (
                         <img
@@ -77,7 +77,7 @@ const ProductDetail: React.FC = () => {
                     ))}
                 </div>
 
-            {/* Cột 2: ảnh lớn */}
+                {/* Cột 2: ảnh lớn */}
                 <div className="middle-column">
                     <img src={selectedImage} alt={product.name} className="main-image" />
                     <IconButton
@@ -101,7 +101,7 @@ const ProductDetail: React.FC = () => {
                     </IconButton>
                 </div>
 
-            {/* Cột 3: thông tin chi tiết */}
+                {/* Cột 3: thông tin chi tiết */}
                 <div className="right-column">
                     <h2>{product.name}</h2>
 
@@ -161,34 +161,32 @@ const ProductDetail: React.FC = () => {
                         <strong>Màu sắc: {product.colors[selectedColorIndex] || 'Chưa chọn'}</strong>
 
                         <div className="color-options" style={{ display: 'flex', gap: 8 }}>
-  {product.colors.map((color, idx) => (
-    <label
-      key={idx}
-      className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
-      onClick={() => setSelectedColorIndex(idx)}
-      style={{ cursor: 'pointer', textAlign: 'center' }}
-    >
-      {/* Vòng tròn màu */}
-      <div
-        style={{
-          width: 24,
-          height: 24,
-          borderRadius: '50%',
-          backgroundColor: color,
-          border: selectedColorIndex === idx ? '2px solid black' : '1px solid #ccc',
-          marginBottom: 4,
-        }}
-      />
-      {/* Tên màu */}
-      <span style={{ fontSize: 12 }}>{color}</span>
+                            {product.colors.map((color, idx) => (
+                                <label
+                                    key={idx}
+                                    className={`color-label ${selectedColorIndex === idx ? 'selected' : ''}`}
+                                    onClick={() => setSelectedColorIndex(idx)}
+                                    style={{ cursor: 'pointer', textAlign: 'center' }}
+                                >
+                                {/* Vòng tròn màu */}
+                                    <div
+                                        style={{
+                                            width: 24,
+                                            height: 24,
+                                            borderRadius: '50%',
+                                            backgroundColor: color,
+                                            border: selectedColorIndex === idx ? '2px solid black' : '1px solid #ccc',
+                                            marginBottom: 4,
+                                        }}
+                                    />
+                                    {/* Tên màu */}
+                                    <span style={{ fontSize: 12 }}>{color}</span>
 
-      {/* Biểu tượng đánh dấu màu đang chọn */}
-      {selectedColorIndex === idx && <div className="corner-icon"></div>}
-    </label>
-  ))}
-</div>
-
-
+                                    {/* Biểu tượng đánh dấu màu đang chọn */}
+                                    {selectedColorIndex === idx && <div className="corner-icon"></div>}
+                                </label>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="sizes-section">
@@ -219,11 +217,11 @@ const ProductDetail: React.FC = () => {
                         <label>Số lượng:</label>
                         <div className="quantity-controls">
                             <button className="quantity-btn" onClick={decreaseQuantity}>
-                            −
+                                −
                             </button>
                             <input type="text" value={quantity} readOnly />
                             <button className="quantity-btn" onClick={increaseQuantity}>
-                            +
+                                +
                             </button>
                         </div>
                     </div>

@@ -61,52 +61,59 @@ const BestSellers: React.FC = () => {
     });
   };
 
-  return (
-    <Box p={4}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Bán chạy trong tháng 🏆
-      </Typography>
-      <Typography variant="body2" mb={3}>
-        Những sản phẩm được yêu thích và mua nhiều nhất trong tháng qua!
-      </Typography>
+    return (
+        <Box p={4}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom align='center'>
+                    Bán chạy trong tháng 🏆
+            </Typography>
+            <Typography variant="body2" mb={3} align='center'>
+                Những sản phẩm được yêu thích và mua nhiều nhất trong tháng qua!
+            </Typography>
 
-      <Box display="flex" alignItems="center" gap={1}>
-        <IconButton onClick={() => scrollByOneProduct('left')} size="large">
-          <ChevronLeftIcon />
-        </IconButton>
+            <Box display="flex" alignItems="center" gap={1} justifyContent="center">
+                <IconButton onClick={() => scrollByOneProduct('left')} size="large">
+                    <ChevronLeftIcon />
+                </IconButton>
 
-        <Box
-          ref={scrollRef}
-          display="flex"
-          onMouseDown={onMouseDown}
-          onMouseLeave={onMouseLeave}
-          onMouseUp={onMouseUp}
-          onMouseMove={onMouseMove}
-          onClickCapture={handleClickCapture}
-          sx={{
-            overflowX: 'auto',
-            width: containerWidth,
-            cursor: isDown.current ? 'grabbing' : 'grab',
-            userSelect: 'none',
-            WebkitUserDrag: 'none',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-          }}
-        >
-          {products.map((product) => (
-            <Box key={product.id} flex="0 0 auto" sx={{ minWidth: productWidth, mr: 2 }}>
-              <ProductCard product={product} />
+                <Box
+                    ref={scrollRef}
+                    display="flex"
+                    onMouseDown={onMouseDown}
+                    onMouseLeave={onMouseLeave}
+                    onMouseUp={onMouseUp}
+                    onMouseMove={onMouseMove}
+                    onClickCapture={handleClickCapture}
+                    sx={{
+                        overflowX: 'auto',
+                        width: containerWidth,
+                        cursor: isDown.current ? 'grabbing' : 'grab',
+                        userSelect: 'none',
+                        WebkitUserDrag: 'none',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        '&::-webkit-scrollbar': { display: 'none' },
+                    }}
+                >
+                {[...products]
+                    .sort((a, b) => b.sold - a.sold)
+                    .slice(0, 10)
+                    .map((product) => (
+                        <Box 
+                        key={product.id} 
+                        flex="0 0 auto" 
+                        sx={{ minWidth: productWidth, pl:1 , mr:1, mb: 2, mt: 2 }}
+                        >
+                            <ProductCard product={product} />
+                        </Box>
+                    ))
+                }
+                </Box>
+                <IconButton onClick={() => scrollByOneProduct('right')} size="large">
+                    <ChevronRightIcon />
+                </IconButton>
             </Box>
-          ))}
         </Box>
-
-        <IconButton onClick={() => scrollByOneProduct('right')} size="large">
-          <ChevronRightIcon />
-        </IconButton>
-      </Box>
-    </Box>
-  );
+    );
 };
 
 export default BestSellers;

@@ -16,7 +16,7 @@ export interface Product {
   images: string[];
   sale: boolean;
   delivery: string;
-  time: string; // Định dạng ISO 8601, ví dụ: "2025-05-01T00:00:00Z"
+  createdAt: string; // Định dạng ISO 8601, ví dụ: "2025-05-01T00:00:00Z"
 }
 
 export const products: Product[] =[
@@ -49,7 +49,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-01T00:00:00"
+    "createdAt": "2025-05-01T00:00:00"
   },
   {
     "id": "DOLA3901",
@@ -80,7 +80,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-02T00:00:00"
+    "createdAt": "2025-05-02T00:00:00"
   },
   {
     "id": "DOLA3902",
@@ -111,7 +111,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-03T00:00:00"
+    "createdAt": "2025-05-03T00:00:00"
   },
   {
     "id": "DOLA3903",
@@ -142,7 +142,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-04T00:00:00"
+    "createdAt": "2025-05-04T00:00:00"
   },
   {
     "id": "DOLA3904",
@@ -173,7 +173,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-05T00:00:00"
+    "createdAt": "2025-05-05T00:00:00"
   },
   {
     "id": "DOLA3905",
@@ -204,7 +204,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-06T00:00:00"
+    "createdAt": "2025-05-06T00:00:00"
   },
   {
     "id": "DOLA3906",
@@ -235,7 +235,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-07T00:00:00"
+    "createdAt": "2025-05-07T00:00:00"
   },
   {
     "id": "DOLA3907",
@@ -266,7 +266,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-08T00:00:00"
+    "createdAt": "2025-05-08T00:00:00"
   },
   {
     "id": "DOLA3908",
@@ -297,7 +297,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-09T00:00:00"
+    "createdAt": "2025-05-09T00:00:00"
   },
   {
     "id": "DOLA3909",
@@ -328,7 +328,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-10T00:00:00"
+    "createdAt": "2025-05-10T00:00:00"
   },
   {
     "id": "DOLA3910",
@@ -359,7 +359,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-11T00:00:00"
+    "createdAt": "2025-05-11T00:00:00"
   },
   {
     "id": "DOLA3911",
@@ -390,7 +390,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-12T00:00:00"
+    "createdAt": "2025-05-12T00:00:00"
   },
   {
     "id": "DOLA3912",
@@ -421,7 +421,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-13T00:00:00"
+    "createdAt": "2025-05-13T00:00:00"
   },
   {
     "id": "DOLA3913",
@@ -452,21 +452,21 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-14T00:00:00"
+    "createdAt": "2025-05-14T00:00:00"
   },
   {
     "id": "DOLA3914",
-    "name": "ÁO KIỂU CỔ VUÔNG",
+    "name": "Váy",
     "brand": "Dola Style",
     "price": 299000,
-    "category": "Áo",
+    "category": "Váy",
     "originalPrice": 500000,
     "status": true,
     "colors": [
       "#f00",
       "#0f0"
     ],
-    "type": "áo",
+    "type": "váy",
     "style": "gợi cảm",
     "sizes": [
       "S",
@@ -483,7 +483,193 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-15T00:00:00"
+    "createdAt": "2025-05-15T00:00:00"
+  },
+  {
+    "id": "DOLA3914",
+    "name": "Váy",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Váy",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "váy",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 24,
+    "total": 78,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-15T00:00:00"
+  },
+  {
+    "id": "DOLA3914",
+    "name": "Váy",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Váy",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "váy",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 24,
+    "total": 78,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-15T00:00:00"
+  },
+  {
+    "id": "DOLA3944",
+    "name": "Váy",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Váy",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "váy",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 24,
+    "total": 78,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-15T00:00:00"
+  },
+  {
+    "id": "DOLA3954",
+    "name": "Váy",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Váy",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "váy",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 24,
+    "total": 78,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-15T00:00:00"
+  },
+  {
+    "id": "DOLA3964",
+    "name": "Váy",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Váy",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "váy",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 24,
+    "total": 78,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-15T00:00:00"
+  },
+  {
+    "id": "DOLA3974",
+    "name": "Váy",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Váy",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "váy",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 24,
+    "total": 78,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-15T00:00:00"
   },
   {
     "id": "DOLA3915",
@@ -514,7 +700,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-16T00:00:00"
+    "createdAt": "2025-05-16T00:00:00"
   },
   {
     "id": "DOLA3916",
@@ -545,7 +731,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-17T00:00:00"
+    "createdAt": "2025-05-17T00:00:00"
   },
   {
     "id": "DOLA3917",
@@ -576,7 +762,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-18T00:00:00"
+    "createdAt": "2025-05-18T00:00:00"
   },
   {
     "id": "DOLA3918",
@@ -607,7 +793,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-19T00:00:00"
+    "createdAt": "2025-05-19T00:00:00"
   },
   {
     "id": "DOLA3919",
@@ -638,7 +824,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-20T00:00:00"
+    "createdAt": "2025-05-20T00:00:00"
   },
   {
     "id": "DOLA3920",
@@ -669,7 +855,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-21T00:00:00"
+    "createdAt": "2025-05-21T00:00:00"
   },
   {
     "id": "DOLA3921",
@@ -700,7 +886,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-22T00:00:00"
+    "createdAt": "2025-05-22T00:00:00"
   },
   {
     "id": "DOLA3922",
@@ -731,7 +917,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-23T00:00:00"
+    "createdAt": "2025-05-23T00:00:00"
   },
   {
     "id": "DOLA3923",
@@ -762,7 +948,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-24T00:00:00"
+    "createdAt": "2025-05-24T00:00:00"
   },
   {
     "id": "DOLA3924",
@@ -793,7 +979,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-25T00:00:00"
+    "createdAt": "2025-05-25T00:00:00"
   },
   {
     "id": "DOLA3925",
@@ -824,7 +1010,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-26T00:00:00"
+    "createdAt": "2025-05-26T00:00:00"
   },
   {
     "id": "DOLA3926",
@@ -855,7 +1041,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-27T00:00:00"
+    "createdAt": "2025-05-27T00:00:00"
   },
   {
     "id": "DOLA3927",
@@ -886,7 +1072,7 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-28T00:00:00"
+    "createdAt": "2025-05-28T00:00:00"
   },
   {
     "id": "DOLA3928",
@@ -917,7 +1103,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "time": "2025-05-29T00:00:00"
+    "createdAt": "2025-05-29T00:00:00"
   },
   {
     "id": "DOLA3929",
@@ -948,6 +1134,6 @@ export const products: Product[] =[
     ],
     "sale": true,
     "delivery": "standard",
-    "time": "2025-05-30T00:00:00"
+    "createdAt": "2025-05-30T00:00:00"
   }
 ]

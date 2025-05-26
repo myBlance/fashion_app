@@ -4,13 +4,13 @@ import { clientRoutes, adminRoutes } from './routes';
 import ClientLayout from './layouts/ClientLayout';
 import AdminLayout from './layouts/AdminLayout';
 import PrivateRoute from './components/Client/PrivateRoute';
-import Login from './layouts/Login';
+import LoginPage from './pages/auth/LoginPage';
 
 const App: React.FC = () => {
     return (
         <Routes>
             {/* Đăng nhập không cần layout */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<LoginPage />} />
 
             {/* Client layout cho các route client */}
             <Route path="/" element={<ClientLayout />}>

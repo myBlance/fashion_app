@@ -35,11 +35,15 @@
   opacity: 0;
 }
 
+.navbar-top-right {
+    padding: 5px;
+}
+
 .navbar-top-right button {
     background-color: #c00;
     color: #fff;
     border: none;
-    padding: 14px 12px;
+    padding: 5px 14px;
     margin: 8px;
     border-radius: 4px;
     cursor: pointer;
@@ -103,7 +107,8 @@
 
 .navbar-logo img {
     margin-top: 5px;
-    width: 350px;
+    width: 300px;
+    margin-left: -150px;
     height: 55px;
     object-fit: contain;
 }
@@ -141,26 +146,30 @@
 
 /* --- Navbar Menu --- */
 .navbar-menu {
-  background-color: #b11116;
+    background-color: #b11116;
 }
 
 .navbar-menu ul {
-  display: flex;
-  flex-wrap: wrap;
-  list-style: none;
-  justify-content: center;
-  padding: 12px 0;
-  margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    justify-content: center;
+    padding: 5px 0 7px;
+    margin: 0;
 }
 
 .navbar-menu li {
-  color: white;
-  margin: 0 16px;
-  font-size: 15px;
-  cursor: pointer;
-  position: relative;
+    margin: 0 16px;
+    cursor: pointer;
+    position: relative;
 }
 
-.navbar-menu li:hover {
-  text-decoration: underline;
+.navbar-menu .nav-link {
+    text-decoration: none;
+    color: #fff;
+    font-size: 20px;
+}
+
+.navbar-menu .nav-link:hover {
+    color: rgb(225, 162, 3);
 }

@@ -13,7 +13,7 @@ import CartPage from '../pages/client/CartPage';
 import WishlistPage from '../pages/client/WishlistPage';
 import ShopPage from '../pages/client/ShopPage';
 import AboutPage from '../pages/client/AboutPage';
-import LoginPage from '../pages/auth/LoginPage';
+import AuthTabs from '../pages/auth/AuthTabs';
 // import Products from '../pages/admin/Products';
 // import AddProduct from '../pages/admin/AddProduct';
 // import Orders from '../pages/admin/Orders';
@@ -27,12 +27,13 @@ type RouteItem = {
 
 export const clientRoutes: RouteItem[] = [
     { path: '/', element: React.createElement(Home), auth: 'client' },
-    { path: '/login', element: React.createElement(LoginPage), auth: 'client' },
     { path: '/product/:id', element: React.createElement(ProductDetail) , auth: 'client' },
     { path: '/shop', element: React.createElement(ShopPage), auth: 'client' },
     { path: '/cart', element: React.createElement(CartPage), auth: 'client' },
     { path: '/wishlist', element: React.createElement(WishlistPage), auth: 'client' },
     { path: '/about', element: React.createElement(AboutPage), auth: 'client' },
+    { path: '/auth', element: React.createElement(AuthTabs), auth: 'client' },
+
     // { path: '/checkout', element: <Checkout />, auth: 'client' },
     // { path: '/register', element: React.createElement(Register), auth: 'client' },
 ];

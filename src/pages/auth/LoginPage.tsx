@@ -1,34 +1,177 @@
-// src/pages/LoginPage.tsx
 import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext'; // hoặc đúng path của bạn
+import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Button, TextField } from '@mui/material';
+import '../../styles/Authtabs.css';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const { loginAs } = useAuth();
-  const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const { loginAs } = useAuth();
+    const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === 'admin123') {
-      loginAs('admin');
-      navigate('/admin');
-    } else if (username === 'client' && password === 'client123') {
-      loginAs('client');
-      navigate('/');
-    } else {
-      alert('Sai tài khoản hoặc mật khẩu');
-    }
-  };
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (username === 'admin' && password === 'admin123') {
+            loginAs('admin');
+            navigate('/admin');
+        } else if (username === 'client' && password === 'client123') {
+            loginAs('client');
+            navigate('/');
+        } else {
+            alert('Sai tài khoản hoặc mật khẩu');
+        }
+    };
 
-  return (
-    <div>
-      <h2>Đăng nhập</h2>
-      <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
-      <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
-      <button onClick={handleLogin}>Đăng nhập</button>
-    </div>
-  );
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    return (
+        <div className="tab-container">
+            <h2>Đăng nhập</h2>
+            <form className="tab-form" onSubmit={handleLogin}>
+                <TextField
+                    id="filled-multiline-flexible"
+                    maxRows={4}
+                    label="Email"
+                    variant="filled"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    sx={{
+                        width: '100%',
+                        '& .MuiFilledInput-root': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                            borderRadius: '4px',
+                            color: '#000000',
+                            border: '2px solid #999999',
+                            boxShadow: 'none',
+                            paddingLeft: '5px',
+                            transition: 'background-color 0s', // không đổi màu khi hover
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên màu khi hover
+                            },'&.Mui-focused': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên khi focus
+                            },
+                            '&:before': {
+                                borderBottom: 'none !important',
+                            },
+                            '&:after': {
+                                borderBottom: 'none !important',
+                            },
+                            '&:hover:before': {
+                                borderBottom: 'none !important',
+                            },
+                            '& input': {
+                                caretColor: '#000000',
+                            },
+                            '& input:-webkit-autofill': {
+                                WebkitBoxShadow: '0 0 0 1000px rgba(0,0,0,0) inset !important',
+                                WebkitTextFillColor: '#000000 !important',
+                                transition: 'background-color 0s 600000s, color 0s 600000s',
+                                borderRadius:'40px',
+                            },
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#000000',
+                            left: '5px',
+                            '&.Mui-focused': {
+                                color: '#000000',
+                            },
+                        },
+                    }}
+                />
+                <TextField
+                    id="filled-multiline-flexible"          
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Mật khẩu"
+                    maxRows={4}
+                    variant="filled"
+                    type={showPassword ? 'text' : 'password'}
+                    sx={{
+                        mb: 3,
+                        mt: 3,
+                        width: '100%',
+                        '& .MuiFilledInput-root': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                            borderRadius: '4px',
+                            color: '#fff',
+                            border: '2px solid #999999',
+                            boxShadow: 'none',
+                            paddingLeft: '5px',
+                            transition: 'background-color 0s', // không đổi màu khi hover
+                            '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên màu khi hover
+                            },'&.Mui-focused': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên khi focus
+                            },
+                            '&:before': {
+                                borderBottom: 'none !important',
+                            },
+                            '&:after': {
+                                borderBottom: 'none !important',
+                            },
+                            '&:hover:before': {
+                                borderBottom: 'none !important',
+                            },
+                            '& input': {
+                                caretColor: '#000000',
+                            },
+                            '& input:-webkit-autofill': {
+                                WebkitBoxShadow: '0 0 0 1000px rgba(0,0,0,0) inset !important',
+                                WebkitTextFillColor: '#000000 !important',
+                                transition: 'background-color 0s 600000s, color 0s 600000s',
+                                borderRadius:'40px',
+                            },
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#000000',
+                            left: '5px',
+                            '&.Mui-focused': {
+                                color: '#000000',
+                            },
+                        },
+                    }}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={handleTogglePassword}
+                                    edge="end"
+                                    sx={{ 
+                                        color: '#000000', 
+                                    }}
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    sx={{ mt: 2, backgroundColor: '#f92a2a', color: '#fff' }}
+                >
+                    Đăng nhập
+                </Button>
+                <div className="login-links">
+                    <a href="/forgot-password">Quên mật khẩu?</a>
+                    <span>
+                        Chưa có tài khoản? <a href="/auth?tab=register">Đăng ký</a>
+                    </span>
+                </div>
+            </form>
+        </div>
+    );
 };
 
 export default LoginPage;

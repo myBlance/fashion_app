@@ -1,14 +1,13 @@
-import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import '/src/styles/Navbar.css'; 
-import { useEffect, useState } from 'react';
-import { useAppSelector } from '../../store/hooks';
-import { useAuth } from '../../contexts/AuthContext';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { useAppSelector } from '../../store/hooks';
+import '/src/styles/Navbar.css';
 
 const textList = [
     'Dola Style xin chào bạn!',
@@ -88,19 +87,28 @@ const Navbar: React.FC = () => {
 
                     {role === 'client' ? (
                         <>
-                            <Button onClick={logout}>Đăng xuất</Button>
+                            <Button onClick={logout}>
+                                Đăng xuất
+                            </Button>
                             <Button>
-                                <Link to="/profile">Tài khoản</Link>
+                                <Link to="/profile">
+                                    Tài khoản
+                                </Link>
                             </Button>
                         </>
                     ) : (
                         <>
                             <Button>
-                                <Link to="/login">Đăng nhập</Link>
-                            </Button>                            
-                                
+                                <Link to="/auth?tab=login" style={{ textDecoration: 'none', color: '#fff' }}>
+                                    Đăng nhập
+                                </Link>
+                               
+                            </Button>
+
                             <Button>
-                                <Link to="/register">Đăng ký</Link>
+                                <Link to="/auth?tab=register" style={{ textDecoration: 'none', color: '#fff' }}>
+                                    Đăng ký
+                                </Link>
                             </Button>
                         </>
                     )}
@@ -154,22 +162,30 @@ const Navbar: React.FC = () => {
             <nav className="navbar-menu">
                 <ul>
                     <li>
-                        <Link to="/" style={{ textDecoration: 'none', color: '#fff' }}>
+                        <Link to="/" className='nav-link'>
                             Trang chủ
                         </Link>
                     </li>
                     <li>
-                        <Link to="/about" style={{ textDecoration: 'none', color: '#fff' }}>
+                        <Link to="/about" className='nav-link'>
                             Giới thiệu
                         </Link>
                     </li>
                     <li>
-                        <Link to="/shop" style={{ textDecoration: 'none', color: '#fff' }}>
+                        <Link to="/shop" className='nav-link'>
                             Sản phẩm
                         </Link>
                     </li>
-                    <li>Câu hỏi thường gặp</li>
-                    <li>Liên hệ</li>
+                    <li>
+                        <Link to="/blog" className='nav-link'>
+                            Blog
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/contact" className='nav-link'>
+                            Liên hệ
+                        </Link>
+                    </li>
                 </ul>
             </nav>
         </div>

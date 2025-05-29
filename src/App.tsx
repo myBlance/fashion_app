@@ -1,51 +1,41 @@
+// App.tsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { clientRoutes, adminRoutes } from './routes';
 import ClientLayout from './layouts/ClientLayout';
-import AdminLayout from './layouts/AdminLayout';
 import PrivateRoute from './components/Client/PrivateRoute';
 import LoginPage from './pages/auth/LoginPage';
 
 const App: React.FC = () => {
     return (
         <Routes>
-            {/* Đăng nhập không cần layout */}
-            <Route path="/login" element={<LoginPage />} />
+            {/* Trang đăng nhập */}
+            <Route path="/auth?tab=login" element={<LoginPage />} />
 
-            {/* Client layout cho các route client */}
+            {/* Client layout */}
             <Route path="/" element={<ClientLayout />}>
                 {clientRoutes.map(({ path, element, auth }, index) => {
                     const routePath = path === '/' ? '' : path.slice(1);
-                    const routeElement =
-                        auth === 'client' && (path === '/wishlist' || path === '/cart') ? (
-                            <PrivateRoute element={element} auth="client" />
-                        ) : (
-                            element
-                        );
+                    const isPrivate = auth === 'client' && (path === '/wishlist' || path === '/cart');
 
                     return (
                         <Route
                             key={index}
                             path={routePath}
-                            element={routeElement}
+                            element={isPrivate ? <PrivateRoute element={element} auth="client" /> : element}
                         />
                     );
                 })}
             </Route>
 
-            {/* Admin layout + bảo vệ bằng PrivateRoute */}
-            <Route
-                path="/admin"
-                element={<PrivateRoute element={<AdminLayout />} auth="admin" />}
-            >
-                {adminRoutes.map(({ path, element }, index) => (
-                    <Route
-                        key={index}
-                        path={path.replace('/admin/', '')}
-                        element={element}
-                    />
-                ))}
-            </Route>
+            {/* Route riêng cho admin (React-Admin) */}
+            {adminRoutes.map(({ path, element, auth }, index) => (
+                <Route
+                    key={index}
+                    path={path}
+                    element={<PrivateRoute element={element} auth="admin" />}
+                />
+            ))}
         </Routes>
     );
 };

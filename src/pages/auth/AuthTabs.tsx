@@ -25,10 +25,61 @@ export default function AuthTabs() {
 
     return (
         <Box sx={{ width: '100%', maxWidth: 450, mx: 'auto', mt: 5 }}>
-            <Tabs value={tabIndex} onChange={handleChange} centered sx={{ml: '24px'}}>
-                <Tab label="ĐĂNG NHẬP" />
-                <Tab label="ĐĂNG KÝ" sx={{ml:'10px'}}/>
-            </Tabs>
+            <Tabs
+                value={tabIndex}
+                onChange={handleChange}
+                centered
+                sx={{
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: '#b11116',
+                        height: '3px',
+                    },
+                }}
+            >
+                <Tab
+                    label="ĐĂNG NHẬP"
+                    disableRipple
+                    sx={{
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        color: '#333',
+                        outline: 'none',
+                        '&.Mui-selected': {
+                            color: '#b11116',
+                            border: 'none',
+                        },
+                        '&:focus': {
+                            outline: 'none',
+                        },
+                        '&:hover': {
+                            backgroundColor: 'transparent',
+                        },
+                    }}
+                />
+                <Tab
+                    label="ĐĂNG KÝ"
+                    disableRipple
+                    sx={{
+                        ml: '10px',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        color: '#333',
+                        outline: 'none',
+                        '&.Mui-selected': {
+                            color: '#b11116',
+                            border: 'none',
+                        },
+                        '&:focus': {
+                            outline: 'none',
+                        },
+                        '&:hover': {
+                            backgroundColor: 'transparent',
+                        },
+                    }}
+                />
+                </Tabs>
+
+
 
             <TabPanel value={tabIndex} index={0}>
                 <LoginPage />

@@ -36,10 +36,11 @@ const Footer: React.FC = () => {
                     <div className="footer-social">
                         <h4>Mạng xã hội</h4>
                         <div className="ecommerce-links">
-                            <img src="/assets/icons/shopee.png" alt="Shopee" />
-                            <img src="/assets/icons/lazada.png" alt="Lazada" />
-                            <img src="/assets/icons/tiki.png" alt="Tiki" />
-                            <img src="/assets/icons/sendo.png" alt="Sendo" />
+                            <img src="/assets/icons/facebook.webp" alt="Shopee" />
+                            <img src="/assets/icons/youtube.webp" alt="Lazada" />
+                            <img src="/assets/icons/instagram.webp" alt="Tiki" />
+                            <img src="/assets/icons/pinterest.webp" alt="Sendo" />
+                            <img src="/assets/icons/twitter.webp" alt="Sendo" />
                         </div>
                     </div>
                 </div>
@@ -51,10 +52,10 @@ const Footer: React.FC = () => {
                     </div>
                     <h4>Liên kết sàn</h4>
                     <div className="ecommerce-links">
-                        <img src="/assets/icons/shopee.png" alt="Shopee" />
-                        <img src="/assets/icons/lazada.png" alt="Lazada" />
-                        <img src="/assets/icons/tiki.png" alt="Tiki" />
-                        <img src="/assets/icons/sendo.png" alt="Sendo" />
+                        <img src="/assets/icons/laz.webp" alt="Shopee" />
+                        <img src="/assets/icons/shopee.webp" alt="Lazada" />
+                        <img src="/assets/icons/sendo.webp" alt="Tiki" />
+                        <img src="/assets/icons/tiki.webp" alt="Sendo" />
                     </div>
                 </div>
             </div>

@@ -79,6 +79,8 @@ const ShopPage: React.FC = () => {
             <Box
                 sx={{
                     p: 4,
+                    maxWidth: '90%',
+                    margin:'0 5%',
                     mb: 2,
                     backgroundColor: '#eee',
                     borderRadius: 2,

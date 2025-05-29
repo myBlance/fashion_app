@@ -10,6 +10,7 @@ const DashBoard: React.FC = () => {
       </Box>
       <Paper sx={{ padding: 3 }}>
         <Typography variant="body1">Đây là nội dung chính của admin.</Typography>
+        
       </Paper>
     </div>
   );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom'; // Import Outlet
 import Navbar from '../components/Client/Navbar';
-import '../styles/ClientLayout.css';
 import Footer from '../components/Client/Footer';
 
 const ClientLayout: React.FC = () => {

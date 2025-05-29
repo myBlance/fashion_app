@@ -16,10 +16,10 @@ const LoginPage = () => {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (username === 'admin' && password === 'admin123') {
+        if (username === 'admin' && password === '1') {
             loginAs('admin');
             navigate('/admin');
-        } else if (username === 'client' && password === 'client123') {
+        } else if (username === 'client' && password === '1') {
             loginAs('client');
             navigate('/');
         } else {
@@ -102,7 +102,7 @@ const LoginPage = () => {
                         '& .MuiFilledInput-root': {
                             backgroundColor: 'rgba(255, 255, 255, 0.5)',
                             borderRadius: '4px',
-                            color: '#fff',
+                            color: '#000000',
                             border: '2px solid #999999',
                             boxShadow: 'none',
                             paddingLeft: '5px',
@@ -159,7 +159,7 @@ const LoginPage = () => {
                     type="submit"
                     variant="contained"
                     fullWidth
-                    sx={{ mt: 2, backgroundColor: '#f92a2a', color: '#fff' }}
+                    sx={{ mt: 2, backgroundColor: '#ca161c', color: '#fff' }}
                 >
                     Đăng nhập
                 </Button>

@@ -11,7 +11,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, auth }) => {
     const { role } = useAuth();
     // Kiểm tra quyền truy cập
     if (role !== auth) {
-        return <Navigate to="/login" replace />; // Chuyển hướng đến trang login nếu không có quyền
+        return <Navigate to="/auth?tab=login" replace />; // Chuyển hướng đến trang login nếu không có quyền
     }
 
     return <>{element}</>; // Hiển thị element nếu quyền truy cập hợp lệ

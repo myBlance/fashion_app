@@ -173,3 +173,90 @@
 .navbar-menu .nav-link:hover {
     color: rgb(225, 162, 3);
 }
+
+/* --- Responsive cho tablet và mobile --- */
+@media screen and (max-width: 1024px) {
+  .navbar-logo img {
+    width: 200px;
+    margin-left: -50px;
+  }
+
+  .navbar-search-input {
+    width: 180px;
+    font-size: 12px;
+  }
+
+  .navbar-menu ul {
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+
+  .navbar-menu .nav-link {
+    font-size: 16px;
+  }
+
+  .navbar-icon {
+    font-size: 12px;
+  }
+
+  .navbar-icon svg {
+    font-size: 20px;
+  }
+}
+
+/* @media screen and (max-width: 768px) {
+  .navbar-top,
+  .navbar-search,
+  .navbar-main {
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 16px;
+  }
+
+  .navbar-logo img {
+    width: 180px;
+    margin: 0 auto;
+  }
+
+  .navbar-search {
+    display: none;
+  }
+
+  .navbar-search-input {
+    width: 80%;
+  }
+
+  .navbar-icons {
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .navbar-menu ul {
+    display: none;
+  }
+
+  .navbar-menu li {
+    margin: 8px 0;
+  }
+
+  .navbar-top-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+} */
+
+/* @media screen and (max-width: 480px) {
+  .navbar-search-input {
+    width: 90%;
+    font-size: 12px;
+  }
+
+  .navbar-menu .nav-link {
+    font-size: 14px;
+  }
+
+  .navbar-icon svg {
+    font-size: 18px;
+  }
+} */

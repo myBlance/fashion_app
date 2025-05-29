@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAppSelector } from '../../store/hooks';
+
 import '/src/styles/Navbar.css';
 
 const textList = [
@@ -24,6 +25,12 @@ const placeholders = [
 
 const Navbar: React.FC = () => {
     const { role, logout } = useAuth();
+
+    const [menuActive, setMenuActive] = useState(false);
+    const toggleMenu = () => {
+        setMenuActive(!menuActive);
+    };
+
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
     const navigate = useNavigate();
     // ví dụ state.cart.items là mảng chứa các sản phẩm trong giỏ hàng
@@ -154,6 +161,11 @@ const Navbar: React.FC = () => {
                         <ShoppingCartOutlinedIcon />
                         <span>Giỏ hàng</span>
                         <span className="navbar-icon-badge">{totalQuantity}</span>
+                    </div>
+                    <div className="hamburger-menu" onClick={toggleMenu}>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
                 </div>
             </div>

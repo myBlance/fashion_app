@@ -7,9 +7,223 @@ const mockOrders = [
 ];
 
 const products = [
-  { id: 1, name: 'Áo thun', price: 150000, stock: 20 },
-  { id: 2, name: 'Quần jean', price: 300000, stock: 15 },
-  { id: 3, name: 'Giày thể thao', price: 500000, stock: 10 },
+  {
+    "id": "DOLA3900",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#fff",
+      "#000"
+    ],
+    "type": "quần",
+    "style": "trẻ trung",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 10,
+    "total": 50,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-01T00:00:00"
+  },
+  {
+    "id": "DOLA3901",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 199000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "quần",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 11,
+    "total": 52,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": true,
+    "delivery": "standard",
+    "createdAt": "2025-05-02T00:00:00"
+  },
+  {
+    "id": "DOLA3902",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 299000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#f00",
+      "#0f0"
+    ],
+    "type": "quần",
+    "style": "gợi cảm",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 12,
+    "total": 54,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": false,
+    "delivery": "free",
+    "createdAt": "2025-05-03T00:00:00"
+  },
+  {
+    "id": "DOLA3903",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 199000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#fff",
+      "#000"
+    ],
+    "type": "quần",
+    "style": "trẻ trung",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 13,
+    "total": 56,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": true,
+    "delivery": "standard",
+    "createdAt": "2025-05-04T00:00:00"
+  },
+    {
+    "id": "DOLA3903",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 199000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#fff",
+      "#000"
+    ],
+    "type": "quần",
+    "style": "trẻ trung",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 13,
+    "total": 56,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": true,
+    "delivery": "standard",
+    "createdAt": "2025-05-04T00:00:00"
+  },
+    {
+    "id": "DOLA3903",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 199000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#fff",
+      "#000"
+    ],
+    "type": "quần",
+    "style": "trẻ trung",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 13,
+    "total": 56,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": true,
+    "delivery": "standard",
+    "createdAt": "2025-05-04T00:00:00"
+  },
+    {
+    "id": "DOLA3903",
+    "name": "QUẦN DÀI ỐNG SUÔNG",
+    "brand": "Dola Style",
+    "price": 199000,
+    "category": "Quần",
+    "originalPrice": 500000,
+    "status": true,
+    "colors": [
+      "#fff",
+      "#000"
+    ],
+    "type": "quần",
+    "style": "trẻ trung",
+    "sizes": [
+      "S",
+      "M",
+      "L"
+    ],
+    "sold": 13,
+    "total": 56,
+    "thumbnail": "/assets/images/xanh.webp",
+    "images": [
+      "/assets/images/xanh1.webp",
+      "/assets/images/kem.jpg",
+      "/assets/images/xanh.webp"
+    ],
+    "sale": true,
+    "delivery": "standard",
+    "createdAt": "2025-05-04T00:00:00"
+  },
 ];
 
 const fakeDataProvider: DataProvider = {

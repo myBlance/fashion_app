@@ -1,24 +1,34 @@
-import { Admin, Resource } from 'react-admin';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import  Dashboard  from './Dashboard'; 
-import { OrderList } from './OrderList'; 
-import  ProductList  from './ProductList'; 
+import StorefrontIcon from '@mui/icons-material/Storefront'; // icon khác cho products
+import { Admin, Resource } from 'react-admin';
+import Dashboard from './Dashboard';
+import { OrderList } from './order/OrderList';
+import { ProductList } from './product/ProductList';
+import ProductEdit from './product/ProductEdit';
 
-import AdminLayout from '../../layouts/AdminLayout'; 
+import { AdminLayout } from '../../layouts/AdminLayout';
 
-import fakeDataProvider from '../../data/fakeDataProvider'; // Giả lập dataProvider
+import fakeDataProvider from '../../data/fakeDataProvider';
 
 const AdminApp = () => (
     <Admin 
-      dataProvider={fakeDataProvider} 
-      dashboard={Dashboard} 
-      layout={AdminLayout}
+        basename="/admin"
+        dataProvider={fakeDataProvider} 
+        dashboard={Dashboard} 
+        layout={AdminLayout}
     >
-      {/* Resource đại diện các route menu */}
-      <Resource name="dashboard" list={Dashboard} icon={DashboardIcon} />
-      <Resource name="orders" list={OrderList} icon={ShoppingCartIcon} />
-      <Resource name="products" list={ProductList} icon={ShoppingCartIcon} />
+        {/* Không cần Resource cho dashboard */}
+        <Resource 
+            name="orders" 
+            list={OrderList} 
+            icon={ShoppingCartIcon}
+        />
+        <Resource 
+            name="products" 
+            list={ProductList} 
+            edit={ProductEdit}
+            icon={StorefrontIcon} 
+        />
     </Admin>
 );
 

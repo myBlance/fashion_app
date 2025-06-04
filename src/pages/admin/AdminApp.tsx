@@ -4,11 +4,13 @@ import { Admin, Resource } from 'react-admin';
 import Dashboard from './Dashboard';
 import { OrderList } from './order/OrderList';
 import { ProductList } from './product/ProductList';
-import ProductEdit from './product/ProductEdit';
+import { ProductEdit } from './product/ProductEdit';
 
 import { AdminLayout } from '../../layouts/AdminLayout';
 
 import fakeDataProvider from '../../data/fakeDataProvider';
+import { ProductCreate } from './product/ProductCreate';
+import { OrderShow } from './order/OrderShow';
 
 const AdminApp = () => (
     <Admin 
@@ -21,12 +23,14 @@ const AdminApp = () => (
         <Resource 
             name="orders" 
             list={OrderList} 
+            show={OrderShow}
             icon={ShoppingCartIcon}
         />
         <Resource 
             name="products" 
             list={ProductList} 
             edit={ProductEdit}
+            create={ProductCreate}
             icon={StorefrontIcon} 
         />
     </Admin>

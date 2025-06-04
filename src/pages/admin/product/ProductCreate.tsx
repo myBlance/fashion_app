@@ -1,5 +1,5 @@
 import {
-    Edit,
+    Create,
     SimpleForm,
     NumberInput,
     BooleanInput,
@@ -14,8 +14,8 @@ import {
 
 import { Box, Typography, Divider, Card } from '@mui/material';
 import type { Accept } from 'react-dropzone';
-import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 
 const categoryChoices = [
     { id: 'ao', name: 'Áo' },
@@ -25,12 +25,12 @@ const categoryChoices = [
 
 const fieldStyle = { 
     flex: '1 1 150px', 
-    Width: 150, 
+    width: 150,   // fix chữ W viết hoa thành w
     marginRight: 5, 
     marginBottom: 2 
 };
 
-export const ProductEdit = () => {
+export const ProductCreate = () => {
     return (
         <Card sx={{ 
             borderRadius: "20px", 
@@ -43,7 +43,7 @@ export const ProductEdit = () => {
                 <CustomAppBar />
                 <CustomBreadcrumbs  />
             </Box>
-            <Edit title="🛍️ Chỉnh sửa sản phẩm" 
+            <Create title="🛍️ Thêm sản phẩm mới"
                 sx={{
                     border: "2px solid #ddd",
                     borderRadius: "20px",
@@ -64,15 +64,6 @@ export const ProductEdit = () => {
                     </Box>
 
                     <Box display="flex" flexWrap="wrap" mb={4}>
-                        <Box sx={fieldStyle}>
-                            <TextInput
-                                source="id"
-                                label="Mã sản phẩm"
-                                disabled
-                                fullWidth
-                                variant="outlined"
-                            />
-                        </Box>
                         <Box sx={fieldStyle}>
                             <TextInput
                                 source="name"
@@ -169,7 +160,7 @@ export const ProductEdit = () => {
 
                     <Box mb={2}>
                         <Typography variant="h6">Trạng thái</Typography>
-                            <Divider />
+                        <Divider />
                     </Box>
 
                     <Box mb={3} sx={{ width: '150px' }}>
@@ -177,7 +168,7 @@ export const ProductEdit = () => {
                             source="status"
                             label="Đang bán?"
                             variant="outlined"
-                    />
+                        />
                     </Box>
 
                     <Box mb={2}>
@@ -197,13 +188,11 @@ export const ProductEdit = () => {
                         </ImageInput>
                     </Box>
 
-
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" color="text.secondary" mt={2}>
                         * Ngày tạo và các trường tự động sẽ không chỉnh sửa được.
                     </Typography>
                 </SimpleForm>
-            </Edit>
+            </Create>
         </Card>
-        
     );
 };

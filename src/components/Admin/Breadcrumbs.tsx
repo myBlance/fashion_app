@@ -6,39 +6,46 @@ import {
     Box,
     IconButton,
     Button,
+    BoxProps,
 } from "@mui/material";
 import { Refresh as RefreshIcon } from "@mui/icons-material";
 import HomeIcon from "@mui/icons-material/Home";
 import AddIcon from "@mui/icons-material/Add";
 import DownloadIcon from "@mui/icons-material/Download";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import {
-    SelectColumnsButton,
-    useTranslate,
-    useRefresh,
-} from "react-admin";
+import { SelectColumnsButton, useRefresh, useTranslate } from "react-admin";
+
+interface CustomBreadcrumbsProps {
+    onCreate?: () => void;
+    onExport?: () => void;
+    containerProps?: BoxProps;
+}
 
 const breadcrumbNameMap: Record<string, string> = {
     "/": "Home",
     "/orders": "Orders",
     "/products": "Products",
-    "/users": "pages.users",
+    "/products/create": "Create",
     "/products/edit": "Edit",
+    "/users": "Users",
 };
 
-interface CustomBreadcrumbsProps {
-    onCreate?: () => void;
-    onExport?: () => void;
-    onRefresh?: () => void;
-}
+import { useLocation } from "react-router-dom";
+
+// ...
 
 const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExport }) => {
     const translate = useTranslate();
-    const refresh = useRefresh(); // Sử dụng hook refresh
-    
-    const hashPath = window.location.hash.replace(/^#/, '');
-    const pathnames = hashPath.split("/").filter(Boolean);
-    const lastPath = `/${pathnames.join("/")}`;
+    const refresh = useRefresh();
+    const location = useLocation();
+
+    const pathname = location.pathname; // /admin/products/create
+    const pathWithoutAdmin = pathname.replace(/^\/admin/, "");
+    const pathnames = pathWithoutAdmin.split("/").filter(Boolean);
+
+    const buildFullPath = (index: number) => `/${pathnames.slice(0, index + 1).join("/")}`;
+
+    const lastPath = buildFullPath(pathnames.length - 1);
     const pageTitleKey = breadcrumbNameMap[lastPath] || pathnames[pathnames.length - 1];
     const pageTitle = translate(pageTitleKey);
 
@@ -49,31 +56,34 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     <Typography variant="h5" fontWeight="bold">
                         {pageTitle}
                     </Typography>
-                    {/* Thay đổi sự kiện onClick sử dụng refresh thay vì reload trang */}
                     <IconButton onClick={refresh} sx={{ marginLeft: 1 }}>
                         <RefreshIcon />
                     </IconButton>
                 </Box>
                 <Box sx={{ marginTop: 2 }}>
                     <SelectColumnsButton />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        onClick={onCreate}
-                        sx={{ marginRight: 1, color: "#fff", backgroundColor: "#0052a9" }}
-                    >
-                        {translate("buttons.add")}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<DownloadIcon />}
-                        onClick={onExport}
-                        sx={{ color: "#fff", backgroundColor: "#0052a9" }}
-                    >
-                        {translate("buttons.export")}
-                    </Button>
+                    {onCreate && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            onClick={onCreate}
+                            sx={{ marginRight: 1, color: "#fff", backgroundColor: "#0052a9" }}
+                        >
+                            Add
+                        </Button>
+                    )}
+                    {onExport && (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<DownloadIcon />}
+                            onClick={onExport}
+                            sx={{ color: "#fff", backgroundColor: "#0052a9" }}
+                        >
+                            Export
+                        </Button>
+                    )}
                 </Box>
             </Box>
 
@@ -86,10 +96,11 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     <HomeIcon />
                 </Link>
                 {pathnames.map((value, index) => {
-                    const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
+                    const routeTo = buildFullPath(index);
                     const isLast = index === pathnames.length - 1;
                     const labelKey = breadcrumbNameMap[routeTo];
-                    const translatedName = labelKey ? translate(labelKey) : translate(value);
+                    const translatedName = labelKey ? translate(labelKey) : value;
+
                     return isLast ? (
                         <Typography key={routeTo} color="#000">
                             {translatedName}
@@ -104,5 +115,4 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
         </Box>
     );
 };
-
 export default CustomBreadcrumbs;

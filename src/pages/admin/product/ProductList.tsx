@@ -1,4 +1,9 @@
-import { Avatar, Box, Card, Chip, Stack } from '@mui/material';
+import { 
+    Avatar, 
+    Box, 
+    Card, 
+    Chip 
+} from '@mui/material';
 import {
     BooleanField,
     DatagridConfigurable,
@@ -7,17 +12,17 @@ import {
     FunctionField,
     List,
     NumberField,
+    Pagination,
     TextField,
+    TopToolbar,
     useListContext,
     useRecordContext,
-    CreateButton,
-    ExportButton,
-    TopToolbar,
 } from 'react-admin';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { productFilters } from './ProductFilter';
 import { useNavigate } from 'react-router-dom';
+
 
 // 1. STT Field với pagination support
 const STTField = () => {
@@ -76,19 +81,37 @@ const SizeField = ({ source }: { source: string }) => {
 };
 
 // 3. Custom Actions Toolbar
+// const ListActions = () => (
+//     <TopToolbar sx={{ justifyContent: 'left', width: '100%' }}>
+//         <FilterButton filters={productFilters} />
+//         <Stack direction="row" spacing={2}>
+//             <CreateButton />
+//             <ExportButton />
+//         </Stack>
+//     </TopToolbar>
+// );
+
 const ListActions = () => (
-    <TopToolbar sx={{ justifyContent: 'space-between', width: '100%' }}>
-        <FilterButton filters={productFilters} />
-        <Stack direction="row" spacing={2}>
-            <CreateButton />
-            <ExportButton />
-        </Stack>
+    <TopToolbar>
+        <FilterButton />
+        {/* Nếu muốn thêm các nút khác như export, refresh, thêm ở đây */}
     </TopToolbar>
 );
+
 
 // 4. Main Component
 export const ProductList = () => {
     const navigate = useNavigate();
+    
+
+
+    const handleCreate = () => {
+        navigate('/admin/products/create');
+    };
+
+    const handleExport = () => {
+        console.log('Export clicked');  
+    };
     
     return (
         <Card sx={{ 
@@ -96,33 +119,38 @@ export const ProductList = () => {
             mr: "-24px", 
             height: "100%",
             boxShadow: 'none',
+            overflow: 'visible'
         }}>
             <Box sx={{ padding: 2 }}>
                 <CustomAppBar />
-                <CustomBreadcrumbs onCreate={() => navigate('/products/create')} />
+                <CustomBreadcrumbs 
+                    onCreate={handleCreate}
+                    onExport={handleExport}
+                 />
             </Box>
             
             <List
-                actions={<ListActions />}
                 filters={productFilters}
+                exporter={false}
+                pagination={<Pagination />}
+                actions={<ListActions />}
                 sx={{
                     border: "2px solid #ddd",
                     borderRadius: "20px",
-                    mt: "-10px",
+                    // mt: "-10px",
                     mx: "20px",
                     mb: "20px",
                     pt: "10px",
+                    '& .RaList-actions':{
+                        mb: '20px',
+                    },
                     '& .RaList-content': {
                         boxShadow: 'none',
                     },
                 }}
-                perPage={25}
+            
             >
-                <Box sx={{ 
-                    maxHeight: '65vh',
-                    overflow: 'auto',
-                    width: '100%',
-                }}>
+                
                     <DatagridConfigurable
                         bulkActionButtons={false}
                         rowClick="edit"
@@ -201,7 +229,7 @@ export const ProductList = () => {
                             sx={{ whiteSpace: 'nowrap' }}
                         />
                     </DatagridConfigurable>
-                </Box>
+                
             </List>
         </Card>
     );

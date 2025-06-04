@@ -24,7 +24,7 @@ import { productFilters } from './ProductFilter';
 import { useNavigate } from 'react-router-dom';
 
 
-// 1. STT Field với pagination support
+// 1. STT Field 
 const STTField = () => {
     const { isLoading, page = 1, perPage = 10, data = [] } = useListContext();
     const record = useRecordContext();
@@ -36,7 +36,7 @@ const STTField = () => {
     return (page - 1) * perPage + (index >= 0 ? index : 0) + 1;
 };
 
-// 2. Custom Field Components
+// 2. Custom Field 
 const ThumbnailField = ({ source }: { source: string }) => {
     const record = useRecordContext();
     return record ? (
@@ -80,17 +80,6 @@ const SizeField = ({ source }: { source: string }) => {
     ) : null;
 };
 
-// 3. Custom Actions Toolbar
-// const ListActions = () => (
-//     <TopToolbar sx={{ justifyContent: 'left', width: '100%' }}>
-//         <FilterButton filters={productFilters} />
-//         <Stack direction="row" spacing={2}>
-//             <CreateButton />
-//             <ExportButton />
-//         </Stack>
-//     </TopToolbar>
-// );
-
 const ListActions = () => (
     <TopToolbar>
         <FilterButton />
@@ -102,8 +91,6 @@ const ListActions = () => (
 // 4. Main Component
 export const ProductList = () => {
     const navigate = useNavigate();
-    
-
 
     const handleCreate = () => {
         navigate('/admin/products/create');
@@ -150,86 +137,84 @@ export const ProductList = () => {
                 }}
             
             >
-                
-                    <DatagridConfigurable
-                        bulkActionButtons={false}
-                        rowClick="edit"
-                        omit={['sale', 'createdAt']}
-                        sx={{
-                            '& .RaDatagrid-headerCell': {
-                                backgroundColor: '#f5f5f5',
-                                fontWeight: 'bold',
-                                py: 2,
-                                position: 'sticky',
-                                top: 0,
-                                zIndex: 1,
+                <DatagridConfigurable
+                    bulkActionButtons={false}
+                    rowClick="edit"
+                    omit={['sale', 'createdAt']}
+                    sx={{
+                        '& .RaDatagrid-headerCell': {
+                            backgroundColor: '#f5f5f5',
+                            fontWeight: 'bold',
+                            py: 2,
+                            position: 'sticky',
+                            top: 0,
+                            zIndex: 1,
+                        },
+                        '& .RaDatagrid-rowCell': {
+                            py: 2,
+                        },
+                        '& .RaDatagrid-tableRow': {
+                            '&:hover': {
+                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
                             },
-                            '& .RaDatagrid-rowCell': {
-                                py: 2,
-                            },
-                            '& .RaDatagrid-tableRow': {
-                                '&:hover': {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                },
-                            },
-                        }}
-                        preferenceKey="product-datagrid-config-v2"
-                    >
-                        <FunctionField
-                            label="STT"
-                            render={() => <STTField />}
-                            sx={{ 
-                                textAlign: 'center',
-                                width: 60,
-                                '& .RaFunctionField-field': {
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                }
-                            }}
-                        />
-                        <TextField source="id" label="Mã SP" />
-                        <ThumbnailField source="thumbnail" />
-                        <TextField source="name" label="Tên sản phẩm" />
-                        <TextField source="brand" label="Thương hiệu" />
-                        <TextField source="category" label="Danh mục" />
-                        <ColorField source="colors"/>
-                        <SizeField source="sizes" />
-                        <NumberField 
-                            source="price" 
-                            label="Giá bán"
-                            options={{ style: 'currency', currency: 'VND' }}
-                            sx={{ fontWeight: 'bold' }}
-                        />
-                        <NumberField 
-                            source="originalPrice" 
-                            label="Giá gốc"
-                            options={{ style: 'currency', currency: 'VND' }}
-                        />
-                        <FunctionField 
-                            label="Giảm giá"
-                            render={(record: any) =>
-                                `${Math.round((1 - record.price / record.originalPrice) * 100)}%`
+                        },
+                    }}
+                    preferenceKey="product-datagrid-config-v2"
+                >
+                    <FunctionField
+                        label="STT"
+                        render={() => <STTField />}
+                        sx={{ 
+                            textAlign: 'center',
+                            width: 60,
+                            '& .RaFunctionField-field': {
+                                display: 'flex',
+                                justifyContent: 'center',
                             }
-                            sx={{ color: 'red', fontWeight: 'bold' }}
-                        />
-                        <NumberField source="sold" label="Đã bán" />
-                        <NumberField source="total" label="Tồn kho" />
-                        <BooleanField 
-                            source="status" 
-                            label="Trạng thái"
-                            sx={{
-                                '& .RaBooleanField-falseIcon': { color: 'error.main' },
-                                '& .RaBooleanField-trueIcon': { color: 'success.main' },
-                            }}
-                        />
-                        <DateField 
-                            source="createdAt" 
-                            label="Ngày tạo" 
-                            showTime
-                            sx={{ whiteSpace: 'nowrap' }}
-                        />
-                    </DatagridConfigurable>
-                
+                        }}
+                    />
+                    <TextField source="id" label="Mã SP" />
+                    <ThumbnailField source="thumbnail" />
+                    <TextField source="name" label="Tên sản phẩm" />
+                    <TextField source="brand" label="Thương hiệu" />
+                    <TextField source="category" label="Danh mục" />
+                    <ColorField source="colors"/>
+                    <SizeField source="sizes" />
+                    <NumberField 
+                        source="price" 
+                        label="Giá bán"
+                        options={{ style: 'currency', currency: 'VND' }}
+                        sx={{ fontWeight: 'bold' }}
+                    />
+                    <NumberField 
+                        source="originalPrice" 
+                        label="Giá gốc"
+                        options={{ style: 'currency', currency: 'VND' }}
+                    />
+                    <FunctionField 
+                        label="Giảm giá"
+                        render={(record: any) =>
+                            `${Math.round((1 - record.price / record.originalPrice) * 100)}%`
+                        }
+                        sx={{ color: 'red', fontWeight: 'bold' }}
+                    />
+                    <NumberField source="sold" label="Đã bán" />
+                    <NumberField source="total" label="Tồn kho" />
+                    <BooleanField 
+                        source="status" 
+                        label="Trạng thái"
+                        sx={{
+                            '& .RaBooleanField-falseIcon': { color: 'error.main' },
+                            '& .RaBooleanField-trueIcon': { color: 'success.main' },
+                        }}
+                    />
+                    <DateField 
+                        source="createdAt" 
+                        label="Ngày tạo" 
+                        showTime
+                        sx={{ whiteSpace: 'nowrap' }}
+                    />
+                </DatagridConfigurable>
             </List>
         </Card>
     );

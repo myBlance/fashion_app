@@ -1,5 +1,3 @@
-import { AppBarProps } from "react-admin";
-
-const EmptyAppBar = (props: AppBarProps) => null;
+const EmptyAppBar = () => null;
 
 export default EmptyAppBar;

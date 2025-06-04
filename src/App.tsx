@@ -29,7 +29,7 @@ const App: React.FC = () => {
             </Route>
 
             {/* Route riêng cho admin (React-Admin) */}
-            {adminRoutes.map(({ path, element, auth }, index) => (
+            {adminRoutes.map(({ path, element }, index) => (
                 <Route
                     key={index}
                     path={path}

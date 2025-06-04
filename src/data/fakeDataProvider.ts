@@ -297,7 +297,7 @@ const products = [
 const fakeDataProvider: DataProvider = {
   getList: async <RecordType extends RaRecord = any>(
     resource: string,
-    params: any
+    _params: any
   ): Promise<GetListResult<RecordType>> => {
     if (resource === 'products') {
       return {

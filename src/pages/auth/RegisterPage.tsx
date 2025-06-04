@@ -6,7 +6,7 @@ import '../../styles/Authtabs.css';
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [confirm] = useState('');
 
   const handleRegister = () => {
     if (!username || !password || !confirm) {

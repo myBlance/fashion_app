@@ -65,12 +65,12 @@ const RegisterPage = () => {
                     fullWidth
                     margin="normal"
                 />
-                <Button 
+                <Button
                     type="submit"
                     variant="contained"
-                    color="primary"
                     fullWidth
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, backgroundColor: '#ca161c', color: '#fff' }}
+                
                     onClick={handleRegister}
                 >
                     Đăng ký

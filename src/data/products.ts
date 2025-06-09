@@ -486,7 +486,7 @@ export const products: Product[] =[
     "createdAt": "2025-05-15T00:00:00"
   },
   {
-    "id": "DOLA3914",
+    "id": "DOLA3924",
     "name": "Váy",
     "brand": "Dola Style",
     "price": 299000,
@@ -517,7 +517,7 @@ export const products: Product[] =[
     "createdAt": "2025-05-15T00:00:00"
   },
   {
-    "id": "DOLA3914",
+    "id": "DOLA3934",
     "name": "Váy",
     "brand": "Dola Style",
     "price": 299000,
@@ -951,7 +951,7 @@ export const products: Product[] =[
     "createdAt": "2025-05-24T00:00:00"
   },
   {
-    "id": "DOLA3924",
+    "id": "DOLA39241",
     "name": "ÁO KIỂU CỔ VUÔNG",
     "brand": "Dola Style",
     "price": 299000,

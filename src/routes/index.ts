@@ -17,6 +17,8 @@ import AuthTabs from '../pages/auth/AuthTabs';
 // import OrderList from '../pages/admin/OrderList';
 // import ProductList from '../pages/admin/ProductList';
 import AdminApp from '../pages/admin/AdminApp';
+import ProfilePage from '../pages/auth/ProfilePage';
+import ComingSoonPage from '../pages/client/ComingSoonPage';
 // import AdminApp from '../pages/admin/AdminApp';
 // import Products from '../pages/admin/Products';
 // import AddProduct from '../pages/admin/AddProduct';
@@ -38,9 +40,10 @@ export const clientRoutes: RouteItem[] = [
     { path: '/wishlist', element: React.createElement(WishlistPage), auth: 'client' },
     { path: '/about', element: React.createElement(AboutPage), auth: 'client' },
     { path: '/auth', element: React.createElement(AuthTabs), auth: 'client' },
-
+    { path: '/profile', element: React.createElement(ProfilePage), auth: 'client' },
     // { path: '/checkout', element: <Checkout />, auth: 'client' },
-    // { path: '/register', element: React.createElement(Register), auth: 'client' },
+    { path: '/blog', element: React.createElement(ComingSoonPage), auth: 'client' },
+    { path: '/contact', element: React.createElement(ComingSoonPage), auth: 'client' },
 ];
 
 export const adminRoutes: RouteItem[] = [
@@ -48,7 +51,6 @@ export const adminRoutes: RouteItem[] = [
     // { path: '/admin/orders', element: React.createElement(OrderList), auth: 'admin' },
     // { path: '/admin/products', element: React.createElement(ProductList), auth: 'admin' },
     { path: '/admin/*', element: React.createElement(AdminApp), auth: 'admin' }
-
     // { path: '/admin/products/add', element: <AddProduct />, auth: 'admin' },
     // { path: '/admin/users', element: <Users />, auth: 'admin' },
 ];

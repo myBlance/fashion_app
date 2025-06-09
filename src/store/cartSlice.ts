@@ -36,9 +36,32 @@ const cartSlice = createSlice({
         state.items.push(item);
       }
     },
-    // Thêm các action khác như removeFromCart, updateQuantity nếu cần
+    increaseQuantity(state, action: PayloadAction<{id: string; color: string; size: string;}>) {
+      const { id, color, size } = action.payload;
+      const item = state.items.find(
+        i => i.id === id && i.color === color && i.size === size
+      );
+      if (item) {
+        item.quantity += 1;
+      }
+    },
+    decreaseQuantity(state, action: PayloadAction<{id: string; color: string; size: string;}>) {
+      const { id, color, size } = action.payload;
+      const item = state.items.find(
+        i => i.id === id && i.color === color && i.size === size
+      );
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
+      }
+    },
+    removeFromCart(state, action: PayloadAction<{id: string; color: string; size: string;}>) {
+      const { id, color, size } = action.payload;
+      state.items = state.items.filter(
+        i => !(i.id === id && i.color === color && i.size === size)
+      );
+    }
   },
 });
 
-export const { addToCart } = cartSlice.actions;
+export const { addToCart, increaseQuantity, decreaseQuantity, removeFromCart } = cartSlice.actions;
 export default cartSlice.reducer;

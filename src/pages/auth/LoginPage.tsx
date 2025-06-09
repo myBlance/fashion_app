@@ -7,6 +7,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import axios from 'axios';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -14,20 +15,52 @@ const LoginPage = () => {
     const { loginAs } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (username === 'admin' && password === '1') {
-            loginAs('admin');
-            navigate('/admin');
-        } else if (username === 'client' && password === '1') {
-            loginAs('client');
-            navigate('/');
-        } else {
-            alert('Sai tài khoản hoặc mật khẩu');
-        }
-    };
 
-    const [showPassword, setShowPassword] = useState(false);
+    const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post('http://localhost:5000/api/auth/login', {
+  username,
+  password,
+});
+
+    const { role } = res.data;
+
+    if (role === 'admin') {
+      loginAs('admin');
+      navigate('/admin');
+    } else if (role === 'client') {
+      loginAs('client');
+      navigate('/');
+    } else {
+      alert('Vai trò không hợp lệ');
+    }
+  } catch (error) {
+    alert('Sai tài khoản hoặc mật khẩu');
+    console.error(error);
+  }
+};
+
+// const LoginPage = () => {
+//     const [username, setUsername] = useState('');
+//     const [password, setPassword] = useState('');
+//     const { loginAs } = useAuth();
+//     const navigate = useNavigate();
+
+//     const handleLogin = (e: React.FormEvent) => {
+//         e.preventDefault();
+//         if (username === 'admin' && password === '1') {
+//             loginAs('admin');
+//             navigate('/admin');
+//         } else if (username === 'client' && password === '1') {
+//             loginAs('client');
+//             navigate('/');
+//         } else {
+//             alert('Sai tài khoản hoặc mật khẩu');
+//         }
+//     };
+
+  const [showPassword, setShowPassword] = useState(false);
 
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);

@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
                         Công ty TNHH Dola Style chuyên sản xuất - phân phối - bán lẻ thời trang nữ.<br />
                         Mã số thuế: 123456xxxx - Ngày cấp: 13/05/2024 - Nơi cấp: Sở Kế hoạch và Đầu tư TPHCM - Website: <a href="#">dola-style.mysapo.net</a>
                     </p>
-                    <p><strong>Địa chỉ:</strong> 70 Lữ Gia, Phường 15, Quận 11, TP.HCM</p>
+                    <p><strong>Địa chỉ:</strong> </p>
                     <p><strong>Điện thoại:</strong> 1900 6750</p>
                     <p><strong>Email:</strong> support@sapo.vn</p>
                     <div className="footer-social">

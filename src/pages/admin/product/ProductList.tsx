@@ -125,12 +125,12 @@ export const ProductList = () => {
             
             >
                 <Box sx={{ overflowX: 'auto', width: '100%' }}>
+                    <Box sx={{ minWidth: '1400px' }}>
 
                     <DatagridConfigurable
                         bulkActionButtons={false}
                         rowClick="edit"
                         sx={{
-                            minWidth: '1200px',
                             '& .RaDatagrid-headerCell': {
                                 backgroundColor: '#f5f5f5',
                                 fontWeight: 'bold',
@@ -231,6 +231,10 @@ export const ProductList = () => {
                         />
                         
                     </DatagridConfigurable>
+                    </Box>
+
+
+
                 </Box>                
             </List>
         </Card>

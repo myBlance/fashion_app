@@ -25,7 +25,7 @@ const categoryChoices = [
 
 const fieldStyle = { 
     flex: '1 1 150px', 
-    width: 150,   // fix chữ W viết hoa thành w
+    width: 150,   
     marginRight: 5, 
     marginBottom: 2 
 };

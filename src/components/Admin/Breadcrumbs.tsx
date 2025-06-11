@@ -14,6 +14,8 @@ import AddIcon from "@mui/icons-material/Add";
 import DownloadIcon from "@mui/icons-material/Download";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { SelectColumnsButton, useRefresh, useTranslate } from "react-admin";
+import CachedIcon from '@mui/icons-material/Cached';
+import { useLocation } from "react-router-dom";
 
 interface CustomBreadcrumbsProps {
     onCreate?: () => void;
@@ -30,16 +32,12 @@ const breadcrumbNameMap: Record<string, string> = {
     "/users": "Users",
 };
 
-import { useLocation } from "react-router-dom";
-
-// ...
-
 const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExport }) => {
     const translate = useTranslate();
     const refresh = useRefresh();
     const location = useLocation();
 
-    const pathname = location.pathname; // /admin/products/create
+    const pathname = location.pathname; 
     const pathWithoutAdmin = pathname.replace(/^\/admin/, "");
     const pathnames = pathWithoutAdmin.split("/").filter(Boolean);
 
@@ -62,6 +60,15 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                 </Box>
                 <Box sx={{ marginTop: 2 }}>
                     <SelectColumnsButton />
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<CachedIcon />}
+                        onClick={refresh}
+                        sx={{ marginRight: 1 , backgroundColor: "#0052a9", color: "#fff" }}
+                    >
+                        Đồng bộ
+                    </Button>
                     {onCreate && (
                         <Button
                             variant="contained"

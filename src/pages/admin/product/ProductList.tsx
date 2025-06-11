@@ -2,7 +2,8 @@ import {
     Avatar, 
     Box, 
     Card, 
-    Chip 
+    Chip, 
+    Tooltip
 } from '@mui/material';
 import {
     BooleanField,
@@ -15,28 +16,17 @@ import {
     Pagination,
     TextField,
     TopToolbar,
-    useListContext,
     useRecordContext,
+    DeleteButton,
 } from 'react-admin';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { productFilters } from './ProductFilter';
 import { useNavigate } from 'react-router-dom';
+import { Edit, Delete, Visibility } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 
 
-// 1. STT Field 
-const STTField = () => {
-    const { isLoading, page = 1, perPage = 10, data = [] } = useListContext();
-    const record = useRecordContext();
-    
-    if (isLoading || !record) return <span>-</span>;
-
-    const index = data.findIndex((item: any) => item.id === record.id);
-    
-    return (page - 1) * perPage + (index >= 0 ? index : 0) + 1;
-};
-
-// 2. Custom Field 
 const ThumbnailField = ({ source }: { source: string }) => {
     const record = useRecordContext();
     return record ? (
@@ -83,12 +73,10 @@ const SizeField = ({ source }: { source: string }) => {
 const ListActions = () => (
     <TopToolbar>
         <FilterButton />
-        {/* Nếu muốn thêm các nút khác như export, refresh, thêm ở đây */}
     </TopToolbar>
 );
 
 
-// 4. Main Component
 export const ProductList = () => {
     const navigate = useNavigate();
 
@@ -106,7 +94,7 @@ export const ProductList = () => {
             mr: "-24px", 
             height: "100%",
             boxShadow: 'none',
-            overflow: 'visible'
+            overflow: 'hidden'
         }}>
             <Box sx={{ padding: 2 }}>
                 <CustomAppBar />
@@ -119,102 +107,131 @@ export const ProductList = () => {
             <List
                 filters={productFilters}
                 exporter={false}
-                pagination={<Pagination />}
+                pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
+                perPage={10}
                 actions={<ListActions />}
                 sx={{
                     border: "2px solid #ddd",
                     borderRadius: "20px",
-                    // mt: "-10px",
                     mx: "20px",
                     mb: "20px",
                     pt: "10px",
-                    '& .RaList-actions':{
+                    backgroundColor: "#fff",
+                    '& .RaList-actions': {
                         mb: '20px',
                     },
-                    '& .RaList-content': {
-                        boxShadow: 'none',
-                    },
+                    
                 }}
             
             >
-                <DatagridConfigurable
-                    bulkActionButtons={false}
-                    rowClick="edit"
-                    omit={['sale', 'createdAt']}
-                    sx={{
-                        '& .RaDatagrid-headerCell': {
-                            backgroundColor: '#f5f5f5',
-                            fontWeight: 'bold',
-                            py: 2,
-                            position: 'sticky',
-                            top: 0,
-                            zIndex: 1,
-                        },
-                        '& .RaDatagrid-rowCell': {
-                            py: 2,
-                        },
-                        '& .RaDatagrid-tableRow': {
-                            '&:hover': {
+                <Box sx={{ overflowX: 'auto', width: '100%' }}>
+
+                    <DatagridConfigurable
+                        bulkActionButtons={false}
+                        rowClick="edit"
+                        sx={{
+                            minWidth: '1200px',
+                            '& .RaDatagrid-headerCell': {
+                                backgroundColor: '#f5f5f5',
+                                fontWeight: 'bold',
+                                py: 2,
+                                position: 'sticky',
+                                top: 0,
+                                zIndex: 1,
+                            },
+                            '& .RaDatagrid-rowCell': {
+                                    py: 2,
+                            },
+                            '& .RaDatagrid-tableRow:hover': {
                                 backgroundColor: 'rgba(0, 0, 0, 0.04)',
                             },
-                        },
-                    }}
-                    preferenceKey="product-datagrid-config-v2"
-                >
-                    <FunctionField
-                        label="STT"
-                        render={() => <STTField />}
-                        sx={{ 
-                            textAlign: 'center',
-                            width: 60,
-                            '& .RaFunctionField-field': {
-                                display: 'flex',
-                                justifyContent: 'center',
+                        }}
+                        preferenceKey="product-datagrid-config-v2"
+                    >
+                        <TextField source="id" label="Mã SP" />
+                        <ThumbnailField source="thumbnail" />
+                        <TextField source="name" label="Tên sản phẩm" />
+                        <TextField source="brand" label="Thương hiệu" />
+                        <TextField source="category" label="Danh mục" />
+                        <ColorField source="colors"/>
+                        <SizeField source="sizes" />
+                        <NumberField 
+                            source="price" 
+                            label="Giá bán"
+                            options={{ style: 'currency', currency: 'VND' }}
+                            sx={{ fontWeight: 'bold' }}
+                        />
+                        <NumberField 
+                            source="originalPrice" 
+                            label="Giá gốc"
+                            options={{ style: 'currency', currency: 'VND' }}
+                        />
+                        <FunctionField 
+                            label="Giảm giá"
+                            render={(record: any) =>
+                                `${Math.round((1 - record.price / record.originalPrice) * 100)}%`
                             }
-                        }}
-                    />
-                    <TextField source="id" label="Mã SP" />
-                    <ThumbnailField source="thumbnail" />
-                    <TextField source="name" label="Tên sản phẩm" />
-                    <TextField source="brand" label="Thương hiệu" />
-                    <TextField source="category" label="Danh mục" />
-                    <ColorField source="colors"/>
-                    <SizeField source="sizes" />
-                    <NumberField 
-                        source="price" 
-                        label="Giá bán"
-                        options={{ style: 'currency', currency: 'VND' }}
-                        sx={{ fontWeight: 'bold' }}
-                    />
-                    <NumberField 
-                        source="originalPrice" 
-                        label="Giá gốc"
-                        options={{ style: 'currency', currency: 'VND' }}
-                    />
-                    <FunctionField 
-                        label="Giảm giá"
-                        render={(record: any) =>
-                            `${Math.round((1 - record.price / record.originalPrice) * 100)}%`
-                        }
-                        sx={{ color: 'red', fontWeight: 'bold' }}
-                    />
-                    <NumberField source="sold" label="Đã bán" />
-                    <NumberField source="total" label="Tồn kho" />
-                    <BooleanField 
-                        source="status" 
-                        label="Trạng thái"
-                        sx={{
-                            '& .RaBooleanField-falseIcon': { color: 'error.main' },
-                            '& .RaBooleanField-trueIcon': { color: 'success.main' },
-                        }}
-                    />
-                    <DateField 
-                        source="createdAt" 
-                        label="Ngày tạo" 
-                        showTime
-                        sx={{ whiteSpace: 'nowrap' }}
-                    />
-                </DatagridConfigurable>
+                            sx={{ color: 'red', fontWeight: 'bold' }}
+                        />
+                        <NumberField source="sold" label="Đã bán" />
+                        <NumberField source="total" label="Tồn kho" />
+                        <BooleanField 
+                            source="status" 
+                            label="Trạng thái"
+                            sx={{
+                                '& .RaBooleanField-falseIcon': { color: 'error.main' },
+                                '& .RaBooleanField-trueIcon': { color: 'success.main' },
+                            }}
+                        />
+                        <DateField 
+                            source="createdAt" 
+                            label="Ngày tạo" 
+                            showTime
+                            sx={{ whiteSpace: 'nowrap' }}
+                        />
+                        <FunctionField
+                            label="Hành động"
+                            render={(record: any) => (
+                                <Box sx={{ display: 'flex', gap: 0.1}}>
+                                    <Tooltip title="Xem/Clone">
+                                        <IconButton
+                                            size="small"
+                                            color="primary"
+                                            onClick={() => navigate(`/admin/products/show?clone=${record.id}`)}
+                                        >
+                                            <Visibility fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    {/* Sửa */}
+                                    <Tooltip title="Sửa">
+                                        <IconButton
+                                            size="small"
+                                            color="info"
+                                            onClick={() => navigate(`/admin/products/${record.id}`)}
+                                        >
+                                            <Edit fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    {/* Xoá */}
+                                    <Tooltip title="Xoá">
+                                        <DeleteButton
+                                            size="small"
+                                            record={record}
+                                            mutationMode="pessimistic"
+                                            confirmTitle="Xác nhận xoá"
+                                            confirmContent="Bạn có chắc muốn xoá sản phẩm này?"
+                                            icon={<Delete fontSize="small"/>}
+                                            label=""
+                                        />
+                                    </Tooltip>
+                                </Box>
+                            )}
+                        />
+                        
+                    </DatagridConfigurable>
+                </Box>                
             </List>
         </Card>
     );

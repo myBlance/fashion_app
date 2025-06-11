@@ -12,20 +12,20 @@ import {
 } from '@mui/material';
 
 const UserMenu = () => {
-  const { identity, isLoading } = useGetIdentity();
-  const logout = useLogout();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const { identity, isLoading } = useGetIdentity();
+    const logout = useLogout();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-  const handleClose = () => setAnchorEl(null);
+    const handleClose = () => setAnchorEl(null);
 
-  const handleLogout = () => {
-  handleClose();
-  logout(undefined, false);
-  window.location.href = '/';
+    const handleLogout = () => {
+    handleClose();
+    logout(undefined, false);
+    window.location.href = '/';
 };
 
 

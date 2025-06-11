@@ -1,4 +1,3 @@
-// OrderShow.tsx
 import {
   Show,
   SimpleShowLayout,

@@ -1,61 +1,51 @@
-// OrderList.tsx
 import {
   List,
   TextField,
   DateField,
   NumberField,
-  FunctionField,
   useRecordContext,
-  useListContext,
   DatagridConfigurable,
 } from "react-admin";
 import { orderFilters } from "./OrderFilter";
-import { Box, Card, Chip } from "@mui/material";
+import { Box, Card, Chip, Tooltip } from "@mui/material";
 import CustomBreadcrumbs from "../../../components/Admin/Breadcrumbs";
 import { CustomAppBar } from "../../../components/Admin/CustomAppBar";
+import { Edit, Delete, Visibility } from '@mui/icons-material';
+import { DeleteButton, FunctionField } from 'react-admin';
+import { IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-
-const STTField = () => {
-      const { isLoading, page = 1, perPage = 10, data = [] } = useListContext();
-      const record = useRecordContext();
-      
-      if (isLoading || !record) return <span>-</span>;
-  
-      const index = data.findIndex((item: any) => item.id === record.id);
-      
-      return (page - 1) * perPage + (index >= 0 ? index : 0) + 1;
-  };
 
 const StatusChip = () => {
-  const record = useRecordContext();
-  const status = record?.status;
-  const labelMap: Record<string, string> = {
-    pending: "Chờ xác nhận",
-    shipping: "Đang giao",
-    completed: "Đã hoàn thành",
-    cancelled: "Đã hủy",
-  };
-  const colorMap: Record<string, "default" | "primary" | "success" | "error" | "warning" | "info"> = {
-    pending: "warning",
-    shipping: "info",
-    completed: "success",
-    cancelled: "error",
-  };
+    const record = useRecordContext();
+    const status = record?.status;
+    const labelMap: Record<string, string> = {
+        pending: "Chờ xác nhận",
+        shipping: "Đang giao",
+        completed: "Đã hoàn thành",
+        cancelled: "Đã hủy",
+    };
+    const colorMap: Record<string, "default" | "primary" | "success" | "error" | "warning" | "info"> = {
+        pending: "warning",
+        shipping: "info",
+        completed: "success",
+        cancelled: "error",
+    };
 
   
 
-  return (
-    <Chip
-      label={labelMap[status] || "Không xác định"}
-      color={colorMap[status] || "default"}
-      size="small"
-    />
-  );
+    return (
+        <Chip
+            label={labelMap[status] || "Không xác định"}
+            color={colorMap[status] || "default"}
+            size="small"
+        />
+    );
 };
 
 export const OrderList = () => {
-
-
+    const navigate = useNavigate();
+    
     return (
         <Card sx={{ 
                 borderRadius: "20px", 
@@ -72,7 +62,7 @@ export const OrderList = () => {
             <List
                 filters={orderFilters}
                 exporter={false}
-                perPage={10}
+                
                 sx={{
                     border: "2px solid #ddd",
                     borderRadius: "20px",
@@ -110,18 +100,6 @@ export const OrderList = () => {
                     }}
                     rowClick="show"
                 >
-                    <FunctionField
-                        label="STT"
-                        render={() => <STTField />}
-                        sx={{ 
-                            textAlign: 'center',
-                            width: 60,
-                            '& .RaFunctionField-field': {
-                                display: 'flex',
-                                justifyContent: 'center',
-                            }
-                        }}
-                    />
                     <TextField source="id" label="Mã đơn hàng" />
                     <TextField source="customerName" label="Khách hàng" />
                     <NumberField
@@ -131,6 +109,47 @@ export const OrderList = () => {
                     />
                     <StatusChip />
                     <DateField source="createdAt" label="Ngày đặt" showTime />
+                    <FunctionField
+                        label="Hành động"
+                        render={(record: any) => (
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Tooltip title="Xem/Clone">
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => navigate(`/admin/products/show?clone=${record.id}`)}
+                                    >
+                                        <Visibility fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+
+                                {/* Sửa */}
+                                <Tooltip title="Sửa">
+                                    <IconButton
+                                        size="small"
+                                        color="info"
+                                        onClick={() => navigate(`/admin/products/${record.id}`)}
+                                    >
+                                        <Edit fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+
+                                {/* Xoá */}
+                                <Tooltip title="Xoá">
+                                    <DeleteButton
+                                        size="small"
+                                        record={record}
+                                        mutationMode="pessimistic"
+                                        confirmTitle="Xác nhận xoá"
+                                        confirmContent="Bạn có chắc muốn xoá sản phẩm này?"
+                                        icon={<Delete fontSize="small"/>}
+                                        label=""
+                                    />
+                                </Tooltip>
+                            </Box>
+                        )}
+                    />
+
                 </DatagridConfigurable>
             </List>
         </Card>

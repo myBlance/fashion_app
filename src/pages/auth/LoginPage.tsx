@@ -51,9 +51,11 @@ const LoginPage = () => {
         e.preventDefault();
         if (username === 'admin' && password === '1') {
             loginAs('admin');
+            sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
             navigate('/admin');
         } else if (username === 'client' && password === '1') {
             loginAs('client');
+            sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
             navigate('/');
         } else {
             alert('Sai tài khoản hoặc mật khẩu');

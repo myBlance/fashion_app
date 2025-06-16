@@ -36,7 +36,7 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => (
                 backgroundColor: "#000",
             }}
         >
-            {children && <Box sx={{ width: "100%" }}>{children}</Box>}
+            {children && <Box sx={{ width: "auto" }}>{children}</Box>}
             <CheckForApplicationUpdate />
         </Box>
     </RALayout>

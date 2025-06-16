@@ -104,7 +104,7 @@ const products = [
     ],
     "sale": false,
     "delivery": "free",
-    "createdAt": "2025-05-01T00:00:00"
+    "createdAt": "2025-05-01"
   },
   {
     "id": "DOLA3901",
@@ -135,7 +135,7 @@ const products = [
     ],
     "sale": true,
     "delivery": "standard",
-    "createdAt": "2025-05-02T00:00:00"
+    "createdAt": "2025-05-02"
   },
   {
     "id": "DOLA3902",
@@ -166,7 +166,7 @@ const products = [
     ],
     "sale": false,
     "delivery": "free",
-    "createdAt": "2025-05-03T00:00:00"
+    "createdAt": "2025-05-03"
   },
   {
     "id": "DOLA3903",
@@ -197,7 +197,7 @@ const products = [
     ],
     "sale": true,
     "delivery": "standard",
-    "createdAt": "2025-05-04T00:00:00"
+    "createdAt": "2025-05-04"
   },
     {
     "id": "DOLA3904",

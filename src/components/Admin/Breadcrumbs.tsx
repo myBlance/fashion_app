@@ -20,8 +20,10 @@ import { useLocation } from "react-router-dom";
 interface CustomBreadcrumbsProps {
     onCreate?: () => void;
     onExport?: () => void;
+    onRefresh?: () => void;
     containerProps?: BoxProps;
 }
+
 
 const breadcrumbNameMap: Record<string, string> = {
     "/": "Home",
@@ -32,7 +34,7 @@ const breadcrumbNameMap: Record<string, string> = {
     "/users": "Users",
 };
 
-const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExport }) => {
+const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExport, onRefresh }) => {
     const translate = useTranslate();
     const refresh = useRefresh();
     const location = useLocation();
@@ -60,15 +62,17 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                 </Box>
                 <Box sx={{ marginTop: 2 }}>
                     <SelectColumnsButton />
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<CachedIcon />}
-                        onClick={refresh}
-                        sx={{ marginRight: 1 , backgroundColor: "#0052a9", color: "#fff" }}
-                    >
-                        Đồng bộ
-                    </Button>
+                    {onRefresh && (
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<CachedIcon />}
+                            onClick={onRefresh}
+                            sx={{ marginRight: 1, backgroundColor: "#0052a9", color: "#fff" }}
+                        >
+                            Đồng bộ
+                        </Button>
+                    )}
                     {onCreate && (
                         <Button
                             variant="contained"
@@ -99,7 +103,7 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                 aria-label="breadcrumb"
                 sx={{ marginTop: "4px" }}
             >
-                <Link color="inherit" href="/" sx={{ display: "flex", alignItems: "center" }}>
+                <Link color="inherit" href="/admin/" sx={{ display: "flex", alignItems: "center" }}>
                     <HomeIcon />
                 </Link>
                 {pathnames.map((value, index) => {

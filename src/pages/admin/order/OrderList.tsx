@@ -5,15 +5,18 @@ import {
   NumberField,
   useRecordContext,
   DatagridConfigurable,
+  useNotify,
+  useRefresh,
 } from "react-admin";
 import { orderFilters } from "./OrderFilter";
 import { Box, Card, Chip, Tooltip } from "@mui/material";
 import CustomBreadcrumbs from "../../../components/Admin/Breadcrumbs";
 import { CustomAppBar } from "../../../components/Admin/CustomAppBar";
-import { Edit, Delete, Visibility } from '@mui/icons-material';
-import { DeleteButton, FunctionField } from 'react-admin';
+import { Edit, Visibility } from '@mui/icons-material';
+import { FunctionField } from 'react-admin';
 import { IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const StatusChip = () => {
@@ -45,7 +48,9 @@ const StatusChip = () => {
 
 export const OrderList = () => {
     const navigate = useNavigate();
-    
+    const refresh = useRefresh();
+    const notify = useNotify();
+
     return (
         <Card sx={{ 
                 borderRadius: "20px", 
@@ -108,12 +113,17 @@ export const OrderList = () => {
                         options={{ style: "currency", currency: "VND" }}
                     />
                     <StatusChip />
-                    <DateField source="createdAt" label="Ngày đặt" showTime />
+                    <DateField 
+                        source="createdAt" 
+                        label="Ngày tạo" 
+                        options={{ day: '2-digit', month: '2-digit', year: 'numeric' }}
+                        sx={{ whiteSpace: 'nowrap' }} 
+                    />
                     <FunctionField
                         label="Hành động"
                         render={(record: any) => (
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                <Tooltip title="Xem/Clone">
+                            <Box sx={{ display: 'flex', gap: 0.1}}>
+                                <Tooltip title="Xem">
                                     <IconButton
                                         size="small"
                                         color="primary"
@@ -123,7 +133,7 @@ export const OrderList = () => {
                                     </IconButton>
                                 </Tooltip>
 
-                                {/* Sửa */}
+                              
                                 <Tooltip title="Sửa">
                                     <IconButton
                                         size="small"
@@ -135,17 +145,26 @@ export const OrderList = () => {
                                 </Tooltip>
 
                                 {/* Xoá */}
-                                <Tooltip title="Xoá">
-                                    <DeleteButton
+                                {/* <Tooltip title="Xoá">
+                                    <IconButton
+                                        color="error"
                                         size="small"
-                                        record={record}
-                                        mutationMode="pessimistic"
-                                        confirmTitle="Xác nhận xoá"
-                                        confirmContent="Bạn có chắc muốn xoá sản phẩm này?"
-                                        icon={<Delete fontSize="small"/>}
-                                        label=""
-                                    />
-                                </Tooltip>
+                                        onClick={() => {
+                                            if (window.confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
+                                                dataProvider.delete('products', { id: record.id })
+                                                    .then(() => {
+                                                        notify('Xoá thành công', { type: 'info' });
+                                                        refresh();
+                                                    })
+                                                    .catch(() => {
+                                                        notify('Xoá thất bại', { type: 'warning' });
+                                                    });
+                                            }
+                                        }}
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip> */}
                             </Box>
                         )}
                     />

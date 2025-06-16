@@ -17,14 +17,18 @@ import {
     TextField,
     TopToolbar,
     useRecordContext,
-    DeleteButton,
+    useDataProvider,
+    useNotify,
+    useRefresh,
 } from 'react-admin';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { productFilters } from './ProductFilter';
 import { useNavigate } from 'react-router-dom';
-import { Edit, Delete, Visibility } from '@mui/icons-material';
+import { Edit, Visibility } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import  DeleteIcon  from '@mui/icons-material/Delete';
+
 
 
 const ThumbnailField = ({ source }: { source: string }) => {
@@ -80,6 +84,28 @@ const ListActions = () => (
 export const ProductList = () => {
     const navigate = useNavigate();
 
+    const refresh = useRefresh();
+    const notify = useNotify();
+    const dataProvider = useDataProvider();
+
+    const handleSync = async () => {
+        try {
+            // Nếu có API riêng để "đồng bộ dữ liệu", gọi ở đây
+            await dataProvider.getList('products', {
+                pagination: { page: 1, perPage: 10 },
+                sort: { field: 'id', order: 'DESC' },
+                filter: {},
+            });
+
+            refresh(); // Gọi hook để reload lại danh sách
+            notify('Đã đồng bộ thành công!', { type: 'info' });
+        } catch (error) {
+            console.error(error);
+            notify('Đồng bộ thất bại!', { type: 'warning' });
+        }
+    };
+
+
     const handleCreate = () => {
         navigate('/admin/products/create');
     };
@@ -101,6 +127,7 @@ export const ProductList = () => {
                 <CustomBreadcrumbs 
                     onCreate={handleCreate}
                     onExport={handleExport}
+                    onRefresh={handleSync}
                  />
             </Box>
             
@@ -186,14 +213,14 @@ export const ProductList = () => {
                         <DateField 
                             source="createdAt" 
                             label="Ngày tạo" 
-                            showTime
-                            sx={{ whiteSpace: 'nowrap' }}
+                            options={{ day: '2-digit', month: '2-digit', year: 'numeric' }}
+                            sx={{ whiteSpace: 'nowrap' }} 
                         />
                         <FunctionField
                             label="Hành động"
                             render={(record: any) => (
                                 <Box sx={{ display: 'flex', gap: 0.1}}>
-                                    <Tooltip title="Xem/Clone">
+                                    <Tooltip title="Xem">
                                         <IconButton
                                             size="small"
                                             color="primary"
@@ -216,25 +243,30 @@ export const ProductList = () => {
 
                                     {/* Xoá */}
                                     <Tooltip title="Xoá">
-                                        <DeleteButton
+                                        <IconButton
+                                            color="error"
                                             size="small"
-                                            record={record}
-                                            mutationMode="pessimistic"
-                                            confirmTitle="Xác nhận xoá"
-                                            confirmContent="Bạn có chắc muốn xoá sản phẩm này?"
-                                            icon={<Delete fontSize="small"/>}
-                                            label=""
-                                        />
+                                            onClick={() => {
+                                                if (window.confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
+                                                    dataProvider.delete('products', { id: record.id })
+                                                        .then(() => {
+                                                            notify('Xoá thành công', { type: 'info' });
+                                                            refresh();
+                                                        })
+                                                        .catch(() => {
+                                                            notify('Xoá thất bại', { type: 'warning' });
+                                                        });
+                                                }
+                                            }}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
                                     </Tooltip>
                                 </Box>
                             )}
                         />
-                        
                     </DatagridConfigurable>
                     </Box>
-
-
-
                 </Box>                
             </List>
         </Card>

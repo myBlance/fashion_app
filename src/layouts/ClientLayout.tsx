@@ -9,7 +9,7 @@ const ClientLayout: React.FC = () => {
             <main>
                 <Navbar />
                 <Outlet /> 
-                {/* Sẽ render các trang con như Home, Login, v.v. */}
+                {/* render các trang con như Home, Login, v.v. */}
                 <Footer/>
             </main>
         </div>

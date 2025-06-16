@@ -45,14 +45,13 @@ const UserMenu = () => {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: 2,
+                    mb: 2,
                 }}
             >
-                <Box display="flex" alignItems="center" gap={2} 
-                   
-                >
+                <Box display="flex" alignItems="center" gap={2}>
                     <Avatar alt={identity?.fullName || 'User'} src="/user-avatar.png" />
                     <Typography variant="body1" sx={{color:'#fff'}}>
-                        {isLoading ? 'Đang tải...' : identity?.fullName || 'Người dùng'}
+                        {isLoading ? 'Đang tải...' : identity?.fullName || 'ADMIN'}
                     </Typography>
                 </Box>
 

@@ -49,7 +49,7 @@ export const products: Product[] =[
     ],
     "sale": false,
     "delivery": "free",
-    "createdAt": "2025-05-01T00:00:00"
+    "createdAt": "2025-05-01"
   },
   {
     "id": "DOLA3901",

@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout } from 'react-admin';
 
-import { ShoppingCart, MoreVert, Store } from '@mui/icons-material';
+import { MoreVert, ShoppingCart, Store } from '@mui/icons-material';
 import {
-  Box,
-  Typography,
-  Avatar,
-  IconButton,
-  Menu as MuiMenu,
-  MenuItem,
+    Avatar,
+    Box,
+    IconButton,
+    MenuItem,
+    Menu as MuiMenu,
+    Typography,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+// Define your API base URL here or import it from your config
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface UserProfile {
     name: string;
@@ -48,7 +51,7 @@ const UserMenu = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        axios.get('http://localhost:5000/api/users/profile', {
+        axios.get(`${API_BASE_URL}/api/users/profile`, {
             headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {

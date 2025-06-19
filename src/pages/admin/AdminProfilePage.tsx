@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import {
-    Box,
-    Typography,
-    TextField,
-    Button,
     Avatar,
-    Tabs,
+    Box,
+    Button,
     Tab,
+    Tabs,
+    TextField,
+    Typography,
 } from "@mui/material";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
 interface AdminProfile {
     username: string;
@@ -35,11 +35,12 @@ const AdminProfilePage: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const token = localStorage.getItem("token");
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/users/profile", {
+                const res = await axios.get(`${API_BASE_URL}/api/users/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setProfile(res.data.data);
@@ -76,7 +77,7 @@ const AdminProfilePage: React.FC = () => {
     const handleUpdateProfile = async () => {
         try {
             const res = await axios.put(
-                "http://localhost:5000/api/users/profile",
+                `${API_BASE_URL}/api/users/profile`,
                 {
                     name: profile.name,
                     email: profile.email,
@@ -101,7 +102,7 @@ const AdminProfilePage: React.FC = () => {
 
         try {
             const res = await axios.put(
-                "http://localhost:5000/api/users/change-password",
+                `${API_BASE_URL}/api/users/change-password`,
                 {
                     password: currentPassword,
                     newPassword,

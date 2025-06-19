@@ -7,45 +7,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
-// import axios from 'axios';
-
-// const LoginPage = () => {
-//     const [username, setUsername] = useState('');
-//     const [password, setPassword] = useState('');
-//     const { loginAs } = useAuth();
-//     const navigate = useNavigate();
-
-
-//     const handleLogin = async (e: React.FormEvent) => {
-//   e.preventDefault();
-//   try {
-//     const res = await axios.post('http://localhost:5000/api/auth/login', {
-//       username,
-//       password,
-//     });
-
-//     const { token, role } = res.data;
-
-//     // 🟢 Lưu token vào localStorage để dùng ở các route cần xác thực
-//     localStorage.setItem('token', token);
-
-//     // ➕ (nếu muốn) lưu role vào localStorage hoặc context
-//     localStorage.setItem('role', role);
-
-//     if (role === 'admin') {
-//       loginAs('admin');
-//       navigate('/admin');
-//     } else if (role === 'client') {
-//       loginAs('client');
-//       navigate('/');
-//     } else {
-//       alert('Vai trò không hợp lệ');
-//     }
-//   } catch (error) {
-//     alert('Sai tài khoản hoặc mật khẩu');
-//     console.error(error);
-//   }
-// };
+import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -53,20 +16,58 @@ const LoginPage = () => {
     const { loginAs } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (username === 'admin' && password === '1') {
-            loginAs('admin');
-            sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
-            navigate('/admin');
-        } else if (username === 'client' && password === '1') {
-            loginAs('client');
-            sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
-            navigate('/');
-        } else {
-            alert('Sai tài khoản hoặc mật khẩu');
-        }
-    };
+
+    const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${API_BASE_URL}/api/auth/login`, {
+      username,
+      password,
+    });
+
+    const { token, role } = res.data;
+
+    // 🟢 Lưu token vào localStorage để dùng ở các route cần xác thực
+    localStorage.setItem('token', token);
+
+    // ➕ (nếu muốn) lưu role vào localStorage hoặc context
+    localStorage.setItem('role', role);
+
+    if (role === 'admin') {
+      loginAs('admin');
+      navigate('/admin');
+    } else if (role === 'client') {
+      loginAs('client');
+      navigate('/');
+    } else {
+      alert('Vai trò không hợp lệ');
+    }
+  } catch (error) {
+    alert('Sai tài khoản hoặc mật khẩu');
+    console.error(error);
+  }
+};
+
+// const LoginPage = () => {
+//     const [username, setUsername] = useState('');
+//     const [password, setPassword] = useState('');
+//     const { loginAs } = useAuth();
+//     const navigate = useNavigate();
+
+//     const handleLogin = (e: React.FormEvent) => {
+//         e.preventDefault();
+//         if (username === 'admin' && password === '1') {
+//             loginAs('admin');
+//             sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
+//             navigate('/admin');
+//         } else if (username === 'client' && password === '1') {
+//             loginAs('client');
+//             sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
+//             navigate('/');
+//         } else {
+//             alert('Sai tài khoản hoặc mật khẩu');
+//         }
+//     };
 
   const [showPassword, setShowPassword] = useState(false);
 

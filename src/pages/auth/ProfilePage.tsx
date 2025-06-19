@@ -1,15 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import {
-    Box,
-    Typography,
-    TextField,
-    Button,
     Avatar,
-    Tabs,
+    Box,
+    Button,
     Tab,
-//   Divider,
+    Tabs,
+    TextField,
+    Typography,
 } from "@mui/material";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
 interface UserProfile {
     username: string;
@@ -42,12 +41,13 @@ const ProfilePage: React.FC = () => {
     
 
     const token = localStorage.getItem("token");
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get("http://localhost:5000/api/users/profile", {
+                const res = await axios.get(`${API_BASE_URL}/api/users/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setProfile(res.data.data);
@@ -84,7 +84,7 @@ const ProfilePage: React.FC = () => {
     const handleUpdateProfile = async () => {
         try {
             const res = await axios.put(
-                "http://localhost:5000/api/users/profile",
+                `${API_BASE_URL}/api/users/profile`,
                 {
                     name: profile.name,
                     email: profile.email,
@@ -111,7 +111,7 @@ const ProfilePage: React.FC = () => {
         }
         try {
             const res = await axios.put(
-                "http://localhost:5000/api/users/change-password",
+                `${API_BASE_URL}/api/users/change-password`,
                 {
                     password: currentPassword,
                     newPassword,
@@ -137,7 +137,7 @@ const ProfilePage: React.FC = () => {
 //   const handleChangeEmail = async () => {
 //     try {
 //       const res = await axios.post(
-//         "http://localhost:5000/api/users/change-email",
+//         `${API_BASE_URL}/api/users/change-email`,
 //         { email: newEmail },
 //         {
 //           headers: { Authorization: `Bearer ${token}` },

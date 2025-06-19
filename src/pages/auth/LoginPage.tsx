@@ -23,7 +23,11 @@ const LoginPage = () => {
     const res = await axios.post(`${API_BASE_URL}/api/auth/login`, {
       username,
       password,
-    });
+    },
+    {
+    withCredentials: true,
+  }
+);
 
     const { token, role } = res.data;
 

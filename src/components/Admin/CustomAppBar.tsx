@@ -32,7 +32,7 @@ export const CustomAppBar: FC<CustomAppBarProps> = memo(({ onToggleSidebar, }) =
     
     return (
         <HideOnScroll >
-            <Toolbar disableGutters variant={isXSmall ? "regular" : "dense"} sx={{borderBottom: "2px solid #ddd", backgroundColor: "#ffffff", height: "64px"}}>
+            <Toolbar disableGutters variant={isXSmall ? "regular" : "dense"} sx={{borderBottom: "2px solid #ddd", height: "64px"}}>
                 {onToggleSidebar ? (
                     <IconButton onClick={onToggleSidebar} sx={{ color: "#000", marginRight: 2 }}>
                         <MenuIcon />

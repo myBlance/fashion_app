@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Menu, MenuProps, useGetIdentity, useLogout } from 'react-admin';
+import React, { useEffect, useState } from 'react';
+import { Menu, MenuProps, useLogout } from 'react-admin';
 
 import { ShoppingCart, MoreVert, Store } from '@mui/icons-material';
 import {
@@ -10,11 +10,21 @@ import {
   Menu as MuiMenu,
   MenuItem,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+interface UserProfile {
+    name: string;
+    avatarUrl?: string;
+}
 
 const UserMenu = () => {
-    const { identity, isLoading } = useGetIdentity();
-    const logout = useLogout();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const logout = useLogout();
+    const navigate = useNavigate();
 
     const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -23,17 +33,37 @@ const UserMenu = () => {
     const handleClose = () => setAnchorEl(null);
 
     const handleLogout = () => {
-    handleClose();
-    logout(undefined, false);
-    window.location.href = '/';
-};
-
-
-
-    const handleSwitchUser = () => {
         handleClose();
-        alert('Tính năng đổi người dùng đang được phát triển.');
+        sessionStorage.removeItem('role');
+        logout(undefined, false);
+        window.location.href = '/';
     };
+
+    const handleInforUser = () => {
+        handleClose();
+        navigate('/admin/profile');
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        axios.get('http://localhost:5000/api/users/profile', {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+            const data = res.data.data;
+            setProfile({
+                name: data.name || 'ADMIN',
+                avatarUrl: data.avatarUrl || '/user-avatar.png',
+            });
+        })
+        .catch((err) => {
+            console.error('Lỗi khi lấy thông tin người dùng:', err);
+            setProfile({ name: 'ADMIN', avatarUrl: '/user-avatar.png' });
+        })
+        .finally(() => setLoading(false));
+    }, []);
 
     return (
         <>
@@ -49,19 +79,19 @@ const UserMenu = () => {
                 }}
             >
                 <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar alt={identity?.fullName || 'User'} src="/user-avatar.png" />
-                    <Typography variant="body1" sx={{color:'#fff'}}>
-                        {isLoading ? 'Đang tải...' : identity?.fullName || 'ADMIN'}
+                    <Avatar alt={profile?.name || 'User'} src={profile?.avatarUrl || '/user-avatar.png'} />
+                    <Typography variant="body1" sx={{ color: '#fff' }}>
+                        {loading ? 'Đang tải...' : profile?.name || 'ADMIN'}
                     </Typography>
                 </Box>
 
                 <IconButton onClick={handleMenuClick}>
-                    <MoreVert sx={{color:'#fff'}}/>
+                    <MoreVert sx={{ color: '#fff' }} />
                 </IconButton>
             </Box>
 
             <MuiMenu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                <MenuItem onClick={handleSwitchUser}>Đổi người dùng</MenuItem>
+                <MenuItem onClick={handleInforUser}>Thông tin Admin</MenuItem>
                 <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
             </MuiMenu>
         </>
@@ -86,11 +116,9 @@ const MyMenu: React.FC<MenuProps> = (props) => (
                 
             }}
         >
-            <img
-                src="/assets/images/logo.webp"
-                alt="Logo"
-                style={{ maxHeight: 35 }}
-            />
+            <h1 style={{ color: '#ff7a7a', margin: 0, fontSize: '32px', fontFamily:'fantasy' }}>
+                DolaStyle
+            </h1>
         </Box>
 
         {/* Menu chính */}

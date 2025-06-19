@@ -8,6 +8,7 @@ import {
   useNotify,
   useRefresh,
 } from "react-admin";
+import { useDataProvider } from "react-admin";
 import { orderFilters } from "./OrderFilter";
 import { Box, Card, Chip, Tooltip } from "@mui/material";
 import CustomBreadcrumbs from "../../../components/Admin/Breadcrumbs";
@@ -35,8 +36,6 @@ const StatusChip = () => {
         cancelled: "error",
     };
 
-  
-
     return (
         <Chip
             label={labelMap[status] || "Không xác định"}
@@ -50,6 +49,7 @@ export const OrderList = () => {
     const navigate = useNavigate();
     const refresh = useRefresh();
     const notify = useNotify();
+    const dataProvider = useDataProvider();
 
     return (
         <Card sx={{ 
@@ -85,9 +85,10 @@ export const OrderList = () => {
             >
                 <DatagridConfigurable
                     bulkActionButtons={false}
-                    sx={{
+                    sx={(theme) => ({
                         '& .RaDatagrid-headerCell': {
-                            backgroundColor: '#f5f5f5',
+                            backgroundColor:
+                                theme.palette.mode === 'light' ? '#f5f5f5' : '#1e1e1e',
                             fontWeight: 'bold',
                             py: 2,
                             position: 'sticky',
@@ -102,7 +103,7 @@ export const OrderList = () => {
                                 backgroundColor: 'rgba(0, 0, 0, 0.04)',
                             },
                         },
-                    }}
+                    })}
                     rowClick="show"
                 >
                     <TextField source="id" label="Mã đơn hàng" />
@@ -112,7 +113,11 @@ export const OrderList = () => {
                         label="Tổng tiền"
                         options={{ style: "currency", currency: "VND" }}
                     />
-                    <StatusChip />
+                    <FunctionField
+                        label="Trạng thái"
+                        render={() => <StatusChip />}
+                    />
+
                     <DateField 
                         source="createdAt" 
                         label="Ngày tạo" 
@@ -145,26 +150,26 @@ export const OrderList = () => {
                                 </Tooltip>
 
                                 {/* Xoá */}
-                                {/* <Tooltip title="Xoá">
-                                    <IconButton
-                                        color="error"
-                                        size="small"
-                                        onClick={() => {
-                                            if (window.confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
-                                                dataProvider.delete('products', { id: record.id })
-                                                    .then(() => {
-                                                        notify('Xoá thành công', { type: 'info' });
-                                                        refresh();
-                                                    })
-                                                    .catch(() => {
-                                                        notify('Xoá thất bại', { type: 'warning' });
-                                                    });
-                                            }
-                                        }}
-                                    >
-                                        <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                </Tooltip> */}
+                                    <Tooltip title="Xoá">
+                                        <IconButton
+                                            color="error"
+                                            size="small"
+                                            onClick={() => {
+                                                if (window.confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
+                                                    dataProvider.delete('products', { id: record.id })
+                                                        .then(() => {
+                                                            notify('Xoá thành công', { type: 'info' });
+                                                            refresh();
+                                                        })
+                                                        .catch(() => {
+                                                            notify('Xoá thất bại', { type: 'warning' });
+                                                        });
+                                                }
+                                            }}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
                             </Box>
                         )}
                     />

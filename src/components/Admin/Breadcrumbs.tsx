@@ -113,11 +113,11 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     const translatedName = labelKey ? translate(labelKey) : value;
 
                     return isLast ? (
-                        <Typography key={routeTo} color="#000">
+                        <Typography key={routeTo} color="text.primary">
                             {translatedName}
                         </Typography>
                     ) : (
-                        <Link key={routeTo} color="#000" href={`#${routeTo}`} underline="hover">
+                        <Link key={routeTo} color="text.primary"  href={`#${routeTo}`} underline="hover">
                             {translatedName}
                         </Link>
                     );

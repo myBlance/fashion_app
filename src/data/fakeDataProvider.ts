@@ -157,7 +157,7 @@ const products = [
       "L"
     ],
     "sold": 12,
-    "total": 54,
+    "total": 12,
     "thumbnail": "/assets/images/xanh.webp",
     "images": [
       "/assets/images/xanh1.webp",
@@ -188,7 +188,7 @@ const products = [
       "L"
     ],
     "sold": 13,
-    "total": 56,
+    "total": 13,
     "thumbnail": "/assets/images/xanh.webp",
     "images": [
       "/assets/images/xanh1.webp",

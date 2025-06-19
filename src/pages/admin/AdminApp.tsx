@@ -1,16 +1,16 @@
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import StorefrontIcon from '@mui/icons-material/Storefront'; // icon khác cho products
-import { Admin, Resource } from 'react-admin';
+import { Admin, CustomRoutes, Resource } from 'react-admin';
 import Dashboard from './Dashboard';
 import { OrderList } from './order/OrderList';
 import { ProductList } from './product/ProductList';
 import { ProductEdit } from './product/ProductEdit';
-
 import { AdminLayout } from '../../layouts/AdminLayout';
-
 import fakeDataProvider from '../../data/fakeDataProvider';
 import { ProductCreate } from './product/ProductCreate';
 import { OrderShow } from './order/OrderShow';
+import AdminProfilePage from './AdminProfilePage';
+import { Route } from 'react-router-dom';
 
 const AdminApp = () => (
     <Admin 
@@ -33,6 +33,9 @@ const AdminApp = () => (
             create={ProductCreate}
             icon={StorefrontIcon} 
         />
+        <CustomRoutes>
+            <Route path="profile" element={<AdminProfilePage />} />
+        </CustomRoutes>
     </Admin>
 );
 

@@ -1,146 +1,282 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { Box, Typography, TextField, Button, Avatar } from "@mui/material";
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Avatar,
+    Tabs,
+    Tab,
+//   Divider,
+} from "@mui/material";
 
 interface UserProfile {
-  username: string;
-  name?: string;
-  email?: string;
-  avatarUrl?: string;
+    username: string;
+    name?: string;
+    email?: string;
+    avatarUrl?: string;
 }
 
 const ProfilePage: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile>({
-    username: "",
-    name: "",
-    email: "",
-    avatarUrl: "",
-  });
+    const [tab, setTab] = useState(0);
 
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+    const [profile, setProfile] = useState<UserProfile>({
+        username: "",
+        name: "",
+        email: "",
+        avatarUrl: "",
+    });
 
-  const token = localStorage.getItem("token");
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
+    const [passwordMessage, setPasswordMessage] = useState("");
+    // const [emailMessage, setEmailMessage] = useState("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/users/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setProfile(res.data);
-      } catch (err) {
-        console.error(err);
-        setMessage("Lỗi khi tải thông tin cá nhân");
-      } finally {
-        setLoading(false);
-      }
+    const [currentPassword, setcurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    // const [newEmail, setNewEmail] = useState("");
+    const [, setNewEmail] = useState("");
+    
+
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get("http://localhost:5000/api/users/profile", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setProfile(res.data.data);
+                setNewEmail(res.data.email || "");
+            } catch (err) {
+                console.error(err);
+                setMessage("Lỗi khi tải thông tin cá nhân");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProfile();
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setProfile({ ...profile, [e.target.name]: e.target.value });
     };
-    fetchProfile();
-  }, [token]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
-
-  // Mở dialog chọn file khi nhấn vào avatar
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  // Đọc file ảnh thành base64 và set avatarUrl để preview
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfile(prev => ({
-        ...prev,
-        avatarUrl: reader.result as string,
-      }));
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
     };
-    reader.readAsDataURL(file);
-  };
 
-  const handleUpdate = async () => {
-    try {
-      const res = await axios.put(
-        "http://localhost:5000/api/users/profile",
-        {
-          name: profile.name,
-          email: profile.email,
-          avatarUrl: profile.avatarUrl,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setProfile(prev => ({ ...prev, avatarUrl: reader.result as string }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleUpdateProfile = async () => {
+        try {
+            const res = await axios.put(
+                "http://localhost:5000/api/users/profile",
+                {
+                    name: profile.name,
+                    email: profile.email,
+                    avatarUrl: profile.avatarUrl,
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+        );
+            setMessage(res.data.message || "Cập nhật thành công");
+        } catch (err: any) {
+            if (axios.isAxiosError(err)) {
+                console.error('Lỗi cập nhật:', err.response?.data); 
+            } else {
+                console.error('Lỗi không xác định:', err);
+            }
         }
-      );
-      setMessage(res.data.message || "Cập nhật thành công");
-    } catch (err) {
-      console.error(err);
-      setMessage("Cập nhật thất bại");
-    }
-  };
+    };
 
-  if (loading) return <Typography>Đang tải...</Typography>;
+    const handleChangePassword = async () => {
+        if (newPassword !== confirmPassword) {
+            setPasswordMessage("Mật khẩu xác nhận không khớp");
+            return;
+        }
+        try {
+            const res = await axios.put(
+                "http://localhost:5000/api/users/change-password",
+                {
+                    password: currentPassword,
+                    newPassword,
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+                setPasswordMessage(res.data.message || "Đổi mật khẩu thành công");
+                setcurrentPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+            } catch (err: any) {
+            if (axios.isAxiosError(err) && err.response) {
+                setPasswordMessage(err.response.data.message || "Đổi mật khẩu thất bại");
+            } else {
+                setPasswordMessage("Lỗi không xác định");
+            }
+        }
 
-  return (
-    <Box sx={{ maxWidth: 600, margin: "auto", padding: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Thông tin cá nhân
-      </Typography>
+    };
 
-      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-        <Avatar
-          src={profile.avatarUrl || "https://i.pravatar.cc/150?img=3"}
-          alt={profile.name || profile.username}
-          sx={{ width: 80, height: 80, mr: 2, cursor: "pointer" }}
-          onClick={handleAvatarClick}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          ref={fileInputRef}
-          onChange={handleFileChange}
-        />
-        <Typography variant="h6">{profile.name || profile.username}</Typography>
-      </Box>
+//   const handleChangeEmail = async () => {
+//     try {
+//       const res = await axios.post(
+//         "http://localhost:5000/api/users/change-email",
+//         { email: newEmail },
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+//       setEmailMessage(res.data.message || "Email đã được cập nhật");
+//     } catch (err) {
+//       console.error(err);
+//       setEmailMessage("Cập nhật email thất bại");
+//     }
+//   };
 
-      <TextField
-        fullWidth
-        label="Họ và tên"
-        name="name"
-        value={profile.name || ""}
-        onChange={handleChange}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        value={profile.email || ""}
-        onChange={handleChange}
-        margin="normal"
-      />
+    if (loading) return <Typography>Đang tải...</Typography>;
 
-      <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleUpdate}>
-        Cập nhật
-      </Button>
+    return (
+        <Box sx={{ maxWidth: 600, margin: "auto", padding: 4 }}>
+        
 
-      {message && (
-        <Typography sx={{ mt: 2, color: message.includes("thành công") ? "green" : "red" }}>
-          {message}
-        </Typography>
-      )}
-    </Box>
-  );
+        <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} sx={{ mb: 3 }}>
+            <Tab label="Thông tin cá nhân" />
+            <Tab label="Cài đặt bảo mật" />
+        </Tabs>
+
+        {tab === 0 && (
+            <>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                <Avatar
+                src={profile.avatarUrl || "https://i.pravatar.cc/150?img=3"}
+                alt={profile.name || profile.username}
+                sx={{ width: 80, height: 80, mr: 2, cursor: "pointer" }}
+                onClick={handleAvatarClick}
+                />
+                <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                />
+                <Typography variant="h6">{profile.name || profile.username}</Typography>
+            </Box>
+
+            <TextField
+                fullWidth
+                label="Họ và tên"
+                name="name"
+                value={profile.name || ""}
+                onChange={handleChange}
+                margin="normal"
+            />
+            <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                value={profile.email || ""}
+                onChange={handleChange}
+                margin="normal"
+            />
+
+            <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleUpdateProfile}>
+                Cập nhật
+            </Button>
+
+            {message && (
+                <Typography sx={{ mt: 2, color: message.includes("thành công") ? "green" : "red" }}>
+                {message}
+                </Typography>
+            )}
+            </>
+        )}
+
+        {tab === 1 && (
+            <>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                    Đổi mật khẩu
+                </Typography>
+                <TextField
+                    fullWidth
+                    label="Mật khẩu cũ"
+                    type="password"
+                    value={currentPassword}
+                    onChange={e => setcurrentPassword(e.target.value)}
+                    margin="normal"
+                />
+                <TextField
+                    fullWidth
+                    label="Mật khẩu mới"
+                    type="password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    margin="normal"
+                />
+                <TextField
+                    fullWidth
+                    label="Xác nhận mật khẩu mới"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    margin="normal"
+                />
+                <Button variant="contained" sx={{ mt: 2 }} onClick={handleChangePassword}>
+                    Đổi mật khẩu
+                </Button>
+                {passwordMessage && (
+                    <Typography sx={{ mt: 2, color: passwordMessage.includes("thành công") ? "green" : "red" }}>
+                        {passwordMessage}
+                    </Typography>
+                )}
+
+            {/* <Divider sx={{ my: 4 }} />
+                <TextField
+                fullWidth
+                label="Mật khẩu cũ"
+                type="password"
+                value={currentPassword}
+                onChange={e => setcurrentPassword(e.target.value)}
+                margin="normal"
+            />
+            <Typography variant="h6">Đổi email</Typography>
+            <TextField
+                fullWidth
+                label="Email mới"
+                type="email"
+                value={newEmail}
+                onChange={e => setNewEmail(e.target.value)}
+                margin="normal"
+            />
+            <Button variant="contained" sx={{ mt: 2 }} onClick={handleChangeEmail}>
+                Đổi email
+            </Button>
+            {emailMessage && (
+                <Typography sx={{ mt: 2, color: emailMessage.includes("thành công") ? "green" : "red" }}>
+                {emailMessage}
+                </Typography>
+            )} */}
+            </>
+        )}
+        </Box>
+    );
 };
 
 export default ProfilePage;

@@ -6,7 +6,7 @@ import {
     Tooltip
 } from '@mui/material';
 import {
-    BooleanField,
+
     DatagridConfigurable,
     DateField,
     FilterButton,
@@ -31,7 +31,7 @@ import  DeleteIcon  from '@mui/icons-material/Delete';
 
 
 
-const ThumbnailField = ({ source }: { source: string }) => {
+const ThumbnailField = ({ source }: { source: string, label: String }) => {
     const record = useRecordContext();
     return record ? (
         <Avatar
@@ -143,7 +143,7 @@ export const ProductList = () => {
                     mx: "20px",
                     mb: "20px",
                     pt: "10px",
-                    backgroundColor: "#fff",
+                    
                     '& .RaList-actions': {
                         mb: '20px',
                     },
@@ -157,9 +157,10 @@ export const ProductList = () => {
                     <DatagridConfigurable
                         bulkActionButtons={false}
                         rowClick="edit"
-                        sx={{
+                        sx={(theme) => ({
                             '& .RaDatagrid-headerCell': {
-                                backgroundColor: '#f5f5f5',
+                                backgroundColor:
+                                    theme.palette.mode === 'light' ? '#f5f5f5' : '#1e1e1e',
                                 fontWeight: 'bold',
                                 py: 2,
                                 position: 'sticky',
@@ -167,16 +168,17 @@ export const ProductList = () => {
                                 zIndex: 1,
                             },
                             '& .RaDatagrid-rowCell': {
-                                    py: 2,
+                                py: 2,
                             },
-                            '& .RaDatagrid-tableRow:hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                            '& .RaDatagrid-tableRow': {
+                                '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                },
                             },
-                        }}
-                        preferenceKey="product-datagrid-config-v2"
+                        })}
                     >
                         <TextField source="id" label="Mã SP" />
-                        <ThumbnailField source="thumbnail" />
+                        <ThumbnailField source="thumbnail" label="Ảnh"/>
                         <TextField source="name" label="Tên sản phẩm" />
                         <TextField source="brand" label="Thương hiệu" />
                         <TextField source="category" label="Danh mục" />
@@ -200,16 +202,59 @@ export const ProductList = () => {
                             }
                             sx={{ color: 'red', fontWeight: 'bold' }}
                         />
+                        
                         <NumberField source="sold" label="Đã bán" />
-                        <NumberField source="total" label="Tồn kho" />
-                        <BooleanField 
-                            source="status" 
+
+                        <FunctionField
+                            label="Tồn kho"
+                            render={record => (record?.total || 0) - (record?.sold || 0)}
+                        />
+
+                        <FunctionField
+                            label="Tổng SL"
+                            render={record => (record?.total || 0)}
+                        />
+
+                        <FunctionField
                             label="Trạng thái"
-                            sx={{
-                                '& .RaBooleanField-falseIcon': { color: 'error.main' },
-                                '& .RaBooleanField-trueIcon': { color: 'success.main' },
+                            render={record => {
+                                const total = record?.total || 0;
+                                const sold = record?.sold || 0;
+                                const remaining = total - sold;
+                                const rawStatus = record?.status;
+
+                                let displayStatus = "";
+                                if (remaining <= 0) {
+                                    displayStatus = "out_of_stock";
+                                } else if (rawStatus === "stopped") {
+                                    displayStatus = "stopped";
+                                } else {
+                                    displayStatus = "selling";
+                                }
+
+                                const labelMap: Record<string, string> = {
+                                    selling: "Đang bán",
+                                    stopped: "Ngừng bán",
+                                    out_of_stock: "Hết hàng",
+                                };
+
+                                const colorMap: Record<string, "success" | "error" | "default"> = {
+                                    selling: "success",
+                                    stopped: "error",
+                                    out_of_stock: "default",
+                                };
+
+                                return (
+                                    <Chip
+                                        label={labelMap[displayStatus]}
+                                        color={colorMap[displayStatus]}
+                                        size="small"
+                                    />
+                                );
                             }}
                         />
+
+
                         <DateField 
                             source="createdAt" 
                             label="Ngày tạo" 

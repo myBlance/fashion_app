@@ -50,7 +50,7 @@ export const adminRoutes: RouteItem[] = [
     // { path: '/admin/dashboard', element: React.createElement(Dashboard), auth: 'admin' },
     // { path: '/admin/orders', element: React.createElement(OrderList), auth: 'admin' },
     // { path: '/admin/products', element: React.createElement(ProductList), auth: 'admin' },
-    { path: '/admin/*', element: React.createElement(AdminApp), auth: 'admin' }
+    { path: '/admin/*', element: React.createElement(AdminApp), auth: 'admin' },
     // { path: '/admin/products/add', element: <AddProduct />, auth: 'admin' },
     // { path: '/admin/users', element: <Users />, auth: 'admin' },
 ];

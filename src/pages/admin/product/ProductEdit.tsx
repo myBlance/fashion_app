@@ -2,7 +2,6 @@ import {
     Edit,
     SimpleForm,
     NumberInput,
-    BooleanInput,
     SelectInput,
     ArrayInput,
     SimpleFormIterator,
@@ -160,7 +159,7 @@ export const ProductEdit = () => {
                         <Box sx={{ ...fieldStyle, marginRight: 0 }}>
                             <NumberInput
                                 source="total"
-                                label="Tồn kho"
+                                label="Tổng số lượng"
                                 fullWidth
                                 variant="outlined"
                             />
@@ -169,15 +168,21 @@ export const ProductEdit = () => {
 
                     <Box mb={2}>
                         <Typography variant="h6">Trạng thái</Typography>
-                            <Divider />
+                        <Divider />
                     </Box>
 
-                    <Box mb={3} sx={{ width: '150px' }}>
-                        <BooleanInput
+                    <Box mb={3} sx={{ width: '200px' }}>
+                        <SelectInput
                             source="status"
-                            label="Đang bán?"
+                            label="Trạng thái"
                             variant="outlined"
-                    />
+                            choices={[
+                                { id: 'selling', name: 'Đang bán' },
+                                { id: 'stopped', name: 'Ngừng bán' },
+                                { id: 'out_of_stock', name: 'Hết hàng' },
+                            ]}
+                            fullWidth
+                        />
                     </Box>
 
                     <Box mb={2}>

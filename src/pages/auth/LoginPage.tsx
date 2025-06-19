@@ -8,9 +8,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 const LoginPage = () => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { loginAs } = useAuth();
@@ -31,10 +32,7 @@ const LoginPage = () => {
 
     const { token, role } = res.data;
 
-    // 🟢 Lưu token vào localStorage để dùng ở các route cần xác thực
     localStorage.setItem('token', token);
-
-    // ➕ (nếu muốn) lưu role vào localStorage hoặc context
     localStorage.setItem('role', role);
 
     if (role === 'admin') {

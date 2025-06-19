@@ -14,7 +14,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 // Define your API base URL here or import it from your config
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface UserProfile {
     name: string;
@@ -22,6 +21,7 @@ interface UserProfile {
 }
 
 const UserMenu = () => {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState<boolean>(true);

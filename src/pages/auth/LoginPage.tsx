@@ -23,11 +23,8 @@ const LoginPage = () => {
   try {
     const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
       username,
-      password,
+      password
     },
-    {
-    withCredentials: true,
-  }
 );
 
     const { token, role } = res.data;

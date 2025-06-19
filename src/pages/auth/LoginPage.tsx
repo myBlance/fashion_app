@@ -11,7 +11,7 @@ import axios from 'axios';
 
 
 const LoginPage = () => {
-    const API_BASE_URL = import.meta.env.VITE_API_URL;
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { loginAs } = useAuth();
@@ -21,7 +21,7 @@ const LoginPage = () => {
     const handleLogin = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
-    const res = await axios.post(`${API_BASE_URL}/api/auth/login`, {
+    const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
       username,
       password,
     },

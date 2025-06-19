@@ -19,6 +19,7 @@ interface UserProfile {
 
 const ProfilePage: React.FC = () => {
     const [tab, setTab] = useState(0);
+    
 
     const [profile, setProfile] = useState<UserProfile>({
         username: "",
@@ -41,13 +42,12 @@ const ProfilePage: React.FC = () => {
     
 
     const token = localStorage.getItem("token");
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
+    
     useEffect(() => {
         const fetchProfile = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`${API_BASE_URL}/api/users/profile`, {
+                const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setProfile(res.data.data);
@@ -84,7 +84,7 @@ const ProfilePage: React.FC = () => {
     const handleUpdateProfile = async () => {
         try {
             const res = await axios.put(
-                `${API_BASE_URL}/api/users/profile`,
+                `$${import.meta.env.VITE_API_BASE_URL}/api/users/profile`,
                 {
                     name: profile.name,
                     email: profile.email,
@@ -111,7 +111,7 @@ const ProfilePage: React.FC = () => {
         }
         try {
             const res = await axios.put(
-                `${API_BASE_URL}/api/users/change-password`,
+                `${import.meta.env.VITE_API_BASE_URL}/api/users/change-password`,
                 {
                     password: currentPassword,
                     newPassword,

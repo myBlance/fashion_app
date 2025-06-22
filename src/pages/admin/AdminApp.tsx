@@ -6,16 +6,17 @@ import { OrderList } from './order/OrderList';
 import { ProductList } from './product/ProductList';
 import { ProductEdit } from './product/ProductEdit';
 import { AdminLayout } from '../../layouts/AdminLayout';
-import fakeDataProvider from '../../data/fakeDataProvider';
+// import fakeDataProvider from '../../data/fakeDataProvider';
 import { ProductCreate } from './product/ProductCreate';
 import { OrderShow } from './order/OrderShow';
 import AdminProfilePage from './AdminProfilePage';
 import { Route } from 'react-router-dom';
+import dataProvider from '../../data/dataProvider';
 
 const AdminApp = () => (
     <Admin 
         basename="/admin"
-        dataProvider={fakeDataProvider} 
+        dataProvider={dataProvider} 
         dashboard={Dashboard} 
         layout={AdminLayout}
     >

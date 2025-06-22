@@ -1,25 +1,33 @@
 import {
+    CheckboxGroupInput,
     Edit,
-    SimpleForm,
+    ImageField,
+    ImageInput,
     NumberInput,
     SelectInput,
-    ArrayInput,
-    SimpleFormIterator,
-    required,
-    ImageInput,
-    ImageField,
+    SimpleForm,
     TextInput,
+    required,
 } from 'react-admin';
 
-import { Box, Typography, Divider, Card } from '@mui/material';
+import { Box, Card, Divider, Typography } from '@mui/material';
 import type { Accept } from 'react-dropzone';
-import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 
 const categoryChoices = [
     { id: 'ao', name: 'Áo' },
     { id: 'quan', name: 'Quần' },
     { id: 'giay', name: 'Giày' },
+];
+
+const colorChoices = [
+    { id: 'red', name: 'Đỏ' },
+    { id: 'blue', name: 'Xanh dương' },
+    { id: 'green', name: 'Xanh lá' },
+    { id: 'black', name: 'Đen' },
+    { id: 'white', name: 'Trắng' },
+    { id: '#ff69b4', name: 'Hồng' },
 ];
 
 const fieldStyle = { 
@@ -105,26 +113,58 @@ export const ProductEdit = () => {
                         <Divider />
                     </Box>
 
-                    <Box display="flex" flexWrap="wrap" mb={4}>
-                        <Box sx={fieldStyle}>
-                            <ArrayInput source="colors" label="Màu sắc">
-                                <SimpleFormIterator>
-                                    <TextInput
-                                        label="Màu (#hex hoặc tên màu)"
-                                        source="color"
-                                        variant="outlined"
-                                    />
-                                </SimpleFormIterator>
-                            </ArrayInput>
+                    <Box display="flex" gap={4} mb={4}>
+                        {/* Cột màu sắc */}
+                        <Box>
+                            <CheckboxGroupInput
+                                source="colors"
+                                label="Màu sắc"
+                                choices={colorChoices}
+                                optionValue="id"
+                                optionText={(choice) => (
+                                    <Box display="flex" alignItems="center">
+                                        <Box
+                                            sx={{
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: '50%',
+                                                backgroundColor: choice.id,
+                                                border: '1px solid #ccc',
+                                                marginRight: 1,
+                                            }}
+                                        />
+                                        {choice.name}
+                                    </Box>
+                                )}
+                                sx={{
+                                    '& .MuiFormGroup-root': {
+                                        flexDirection: 'column',
+                                    },
+                                }}
+                            />
                         </Box>
-                        <Box sx={{ ...fieldStyle, marginRight: 0 }}>
-                            <ArrayInput source="sizes" label="Kích cỡ">
-                                <SimpleFormIterator>
-                                    <TextInput label="Size" source="size" variant="outlined" />
-                                </SimpleFormIterator>
-                            </ArrayInput>
+
+                        {/* Cột kích cỡ */}
+                        <Box>
+                            <CheckboxGroupInput
+                                source="sizes"
+                                label="Kích cỡ"
+                                choices={[
+                                    { id: 'S', name: 'S' },
+                                    { id: 'M', name: 'M' },
+                                    { id: 'L', name: 'L' },
+                                    { id: 'XL', name: 'XL' },
+                                    { id: 'XXL', name: 'XXL' },
+                                ]}
+                                sx={{
+                                    '& .MuiFormGroup-root': {
+                                        flexDirection: 'column',
+                                    },
+                                }}
+                            />
                         </Box>
                     </Box>
+
 
                     <Box mb={2}>
                         <Typography variant="h6">Giá & Tồn kho</Typography>
@@ -179,7 +219,7 @@ export const ProductEdit = () => {
                             choices={[
                                 { id: 'selling', name: 'Đang bán' },
                                 { id: 'stopped', name: 'Ngừng bán' },
-                                { id: 'out_of_stock', name: 'Hết hàng' },
+                                { id: 'sold_out', name: 'Hết hàng' },
                             ]}
                             fullWidth
                         />

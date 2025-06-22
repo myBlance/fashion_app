@@ -19,13 +19,13 @@ const LoginPage = () => {
 
 
     const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  try {
-    const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
-      username,
-      password
-    },
-);
+        e.preventDefault();
+        try {
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
+                username,
+                password
+            },
+        );
 
     const { token, role } = res.data;
 
@@ -33,19 +33,19 @@ const LoginPage = () => {
     localStorage.setItem('role', role);
 
     if (role === 'admin') {
-      loginAs('admin');
-      navigate('/admin');
+        loginAs('admin');
+        navigate('/admin');
     } else if (role === 'client') {
-      loginAs('client');
-      navigate('/');
+        loginAs('client');
+        navigate('/');
     } else {
-      alert('Vai trò không hợp lệ');
+        alert('Vai trò không hợp lệ');
     }
-  } catch (error) {
-    alert('Sai tài khoản hoặc mật khẩu');
-    console.error(error);
-  }
-};
+        } catch (error) {
+            alert('Sai tài khoản hoặc mật khẩu');
+            console.error(error);
+        }
+    };
 
 // const LoginPage = () => {
 //     const [username, setUsername] = useState('');
@@ -68,7 +68,7 @@ const LoginPage = () => {
 //         }
 //     };
 
-  const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);

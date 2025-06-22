@@ -84,7 +84,7 @@ const ProfilePage: React.FC = () => {
     const handleUpdateProfile = async () => {
         try {
             const res = await axios.put(
-                `$${import.meta.env.VITE_API_BASE_URL}/api/users/profile`,
+                `${import.meta.env.VITE_API_BASE_URL}/api/users/profile`,
                 {
                     name: profile.name,
                     email: profile.email,

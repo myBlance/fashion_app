@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Layout as RALayout, CheckForApplicationUpdate } from "react-admin";
+import { Layout as RALayout } from "react-admin";
 import MyMenu from "../components/Admin/MyMenu";
 import EmptyAppBar from "../components/Admin/EmptyAppBar";
 import { Box } from "@mui/material";
@@ -31,13 +31,17 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => (
             sx={{
                 width: "100%",
                 height: "100%",
-                p: 2,
+                pt: 2,
+                pr: 2,
                 boxSizing: "border-box",
                 backgroundColor: "#000",
             }}
         >
-            {children && <Box sx={{ width: "auto" }}>{children}</Box>}
-            <CheckForApplicationUpdate />
+            {children && 
+                <Box sx={{ width: "100%" }}>
+                    {children}
+                </Box>}
+            
         </Box>
     </RALayout>
 );

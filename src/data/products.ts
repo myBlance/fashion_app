@@ -16,7 +16,7 @@ export interface Product {
   images: string[];
   sale: boolean;
   delivery: string;
-  createdAt: string; // Định dạng ISO 8601, ví dụ: "2025-05-01T00:00:00Z"
+  createdAt: string;
 }
 
 export const products: Product[] =[

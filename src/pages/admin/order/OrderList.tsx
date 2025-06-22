@@ -121,7 +121,6 @@ export const OrderList = () => {
                     <DateField 
                         source="createdAt" 
                         label="Ngày tạo" 
-                        options={{ day: '2-digit', month: '2-digit', year: 'numeric' }}
                         sx={{ whiteSpace: 'nowrap' }} 
                     />
                     <FunctionField

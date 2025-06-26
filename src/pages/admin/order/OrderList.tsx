@@ -7,32 +7,33 @@ import {
   DatagridConfigurable,
   useNotify,
   useRefresh,
+  useDataProvider,
+  FunctionField,
 } from 'react-admin';
-import { useDataProvider } from 'react-admin';
-import { orderFilters } from './OrderFilter';
-import { Box, Card, Chip, Tooltip } from '@mui/material';
-import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
-import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
-import { Edit, Visibility } from '@mui/icons-material';
-import { FunctionField } from 'react-admin';
-import { IconButton } from '@mui/material';
+import { Box, Card, Chip, Tooltip, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import { orderFilters } from './OrderFilter';
+import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 
 const StatusChip = () => {
     const record = useRecordContext();
     const status = record?.status;
     const labelMap: Record<string, string> = {
         pending: 'Chờ xác nhận',
-        shipping: 'Đang giao',
-        completed: 'Đã hoàn thành',
+        processing: 'Đang xử lý',
+        shipped: 'Đang giao',
+        delivered: 'Đã giao',
         cancelled: 'Đã hủy',
     };
-    const colorMap: Record<string, 'default' | 'primary' | 'success' | 'error' | 'warning' | 'info'> = {
+    const colorMap: Record<string, any> = {
         pending: 'warning',
-        shipping: 'info',
-        completed: 'success',
+        processing: 'info',
+        shipped: 'info',
+        delivered: 'success',
         cancelled: 'error',
     };
 
@@ -52,12 +53,13 @@ export const OrderList = () => {
     const dataProvider = useDataProvider();
 
     return (
-        <Card sx={{ 
-                borderRadius: '20px', 
-                mr: '-24px', 
+        <Card
+            sx={{
+                borderRadius: '20px',
+                mr: '-24px',
                 height: '100%',
                 boxShadow: 'none',
-                overflow: 'visible'
+                overflow: 'visible',
             }}
         >
             <Box sx={{ padding: 2 }}>
@@ -67,15 +69,13 @@ export const OrderList = () => {
             <List
                 filters={orderFilters}
                 exporter={false}
-                
                 sx={{
                     border: '2px solid #ddd',
                     borderRadius: '20px',
-                    // mt: '-10px',
                     mx: '20px',
                     mb: '20px',
                     pt: '10px',
-                    '& .RaList-actions':{
+                    '& .RaList-actions': {
                         mb: '20px',
                     },
                     '& .RaList-content': {
@@ -87,92 +87,91 @@ export const OrderList = () => {
                     bulkActionButtons={false}
                     sx={(theme) => ({
                         '& .RaDatagrid-headerCell': {
-                            backgroundColor:
-                                theme.palette.mode === 'light' ? '#f5f5f5' : '#1e1e1e',
-                            fontWeight: 'bold',
-                            py: 2,
-                            position: 'sticky',
-                            top: 0,
-                            zIndex: 1,
+                        backgroundColor:
+                            theme.palette.mode === 'light' ? '#f5f5f5' : '#1e1e1e',
+                        fontWeight: 'bold',
+                        py: 2,
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1,
                         },
                         '& .RaDatagrid-rowCell': {
-                            py: 2,
+                        py: 2,
                         },
-                        '& .RaDatagrid-tableRow': {
-                            '&:hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                            },
+                        '& .RaDatagrid-tableRow:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
                         },
                     })}
                     rowClick='show'
                 >
                     <TextField source='id' label='Mã đơn hàng' />
-                    <TextField source='customerName' label='Khách hàng' />
+
+                    <FunctionField
+                        label='Khách hàng'
+                        render={(record: any) => record.user?.name || record.user?.email || 'Không rõ'}
+                    />
+
                     <NumberField
-                        source='total'
+                        source='totalPrice'
                         label='Tổng tiền'
                         options={{ style: 'currency', currency: 'VND' }}
                     />
+
                     <FunctionField
                         label='Trạng thái'
                         render={() => <StatusChip />}
                     />
 
-                    <DateField 
-                        source='createdAt' 
-                        label='Ngày tạo' 
-                        sx={{ whiteSpace: 'nowrap' }} 
-                    />
+                    <DateField source='createdAt' label='Ngày tạo' sx={{ whiteSpace: 'nowrap' }} />
+
                     <FunctionField
                         label='Hành động'
                         render={(record: any) => (
-                            <Box sx={{ display: 'flex', gap: 0.1}}>
-                                <Tooltip title='Xem'>
-                                    <IconButton
-                                        size='small'
-                                        color='primary'
-                                        onClick={() => navigate(`/admin/products/show?clone=${record.id}`)}
-                                    >
-                                        <Visibility fontSize='small' />
-                                    </IconButton>
-                                </Tooltip>
+                        <Box sx={{ display: 'flex', gap: 0.1 }}>
+                            <Tooltip title='Xem'>
+                                <IconButton
+                                    size='small'
+                                    color='primary'
+                                    onClick={() => navigate(`/admin/orders/${record.id}/show`)}
+                                >
+                                    <VisibilityIcon fontSize='small' />
+                                </IconButton>
+                            </Tooltip>
 
-                              
-                                <Tooltip title='Sửa'>
-                                    <IconButton
-                                        size='small'
-                                        color='info'
-                                        onClick={() => navigate(`/admin/products/${record.id}`)}
-                                    >
-                                        <Edit fontSize='small' />
-                                    </IconButton>
-                                </Tooltip>
+                            <Tooltip title='Sửa'>
+                                <IconButton
+                                    size='small'
+                                    color='info'
+                                    onClick={() => navigate(`/admin/orders/${record.id}`)}
+                                >
+                                    <EditIcon fontSize='small' />
+                                </IconButton>
+                            </Tooltip>
 
-                                {/* Xoá */}
-                                    <Tooltip title='Xoá'>
-                                        <IconButton
-                                            color='error'
-                                            size='small'
-                                            onClick={() => {
-                                                if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
-                                                    dataProvider.delete('products', { id: record.id })
-                                                        .then(() => {
-                                                            notify('Xoá thành công', { type: 'info' });
-                                                            refresh();
-                                                        })
-                                                        .catch(() => {
-                                                            notify('Xoá thất bại', { type: 'warning' });
-                                                        });
-                                                }
-                                            }}
-                                        >
-                                            <DeleteIcon fontSize='small' />
-                                        </IconButton>
-                                    </Tooltip>
-                            </Box>
+                            <Tooltip title='Xoá'>
+                                <IconButton
+                                    color='error'
+                                    size='small'
+                                    onClick={() => {
+                                    if (window.confirm('Bạn có chắc muốn xoá đơn hàng này?')) {
+                                        dataProvider
+                                        .delete('orders', { id: record.id })
+                                        .then(() => {
+                                            notify('Xoá thành công', { type: 'info' });
+                                            refresh();
+                                        })
+                                        .catch(() => {
+                                            notify('Xoá thất bại', { type: 'warning' });
+                                        });
+                                    }
+                                    }}
+                                >
+                                    <DeleteIcon fontSize='small' />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                         )}
                     />
-
                 </DatagridConfigurable>
             </List>
         </Card>

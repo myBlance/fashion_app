@@ -15,7 +15,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { SelectColumnsButton, useRefresh, useTranslate } from "react-admin";
 import CachedIcon from '@mui/icons-material/Cached';
-import { useLocation } from "react-router-dom";
+import { useLocation, Link as RouterLink } from "react-router-dom";
 
 interface CustomBreadcrumbsProps {
     onCreate?: () => void;
@@ -39,8 +39,8 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
     const refresh = useRefresh();
     const location = useLocation();
 
-    const pathname = location.pathname; 
-    const pathWithoutAdmin = pathname.replace(/^\/admin/, "");
+    const fullPath = `${location.pathname}${location.hash.replace("#", "")}`;
+    const pathWithoutAdmin = fullPath.replace(/^\/admin/, "");
     const pathnames = pathWithoutAdmin.split("/").filter(Boolean);
 
     const buildFullPath = (index: number) => `/${pathnames.slice(0, index + 1).join("/")}`;
@@ -64,11 +64,12 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     <SelectColumnsButton />
                     {onRefresh && (
                         <Button
-                            variant="outlined"
-                            color="primary"
+                            variant="contained"
                             startIcon={<CachedIcon />}
                             onClick={onRefresh}
-                            sx={{ marginRight: 1, backgroundColor: "#0052a9", color: "#fff" }}
+                            sx={{ marginRight: 1, marginLeft: 1, backgroundColor: "#1c79dc", color: "#fff" 
+
+                            }}
                         >
                             Đồng bộ
                         </Button>
@@ -76,23 +77,21 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     {onCreate && (
                         <Button
                             variant="contained"
-                            color="primary"
                             startIcon={<AddIcon />}
                             onClick={onCreate}
-                            sx={{ marginRight: 1, color: "#fff", backgroundColor: "#0052a9" }}
+                            sx={{ marginRight: 1, color: "#fff", backgroundColor: "#1c79dc" }}
                         >
-                            Add
+                            Thêm mới
                         </Button>
                     )}
                     {onExport && (
                         <Button
                             variant="contained"
-                            color="primary"
                             startIcon={<DownloadIcon />}
                             onClick={onExport}
-                            sx={{ color: "#fff", backgroundColor: "#0052a9" }}
+                            sx={{ color: "#fff", backgroundColor: "#1c79dc" }}
                         >
-                            Export
+                            Xuất
                         </Button>
                     )}
                 </Box>
@@ -117,7 +116,13 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                             {translatedName}
                         </Typography>
                     ) : (
-                        <Link key={routeTo} color="text.primary"  href={`#${routeTo}`} underline="hover">
+                        <Link
+                            key={routeTo}
+                            color="text.primary"
+                            underline="hover"
+                            component={RouterLink}
+                            to={`/admin${routeTo}`}
+                        >
                             {translatedName}
                         </Link>
                     );

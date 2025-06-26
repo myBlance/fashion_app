@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField } from '@mui/material';
+import { Button, CircularProgress, TextField } from '@mui/material';
 import '../../styles/Authtabs.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
+import React from 'react';
 
 
 const LoginPage = () => {
@@ -17,9 +18,14 @@ const LoginPage = () => {
     const { loginAs } = useAuth();
     const navigate = useNavigate();
 
-
+    const [loading, setLoading] = React.useState(false);
+  
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 10000);
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
                 username,
@@ -197,12 +203,13 @@ const LoginPage = () => {
                     }}
                 />
                 <Button
-                    type="submit"
                     variant="contained"
                     fullWidth
                     sx={{ mt: 2, backgroundColor: '#ca161c', color: '#fff' }}
+                    onClick={handleLogin}
+                    disabled={loading}
                 >
-                    Đăng nhập
+                    {loading ? <CircularProgress size={24} color="inherit" /> : 'Đăng nhập'}
                 </Button>
                 <div className="login-links">
                     <a href="/forgot-password">Quên mật khẩu?</a>

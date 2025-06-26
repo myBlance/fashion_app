@@ -1,4 +1,3 @@
-// ./ProductFilter.ts
 import { InputAdornment } from '@mui/material';
 import { TextInput, SelectInput, SearchInput } from 'react-admin';
 import  SearchIcon  from '@mui/icons-material/Search';

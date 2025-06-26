@@ -218,7 +218,7 @@ const [open] = useSidebarState();
                                     theme.palette.mode === 'light' ? '#f7f7f7' : '#1e1e1e',
                             }, 
                             '& .MuiTableRow-root:hover': {
-                            backgroundColor: '#f8fcff',
+                            backgroundColor: '#edf7ff',
                             },
 
                             '& .sticky-actions': {

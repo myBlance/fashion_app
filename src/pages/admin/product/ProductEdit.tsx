@@ -40,9 +40,9 @@ const fieldStyle = {
 export const ProductEdit = () => {
     return (
         <Card sx={{ 
-            borderRadius: "20px", 
-            mr: "-24px", 
-            height: "100%",
+            borderRadius: '20px', 
+            mr: '-24px', 
+            height: '100%',
             boxShadow: 'none',
             overflow: 'visible'
         }}>
@@ -50,12 +50,12 @@ export const ProductEdit = () => {
                 <CustomAppBar />
                 <CustomBreadcrumbs  />
             </Box>
-            <Edit title="🛍️ Chỉnh sửa sản phẩm" 
+            <Edit title='🛍️ Chỉnh sửa sản phẩm' 
                 sx={{
-                    border: "2px solid #ddd",
-                    borderRadius: "20px",
-                    mx: "20px",
-                    mb: "20px",
+                    border: '2px solid #ddd',
+                    borderRadius: '20px',
+                    mx: '20px',
+                    mb: '20px',
                     '& .RaList-actions':{
                         mb: '20px',
                     },
@@ -66,63 +66,63 @@ export const ProductEdit = () => {
             >
                 <SimpleForm>
                     <Box mb={2}>
-                        <Typography variant="h6">Thông tin cơ bản</Typography>
+                        <Typography variant='h6'>Thông tin cơ bản</Typography>
                         <Divider />
                     </Box>
 
-                    <Box display="flex" flexWrap="wrap" mb={4}>
+                    <Box display='flex' flexWrap='wrap' mb={4}>
                         <Box sx={fieldStyle}>
                             <TextInput
-                                source="id"
-                                label="Mã sản phẩm"
+                                source='id'
+                                label='Mã sản phẩm'
                                 disabled
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                         <Box sx={fieldStyle}>
                             <TextInput
-                                source="name"
-                                label="Tên sản phẩm"
+                                source='name'
+                                label='Tên sản phẩm'
                                 validate={required()}
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                         <Box sx={fieldStyle}>
                             <TextInput
-                                source="brand"
-                                label="Thương hiệu"
+                                source='brand'
+                                label='Thương hiệu'
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                         <Box sx={{ ...fieldStyle, marginRight: 0 }}>
                             <SelectInput
-                                source="category"
-                                label="Danh mục"
+                                source='category'
+                                label='Danh mục'
                                 choices={categoryChoices}
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                     </Box>
 
                     <Box mb={2}>
-                        <Typography variant="h6">Thuộc tính sản phẩm</Typography>
+                        <Typography variant='h6'>Thuộc tính sản phẩm</Typography>
                         <Divider />
                     </Box>
 
-                    <Box display="flex" gap={4} mb={4}>
+                    <Box display='flex' gap={4} mb={4}>
                         {/* Cột màu sắc */}
                         <Box>
                             <CheckboxGroupInput
-                                source="colors"
-                                label="Màu sắc"
+                                source='colors'
+                                label='Màu sắc'
                                 choices={colorChoices}
-                                optionValue="id"
+                                optionValue='id'
                                 optionText={(choice) => (
-                                    <Box display="flex" alignItems="center">
+                                    <Box display='flex' alignItems='center'>
                                         <Box
                                             sx={{
                                                 width: 20,
@@ -147,8 +147,8 @@ export const ProductEdit = () => {
                         {/* Cột kích cỡ */}
                         <Box>
                             <CheckboxGroupInput
-                                source="sizes"
-                                label="Kích cỡ"
+                                source='sizes'
+                                label='Kích cỡ'
                                 choices={[
                                     { id: 'S', name: 'S' },
                                     { id: 'M', name: 'M' },
@@ -167,55 +167,55 @@ export const ProductEdit = () => {
 
 
                     <Box mb={2}>
-                        <Typography variant="h6">Giá & Tồn kho</Typography>
+                        <Typography variant='h6'>Giá & Tồn kho</Typography>
                         <Divider />
                     </Box>
 
-                    <Box display="flex" flexWrap="wrap" mb={4}>
+                    <Box display='flex' flexWrap='wrap' mb={4}>
                         <Box sx={fieldStyle}>
                             <NumberInput
-                                source="price"
-                                label="Giá bán"
+                                source='price'
+                                label='Giá bán'
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                         <Box sx={fieldStyle}>
                             <NumberInput
-                                source="originalPrice"
-                                label="Giá gốc"
+                                source='originalPrice'
+                                label='Giá gốc'
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                         <Box sx={fieldStyle}>
                             <NumberInput
-                                source="sold"
-                                label="Đã bán"
+                                source='sold'
+                                label='Đã bán'
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                         <Box sx={{ ...fieldStyle, marginRight: 0 }}>
                             <NumberInput
-                                source="total"
-                                label="Tổng số lượng"
+                                source='total'
+                                label='Tổng số lượng'
                                 fullWidth
-                                variant="outlined"
+                                variant='outlined'
                             />
                         </Box>
                     </Box>
 
                     <Box mb={2}>
-                        <Typography variant="h6">Trạng thái</Typography>
+                        <Typography variant='h6'>Trạng thái</Typography>
                         <Divider />
                     </Box>
 
                     <Box mb={3} sx={{ width: '200px' }}>
                         <SelectInput
-                            source="status"
-                            label="Trạng thái"
-                            variant="outlined"
+                            source='status'
+                            label='Trạng thái'
+                            variant='outlined'
                             choices={[
                                 { id: 'selling', name: 'Đang bán' },
                                 { id: 'stopped', name: 'Ngừng bán' },
@@ -226,24 +226,24 @@ export const ProductEdit = () => {
                     </Box>
 
                     <Box mb={2}>
-                        <Typography variant="h6">Ảnh đại diện</Typography>
+                        <Typography variant='h6'>Ảnh đại diện</Typography>
                         <Divider />
                     </Box>
 
                     <Box sx={{ flex: '1 1 300px', minWidth: 300 }}>
                         <ImageInput
-                            source="thumbnail"
-                            label="Chọn ảnh"
+                            source='thumbnail'
+                            label='Chọn ảnh'
                             accept={{ 'image/*': [] } as Accept}
                             fullWidth
                             multiple
                         >
-                            <ImageField source="src" title="title" />
+                            <ImageField source='src' title='title' />
                         </ImageInput>
                     </Box>
 
 
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant='caption' color='text.secondary'>
                         * Ngày tạo và các trường tự động sẽ không chỉnh sửa được.
                     </Typography>
                 </SimpleForm>

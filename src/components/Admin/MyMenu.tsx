@@ -38,7 +38,7 @@ const UserMenu = () => {
     const handleLogout = () => {
         handleClose();
         sessionStorage.removeItem('role');
-        logout(undefined, false);
+        logout();
         window.location.href = '/';
     };
 

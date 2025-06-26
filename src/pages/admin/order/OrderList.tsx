@@ -7,12 +7,12 @@ import {
   DatagridConfigurable,
   useNotify,
   useRefresh,
-} from "react-admin";
-import { useDataProvider } from "react-admin";
-import { orderFilters } from "./OrderFilter";
-import { Box, Card, Chip, Tooltip } from "@mui/material";
-import CustomBreadcrumbs from "../../../components/Admin/Breadcrumbs";
-import { CustomAppBar } from "../../../components/Admin/CustomAppBar";
+} from 'react-admin';
+import { useDataProvider } from 'react-admin';
+import { orderFilters } from './OrderFilter';
+import { Box, Card, Chip, Tooltip } from '@mui/material';
+import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { Edit, Visibility } from '@mui/icons-material';
 import { FunctionField } from 'react-admin';
 import { IconButton } from '@mui/material';
@@ -24,23 +24,23 @@ const StatusChip = () => {
     const record = useRecordContext();
     const status = record?.status;
     const labelMap: Record<string, string> = {
-        pending: "Chờ xác nhận",
-        shipping: "Đang giao",
-        completed: "Đã hoàn thành",
-        cancelled: "Đã hủy",
+        pending: 'Chờ xác nhận',
+        shipping: 'Đang giao',
+        completed: 'Đã hoàn thành',
+        cancelled: 'Đã hủy',
     };
-    const colorMap: Record<string, "default" | "primary" | "success" | "error" | "warning" | "info"> = {
-        pending: "warning",
-        shipping: "info",
-        completed: "success",
-        cancelled: "error",
+    const colorMap: Record<string, 'default' | 'primary' | 'success' | 'error' | 'warning' | 'info'> = {
+        pending: 'warning',
+        shipping: 'info',
+        completed: 'success',
+        cancelled: 'error',
     };
 
     return (
         <Chip
-            label={labelMap[status] || "Không xác định"}
-            color={colorMap[status] || "default"}
-            size="small"
+            label={labelMap[status] || 'Không xác định'}
+            color={colorMap[status] || 'default'}
+            size='small'
         />
     );
 };
@@ -53,9 +53,9 @@ export const OrderList = () => {
 
     return (
         <Card sx={{ 
-                borderRadius: "20px", 
-                mr: "-24px", 
-                height: "100%",
+                borderRadius: '20px', 
+                mr: '-24px', 
+                height: '100%',
                 boxShadow: 'none',
                 overflow: 'visible'
             }}
@@ -69,12 +69,12 @@ export const OrderList = () => {
                 exporter={false}
                 
                 sx={{
-                    border: "2px solid #ddd",
-                    borderRadius: "20px",
-                    // mt: "-10px",
-                    mx: "20px",
-                    mb: "20px",
-                    pt: "10px",
+                    border: '2px solid #ddd',
+                    borderRadius: '20px',
+                    // mt: '-10px',
+                    mx: '20px',
+                    mb: '20px',
+                    pt: '10px',
                     '& .RaList-actions':{
                         mb: '20px',
                     },
@@ -104,57 +104,57 @@ export const OrderList = () => {
                             },
                         },
                     })}
-                    rowClick="show"
+                    rowClick='show'
                 >
-                    <TextField source="id" label="Mã đơn hàng" />
-                    <TextField source="customerName" label="Khách hàng" />
+                    <TextField source='id' label='Mã đơn hàng' />
+                    <TextField source='customerName' label='Khách hàng' />
                     <NumberField
-                        source="total"
-                        label="Tổng tiền"
-                        options={{ style: "currency", currency: "VND" }}
+                        source='total'
+                        label='Tổng tiền'
+                        options={{ style: 'currency', currency: 'VND' }}
                     />
                     <FunctionField
-                        label="Trạng thái"
+                        label='Trạng thái'
                         render={() => <StatusChip />}
                     />
 
                     <DateField 
-                        source="createdAt" 
-                        label="Ngày tạo" 
+                        source='createdAt' 
+                        label='Ngày tạo' 
                         sx={{ whiteSpace: 'nowrap' }} 
                     />
                     <FunctionField
-                        label="Hành động"
+                        label='Hành động'
                         render={(record: any) => (
                             <Box sx={{ display: 'flex', gap: 0.1}}>
-                                <Tooltip title="Xem">
+                                <Tooltip title='Xem'>
                                     <IconButton
-                                        size="small"
-                                        color="primary"
+                                        size='small'
+                                        color='primary'
                                         onClick={() => navigate(`/admin/products/show?clone=${record.id}`)}
                                     >
-                                        <Visibility fontSize="small" />
+                                        <Visibility fontSize='small' />
                                     </IconButton>
                                 </Tooltip>
 
                               
-                                <Tooltip title="Sửa">
+                                <Tooltip title='Sửa'>
                                     <IconButton
-                                        size="small"
-                                        color="info"
+                                        size='small'
+                                        color='info'
                                         onClick={() => navigate(`/admin/products/${record.id}`)}
                                     >
-                                        <Edit fontSize="small" />
+                                        <Edit fontSize='small' />
                                     </IconButton>
                                 </Tooltip>
 
                                 {/* Xoá */}
-                                    <Tooltip title="Xoá">
+                                    <Tooltip title='Xoá'>
                                         <IconButton
-                                            color="error"
-                                            size="small"
+                                            color='error'
+                                            size='small'
                                             onClick={() => {
-                                                if (window.confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
+                                                if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
                                                     dataProvider.delete('products', { id: record.id })
                                                         .then(() => {
                                                             notify('Xoá thành công', { type: 'info' });
@@ -166,7 +166,7 @@ export const OrderList = () => {
                                                 }
                                             }}
                                         >
-                                            <DeleteIcon fontSize="small" />
+                                            <DeleteIcon fontSize='small' />
                                         </IconButton>
                                     </Tooltip>
                             </Box>

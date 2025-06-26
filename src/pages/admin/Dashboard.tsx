@@ -12,10 +12,10 @@ import { CustomAppBar } from '../../components/Admin/CustomAppBar';
 const DashBoard: React.FC = () => {
   return (
     <div>
-      <Card sx={{borderRadius:"20px", mr:"-24px", height:"100%"}} >
+      <Card sx={{borderRadius:'20px', mr:'-24px', height:'100%'}} >
         <Box sx={{ padding: 2 }}>
             <CustomAppBar />
-            <CardHeader title="Welcome to the administration" />
+            <CardHeader title='Welcome to the administration' />
             
             <CardContent>
                 

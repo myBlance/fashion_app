@@ -27,6 +27,9 @@ import { useNavigate } from 'react-router-dom';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { productFilters } from './ProductFilter';
+import { useSidebarState } from 'react-admin';
+import { saveAs } from 'file-saver';
+import Papa from 'papaparse';
 
 
 const ThumbnailField = ({ source }: { source: string, label: string }) => {
@@ -39,7 +42,7 @@ const ThumbnailField = ({ source }: { source: string, label: string }) => {
 
     return (
         <Avatar
-            variant="rounded"
+            variant='rounded'
             src={imageUrl}
             alt={record?.name || ''}
             sx={{ width: 48, height: 48 }}
@@ -48,10 +51,10 @@ const ThumbnailField = ({ source }: { source: string, label: string }) => {
 };
 
 
-const ColorField = ({ source }: { source: string }) => {
+const ColorField = ({ source }: { source: string, label: string }) => {
     const record = useRecordContext();
     return record?.[source] ? (
-        <Box display="flex" gap={1}>
+        <Box display='flex'  gap={0.5} flexWrap='wrap' maxWidth={150}>
             {record[source].map((color: string, index: number) => (
                 <Box
                     key={index}
@@ -68,12 +71,12 @@ const ColorField = ({ source }: { source: string }) => {
     ) : null;
 };
 
-const SizeField = ({ source }: { source: string }) => {
+const SizeField = ({ source }: { source: string, label: string }) => {
     const record = useRecordContext();
     return record?.[source] ? (
-        <Box display="flex" gap={0.5} flexWrap="wrap" maxWidth={150}>
+        <Box display='flex' gap={0.5} flexWrap='wrap' maxWidth={150}>
             {record[source].map((size: string, index: number) => (
-                <Chip key={index} label={size} size="small" />
+                <Chip key={index} label={size} size='small' />
             ))}
         </Box>
     ) : null;
@@ -93,6 +96,9 @@ const ListActions = () => (
 
 
 export const ProductList = () => {
+   
+
+const [open] = useSidebarState();
     const navigate = useNavigate();
 
     const refresh = useRefresh();
@@ -101,7 +107,7 @@ export const ProductList = () => {
 
     const handleSync = async () => {
         try {
-            // Nếu có API riêng để "đồng bộ dữ liệu", gọi ở đây
+            // Nếu có API riêng để 'đồng bộ dữ liệu', gọi ở đây
             await dataProvider.getList('products', {
                 pagination: { page: 1, perPage: 10 },
                 sort: { field: 'id', order: 'DESC' },
@@ -116,31 +122,45 @@ export const ProductList = () => {
         }
     };
 
+    const handleExport = async () => {
+        try {
+            const { data } = await dataProvider.getList('products', {
+                pagination: { page: 1, perPage: 1000 },
+                sort: { field: 'id', order: 'ASC' },
+                filter: {},
+            });
+
+            const csv = Papa.unparse(data);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, 'danh_sach_san_pham.csv');
+        } catch (error) {
+            console.error('Export lỗi:', error);
+            notify('Xuất thất bại', { type: 'warning' });
+        }
+    };
 
     const handleCreate = () => {
         navigate('/admin/products/create');
     };
 
-    const handleExport = () => {
-        console.log('Export clicked');  
-    };
+    
     
     return (
         <Card 
             sx={{ 
-                borderRadius: "20px", 
-                mr: "-24px", 
-                height: "100%",
+                borderRadius: '20px', 
+                mr: '-24px', 
+                height: '100%',
                 boxShadow: 'none',
-                overflowX:'hidden'
+            
             }}
         >
             <Box sx={{ padding: 2 }}>
                 <CustomAppBar />
                 <CustomBreadcrumbs 
                     onCreate={handleCreate}
-                    onExport={handleExport}
                     onRefresh={handleSync}
+                    onExport={handleExport}
                  />
             </Box>
             
@@ -151,11 +171,11 @@ export const ProductList = () => {
                 perPage={10}
                 actions={<ListActions />}
                 sx={{
-                    border: "2px solid #ddd",
-                    borderRadius: "20px",
-                    mx: "20px",
-                    mb: "20px",
-                    pt: "10px",
+                    border: '2px solid #ddd',
+                    borderRadius: '20px',
+                    mx: '20px',
+                    mb: '20px',
+                    pt: '10px',
                     
                     '& .RaList-actions': {
                         mb: '20px',
@@ -164,174 +184,219 @@ export const ProductList = () => {
                 }}
             
             >
-                <Box sx={{ overflowX: 'auto', width: '100%' }}>
-                    <Box>
-                        <DatagridConfigurable
-                            bulkActionButtons={false}
-                            rowClick="edit"
-                            sx={(theme) => ({
-                                '& .RaDatagrid-headerCell': {
-                                    backgroundColor:
-                                        theme.palette.mode === 'light' ? '#f5f5f5' : '#1e1e1e',
-                                    fontWeight: 'bold',
-                                    py: 2,
-                                    position: 'sticky',
-                                    top: 0,
-                                    zIndex: 1,
-                                },
-                                '& .RaDatagrid-rowCell': {
-                                    py: 2,
-                                },
-                                '& .RaDatagrid-tableRow': {
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                    },
-                                },
-                            })}
-                        >
-                            <TextField source="id" label="Mã SP" />
-                            <ThumbnailField source="thumbnail" label="Ảnh"/>
-                            <TextField source="name" label="Tên sản phẩm" />
-                            <TextField source="brand" label="Thương hiệu" />
-                           <FunctionField
-                                label="Danh mục"
-                                render={(record: any) => {
-                                    const found = categoryChoices.find(choice => choice.id === record.category);
-                                    return found ? found.name : record.category;
-                                }}
-                            />
 
+                <Box sx={{ overflow: 'auto', maxHeight: 'calc(100vh - 100px)', width: open ? '1228px' : '1419px' }}>
+                    <DatagridConfigurable
+                        bulkActionButtons={false}
+                        rowClick='edit'
+                        sx={(theme) => ({
+                            '& .RaDatagrid-headerCell': {
+                                backgroundColor:
+                                    theme.palette.mode === 'light' ? '#f0f0f0' : '#1e1e1e',
+                                fontWeight: 'bold',
+                                borderTop: '1px solid #ddd',
+                                borderBottom: '1px soild #ddd',
+                                py: 2,
+                                position: 'sticky',
+                                top: 0,
+                                zIndex: 1,
+                                whiteSpace: 'nowrap',
+                                textAlign: 'center',                 //  căn giữa ngang
+                                verticalAlign: 'middle',             //  căn giữa dọc
+                            },
+                            '& .RaDatagrid-rowCell': {
+                                py: 2,
+                                textAlign: 'center',                 
+                                verticalAlign: 'middle',             
+                            },
+                            '& .RaDatagrid-rowEven': { 
+                                backgroundColor: 
+                                    theme.palette.mode === 'light' ? '#ffffff' : '#1e1e1e',
+                            }, 
+                            '& .RaDatagrid-rowOdd': { 
+                                backgroundColor:
+                                    theme.palette.mode === 'light' ? '#f7f7f7' : '#1e1e1e',
+                            }, 
+                            '& .MuiTableRow-root:hover': {
+                            backgroundColor: '#f8fcff',
+                            },
 
-                            <ColorField source="colors"/>
-                            <SizeField source="sizes" />
-                            <NumberField 
-                                source="price" 
-                                label="Giá bán"
-                                options={{ style: 'currency', currency: 'VND' }}
-                                sx={{ fontWeight: 'bold' }}
-                            />
-                            <NumberField 
-                                source="originalPrice" 
-                                label="Giá gốc"
-                                options={{ style: 'currency', currency: 'VND' }}
-                            />
-                            <FunctionField 
-                                label="Giảm giá"
-                                render={(record: any) =>
-                                    `${Math.round((1 - record.price / record.originalPrice) * 100)}%`
-                                }
-                                sx={{ color: 'red', fontWeight: 'bold' }}
-                            />
+                            '& .sticky-actions': {
+                                position: 'sticky',
+                                right: 0,
+                                zIndex: 10,
+                                whiteSpace: 'nowrap',
+                            },
+                            '& .sticky-actions.RaDatagrid-rowCell::before, & .sticky-actions.RaDatagrid-headerCell::before': {
+                                content: '""',
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                bottom: 0,
+                                width: '1px',
+                                backgroundColor: theme.palette.divider,
+                            },
+                            '& .RaDatagrid-rowEven .sticky-actions': {
+                                backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#1e1e1e',
+                            },
+                            '& .RaDatagrid-rowOdd .sticky-actions': {
+                                backgroundColor: theme.palette.mode === 'light' ? '#f7f7f7' : '#1e1e1e',
+                            },
                             
-                            <NumberField source="sold" label="Đã bán" />
+                            '& .sticky-actions.RaDatagrid-headerCell': { 
+                                backgroundColor:
+                                    theme.palette.mode === 'light' ? '#f0f0f0' : '#1e1e1e',
+                                zIndex: 11,
+                            },
+  
 
-                            <FunctionField
-                                label="Tồn kho"
-                                render={record => (record?.total || 0) - (record?.sold || 0)}
-                            />
-
-                            <FunctionField
-                                label="Tổng SL"
-                                render={record => (record?.total || 0)}
-                            />
-
-                            <FunctionField
-                                label="Trạng thái"
-                                render={record => {
-                                    const total = record?.total || 0;
-                                    const sold = record?.sold || 0;
-                                    const remaining = total - sold;
-                                    const rawStatus = record?.status;
-
-                                    let displayStatus = "";
-                                    if (remaining <= 0) {
-                                        displayStatus = "sold_out"; 
-                                    } else if (rawStatus === "stopped") {
-                                        displayStatus = "stopped";
-                                    } else {
-                                        displayStatus = "selling";
-                                    }
-
-                                    const labelMap: Record<string, string> = {
-                                        selling: "Đang bán",
-                                        stopped: "Ngừng bán",
-                                        sold_out: "Hết hàng",
-                                    };
-
-                                    const colorMap: Record<string, "success" | "error" | "default"> = {
-                                        selling: "success",
-                                        stopped: "error",
-                                        sold_out: "default",
-                                    };
-
-                                    return (
-                                        <Chip
-                                            label={labelMap[displayStatus]}
-                                            color={colorMap[displayStatus]}
-                                            size="small"
-                                        />
-                                    );
-                                }}
-                            />
+                        })}
+                    >
+                        <TextField source='id' label='Mã sản phẩm' />
+                        <ThumbnailField source='thumbnail' label='Ảnh'/>
+                        <TextField source='name' label='Tên sản phẩm' sx={{ whiteSpace: 'nowrap' }}/>
+                        <TextField source='brand' label='Thương hiệu' sx={{ whiteSpace: 'nowrap' }}/>
+                        <FunctionField
+                            label='Danh mục'
+                            render={(record: any) => {
+                                const found = categoryChoices.find(choice => choice.id === record.category);
+                                return found ? found.name : record.category;
+                            }}
+                        />
 
 
-                            <DateField 
-                                source="createdAt" 
-                                label="Ngày tạo" 
-                                sx={{ whiteSpace: 'nowrap' }} 
-                            />
-                            <FunctionField
-                                label="Hành động"
-                                render={(record: any) => (
-                                    <Box sx={{ display: 'flex', gap: 0.1}}>
-                                        <Tooltip title="Xem">
-                                            <IconButton
-                                                size="small"
-                                                color="primary"
-                                                onClick={() => navigate(`/admin/products/show?clone=${record.id}`)}
-                                            >
-                                                <Visibility fontSize="small" />
-                                            </IconButton>
-                                        </Tooltip>
+                        <ColorField source='colors' label='Màu'/>
+                        <SizeField source='sizes' label='Size'/>
+                        <NumberField 
+                            source='price' 
+                            label='Giá bán'
+                            options={{ style: 'currency', currency: 'VND' }}
+                            sx={{ fontWeight: 'bold' }}
+                        />
+                        <NumberField 
+                            source='originalPrice' 
+                            label='Giá gốc'
+                            options={{ style: 'currency', currency: 'VND' }}
+                        />
+                        <FunctionField 
+                            label='Giảm giá'
+                            render={(record: any) =>
+                                `${Math.round((1 - record.price / record.originalPrice) * 100)}%`
+                            }
+                            sx={{ color: 'red', fontWeight: 'bold' }}
+                        />
+                        
+                        <NumberField source='sold' label='Đã bán' />
 
-                                        {/* Sửa */}
-                                        <Tooltip title="Sửa">
-                                            <IconButton
-                                                size="small"
-                                                color="info"
-                                                onClick={() => navigate(`/admin/products/${record.id}`)}
-                                            >
-                                                <Edit fontSize="small" />
-                                            </IconButton>
-                                        </Tooltip>
+                        <FunctionField
+                            label='Tồn kho'
+                            render={record => (record?.total || 0) - (record?.sold || 0)}
+                        />
 
-                                        {/* Xoá */}
-                                        <Tooltip title="Xoá">
-                                            <IconButton
-                                                color="error"
-                                                size="small"
-                                                onClick={() => {
-                                                    if (window.confirm("Bạn có chắc muốn xoá sản phẩm này?")) {
-                                                        dataProvider.delete('products', { id: record.id })
-                                                            .then(() => {
-                                                                notify('Xoá thành công', { type: 'info' });
-                                                                refresh();
-                                                            })
-                                                            .catch(() => {
-                                                                notify('Xoá thất bại', { type: 'warning' });
-                                                            });
-                                                    }
-                                                }}
-                                            >
-                                                <DeleteIcon fontSize="small" />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Box>
-                                )}
-                            />
-                        </DatagridConfigurable>
-                    </Box>
-                </Box>                
+                        <FunctionField
+                            label='Tổng số lượng'
+                            render={record => (record?.total || 0)}
+                        />
+
+                        <FunctionField
+                            label='Trạng thái'
+                            render={record => {
+                                const total = record?.total || 0;
+                                const sold = record?.sold || 0;
+                                const remaining = total - sold;
+                                const rawStatus = record?.status;
+
+                                let displayStatus = '';
+                                if (remaining <= 0) {
+                                    displayStatus = 'sold_out'; 
+                                } else if (rawStatus === 'stopped') {
+                                    displayStatus = 'stopped';
+                                } else {
+                                    displayStatus = 'selling';
+                                }
+
+                                const labelMap: Record<string, string> = {
+                                    selling: 'Đang bán',
+                                    stopped: 'Ngừng bán',
+                                    sold_out: 'Hết hàng',
+                                };
+
+                                const colorMap: Record<string, 'success' | 'error' | 'default'> = {
+                                    selling: 'success',
+                                    stopped: 'error',
+                                    sold_out: 'default',
+                                };
+
+                                return (
+                                    <Chip
+                                        label={labelMap[displayStatus]}
+                                        color={colorMap[displayStatus]}
+                                        size='small'
+                                    />
+                                );
+                            }}
+                        />
+
+
+                        <DateField 
+                            source='createdAt' 
+                            label='Ngày tạo' 
+                            sx={{ whiteSpace: 'nowrap' }} 
+                        />
+                        <FunctionField
+                            label='Hành động'
+                            cellClassName='sticky-actions'
+                            headerClassName='sticky-actions'
+                            render={(record: any) => (
+                                <Box sx={{ display: 'flex', gap: '2px'}}>
+                                    <Tooltip title='Xem'>
+                                        <IconButton
+                                            size='small'
+                                            color='primary'
+                                            onClick={() => navigate(`/admin/products/show?clone=${record.id}`)}
+                                        >
+                                            <Visibility fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    {/* Sửa */}
+                                    <Tooltip title='Sửa'>
+                                        <IconButton
+                                            size='small'
+                                            color='info'
+                                            onClick={() => navigate(`/admin/products/${record.id}`)}
+                                        >
+                                            <Edit fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    {/* Xoá */}
+                                    <Tooltip title='Xoá'>
+                                        <IconButton
+                                            color='error'
+                                            size='small'
+                                            onClick={() => {
+                                                if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
+                                                    dataProvider.delete('products', { id: record.id })
+                                                        .then(() => {
+                                                            notify('Xoá thành công', { type: 'info' });
+                                                            refresh();
+                                                        })
+                                                        .catch(() => {
+                                                            notify('Xoá thất bại', { type: 'warning' });
+                                                        });
+                                                }
+                                            }}
+                                        >
+                                            <DeleteIcon fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            )}
+                        />
+                    </DatagridConfigurable>
+                </Box>
+                             
             </List>
         </Card>
     );

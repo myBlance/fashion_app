@@ -18,6 +18,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { orderFilters } from './OrderFilter';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
+import { saveAs } from 'file-saver';
+import Papa from 'papaparse';
 
 const StatusChip = () => {
     const record = useRecordContext();
@@ -52,6 +54,44 @@ export const OrderList = () => {
     const notify = useNotify();
     const dataProvider = useDataProvider();
 
+    const handleSync = async () => {
+            try {
+                // Nếu có API riêng để 'đồng bộ dữ liệu', gọi ở đây
+                await dataProvider.getList('products', {
+                    pagination: { page: 1, perPage: 10 },
+                    sort: { field: 'id', order: 'DESC' },
+                    filter: {},
+                });
+    
+                refresh(); // Gọi hook để reload lại danh sách
+                notify('Đã đồng bộ thành công!', { type: 'info' });
+            } catch (error) {
+                console.error(error);
+                notify('Đồng bộ thất bại!', { type: 'warning' });
+            }
+        };
+    
+        const handleExport = async () => {
+            try {
+                const { data } = await dataProvider.getList('orders', {
+                    pagination: { page: 1, perPage: 1000 },
+                    sort: { field: 'id', order: 'ASC' },
+                    filter: {},
+                });
+    
+                const csv = Papa.unparse(data);
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                saveAs(blob, 'danh_sach_don_hang.csv');
+            } catch (error) {
+                console.error('Export lỗi:', error);
+                notify('Xuất thất bại', { type: 'warning' });
+            }
+        };
+    
+        const handleCreate = () => {
+            navigate('/admin/order/create');
+        };
+
     return (
         <Card
             sx={{
@@ -64,7 +104,11 @@ export const OrderList = () => {
         >
             <Box sx={{ padding: 2 }}>
                 <CustomAppBar />
-                <CustomBreadcrumbs />
+                <CustomBreadcrumbs 
+                    onCreate={handleCreate}
+                    onRefresh={handleSync}
+                    onExport={handleExport}
+                />
             </Box>
             <List
                 filters={orderFilters}

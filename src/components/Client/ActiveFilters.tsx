@@ -1,4 +1,3 @@
-// components/ActiveFilters.tsx
 import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { getLabel, Filters } from '../../utils/filterUtils';

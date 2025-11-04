@@ -1,135 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { products } from '../../data/products';
-import { addToCart } from '../../store/cartSlice';
-import '../../styles/ProductDetail.css';
-import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
-import { Favorite, FavoriteBorder} from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import { toggleWishlist } from '../../store/wishlistSlice';
-import { useAppSelector } from '../../store/hooks';
-
-
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../store/cartSlice";
+import { toggleWishlist } from "../../store/wishlistSlice";
+import { useAppSelector } from "../../store/hooks";
+import "../../styles/ProductDetail.css";
+import DynamicBreadcrumbs from "../../components/Client/DynamicBreadcrumbs";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { getProductById, Product } from "../../services/productService"; // ✅ Import API
 
 const ProductDetail: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const product = products.find((p) => p.id === id);
-    const dispatch = useDispatch();
-    // const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch();
 
-    const wishlist = useAppSelector((state) => state.wishlist.items);
-    const isFavorite = wishlist.includes(product!.id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    const handleToggleWishlist = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    dispatch(toggleWishlist(product!.id));
-    };
+  const wishlist = useAppSelector((state) => state.wishlist.items);
 
-    // State chọn ảnh thumbnail hiện tại
-    const [selectedImage, setSelectedImage] = useState('');
-    // State chọn màu sắc (index trong product.images)
-    const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-    // State chọn size
-    const [selectedSize, setSelectedSize] = useState('L');
-    // State số lượng
-    const [quantity, setQuantity] = useState(1);
-
-  // Khởi tạo selectedImage khi product có dữ liệu
-    useEffect(() => {
-        if (product) {
-        setSelectedImage(product.thumbnail || product.images[0]);
+  // ✅ Lấy dữ liệu sản phẩm từ backend
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        if (id) {
+          const data = await getProductById(id);
+          setProduct(data);
         }
-    }, [product]);
+      } catch (err) {
+        console.error("Lỗi khi tải sản phẩm:", err);
+        setError("Không thể tải dữ liệu sản phẩm.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
 
-    if (!product) {
-        return <div className="not-found">Không tìm thấy sản phẩm</div>;
+  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState("L");
+  const [quantity, setQuantity] = useState(1);
+
+  // ✅ Khi có dữ liệu product → đặt ảnh mặc định
+  useEffect(() => {
+    if (product) {
+      const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+      const thumbnailUrl =
+        product.thumbnail?.startsWith("http")
+          ? product.thumbnail
+          : `${baseURL}/uploads/${product.thumbnail}`;
+      setSelectedImage(thumbnailUrl || product.images[0]);
     }
+  }, [product]);
 
-    const sizes = ['S', 'M', 'L'];
+  const isFavorite = product ? wishlist.includes(product.id) : false;
 
-    const decreaseQuantity = () => {
-        setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-    };
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (product) dispatch(toggleWishlist(product.id));
+  };
 
-    const increaseQuantity = () => {
-        setQuantity((prev) => prev + 1);
-    };
+  const decreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const increaseQuantity = () => setQuantity((prev) => prev + 1);
 
-    const handleVoucherClick = (id: string) => {
-        alert(`Bạn đã chọn voucher: ${id}`);
-    };
+  if (loading) return <div className="loading">Đang tải dữ liệu...</div>;
+  if (error || !product) return <div className="not-found">{error || "Không tìm thấy sản phẩm"}</div>;
 
-    return (
-        <div>
-            <DynamicBreadcrumbs />
-            <div className="product-detail">
-                {/* Cột 1: thumbnails ảnh nhỏ */}
-                <div className="left-column">
-                    {product.images.map((img, i) => (
-                        <img
-                            src={img}
-                            alt={`thumb-${i}`}
-                            key={i}
-                            className={`thumbnail ${selectedImage === img ? 'active' : ''}`}
-                            onClick={() => setSelectedImage(img)}
-                        />
-                    ))}
-                </div>
+  const sizes = product.sizes?.length > 0 ? product.sizes : ["S", "M", "L"];
 
-                {/* Cột 2: ảnh lớn */}
-                <div className="middle-column">
-                    <img src={selectedImage} alt={product.name} className="main-image" />
-                    <IconButton
-                        onClick={handleToggleWishlist}
-                        sx={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        zIndex: 2,
-                        backgroundColor: 'white',
-                            '&:hover': {
-                                backgroundColor: '#e2004b',
-                            },
-                        }}
-                    >
-                        {isFavorite ? (
-                            <Favorite sx={{ color: '#e91e63' }} />
-                        ) : (
-                            <FavoriteBorder sx={{ color: '#999' }} />
-                        )}
-                    </IconButton>
-                </div>
+  // ✅ Hàm chuẩn hóa đường dẫn ảnh
+  const getImageUrl = (path: string) => {
+    if (!path) return "/no-image.png";
+    if (path.startsWith("http")) return path;
+    const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+    return `${baseURL}/uploads/${path}`;
+  };
 
-                {/* Cột 3: thông tin chi tiết */}
-                <div className="right-column">
-                    <h2>{product.name}</h2>
+  return (
+    <div>
+      <DynamicBreadcrumbs />
+      <div className="product-detail">
+        {/* Cột 1: thumbnail nhỏ */}
+        <div className="left-column">
+          {product.images?.map((img, i) => (
+            <img
+              key={i}
+              src={getImageUrl(img)}
+              alt={`thumb-${i}`}
+              className={`thumbnail ${selectedImage === getImageUrl(img) ? "active" : ""}`}
+              onClick={() => setSelectedImage(getImageUrl(img))}
+            />
+          ))}
+        </div>
 
-                    <div className="info-row">
-                        <div>
-                            Loại: <span className="highlight">
-                                {product.category}
-                            </span>
-                                <br />
-                            Tình trạng:{' '}
-                            <span className={`highlight status ${product.status ? 'available' : 'unavailable'}`}>
-                                {product.status ? 'Còn hàng' : 'Hết hàng'}
-                            </span>
-                        </div>
-                        <div>
-                            Thương hiệu: <span className="highlight">{product.brand}</span>
-                            <br />
-                            Mã sản phẩm: <span className="highlight code">{product.id}</span>
-                        </div>
-                    </div>
+        {/* Cột 2: ảnh lớn */}
+        <div className="middle-column">
+          <img src={selectedImage} alt={product.name} className="main-image" />
+          <IconButton
+            onClick={handleToggleWishlist}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              zIndex: 2,
+              backgroundColor: "white",
+              "&:hover": { backgroundColor: "#e2004b" },
+            }}
+          >
+            {isFavorite ? <Favorite sx={{ color: "#e91e63" }} /> : <FavoriteBorder sx={{ color: "#999" }} />}
+          </IconButton>
+        </div>
 
-                    <div className="price-section">
-                        <div className="price-label">Giá bán:</div>
-                        <div className="price-row">
-                            <span className="price">{product.price.toLocaleString()}₫</span>
-                            <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
-                        </div>
-                    </div>
+        {/* Cột 3: thông tin sản phẩm */}
+        <div className="right-column">
+          <h2>{product.name}</h2>
+
+          <div className="info-row">
+            <div>
+              Loại: <span className="highlight">{product.category}</span>
+              <br />
+              Tình trạng:{" "}
+              <span className={`highlight status ${product.status ? "available" : "unavailable"}`}>
+                {product.status ? "Còn hàng" : "Hết hàng"}
+              </span>
+            </div>
+            <div>
+              Thương hiệu: <span className="highlight">{product.brand}</span>
+              <br />
+              Mã sản phẩm: <span className="highlight code">{product.id}</span>
+            </div>
+          </div>
+
+          <div className="price-section">
+            <div className="price-label">Giá bán:</div>
+            <div className="price-row">
+              <span className="price">{product.price.toLocaleString()}₫</span>
+              <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
+            </div>
+          </div>
 
 
                     <div className="promotion-list">
@@ -143,7 +154,7 @@ const ProductDetail: React.FC = () => {
                         </ul>
                     </div>
 
-                    <div className="vouchers">
+                    {/* <div className="vouchers">
                         {['DOLA10', 'FREESHIP', 'DOLA20', 'DOLA50'].map((id) => (
                             <button
                                 key={id}
@@ -153,7 +164,7 @@ const ProductDetail: React.FC = () => {
                                 {id}
                             </button>
                         ))}
-                    </div>
+                    </div> */}
 
                     <div className="voucher-note">Tặng voucher trị giá 50k cho đơn hàng tiếp theo</div>
 
@@ -189,42 +200,32 @@ const ProductDetail: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="sizes-section">
-                        <div className="size-label">
-                            <strong>Size: 
-                                <span> {selectedSize}</span>
-                            </strong>
-                        </div>
-                        <div className="size-options">
-                            {sizes.map((size) => (
-                                <button
-                                    key={size}
-                                    className={`size-btn ${selectedSize === size ? 'selected' : ''}`}
-                                    onClick={() => setSelectedSize(size)}
-                                >
-                                    {size}
-                                    {selectedSize === size && <div className="corner-icon">🏷️</div>}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+          <div className="sizes-section">
+            <strong>Size: {selectedSize}</strong>
+            <div className="size-options">
+              {sizes.map((size) => (
+                <button
+                  key={size}
+                  className={`size-btn ${selectedSize === size ? "selected" : ""}`}
+                  onClick={() => setSelectedSize(size)}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button className="size-hint-btn" onClick={() => alert('Gợi ý tìm size')}>
+                <span className="icon">📐</span> Gợi ý tìm size
+             </button>
 
-                    <button className="size-hint-btn" onClick={() => alert('Gợi ý tìm size')}>
-                        <span className="icon">📐</span> Gợi ý tìm size
-                    </button>
-
-                    <div className="quantity-section">
-                        <label>Số lượng:</label>
-                        <div className="quantity-controls">
-                            <button className="quantity-btn" onClick={decreaseQuantity}>
-                                −
-                            </button>
-                            <input type="text" value={quantity} readOnly />
-                            <button className="quantity-btn" onClick={increaseQuantity}>
-                                +
-                            </button>
-                        </div>
-                    </div>
+          <div className="quantity-section">
+            <label>Số lượng:</label>
+            <div className="quantity-controls">
+              <button className="quantity-btn" onClick={decreaseQuantity}>−</button>
+              <input type="text" value={quantity} readOnly />
+              <button className="quantity-btn" onClick={increaseQuantity}>+</button>
+            </div>
+          </div>
 
                     <div className="action-buttons">
                         <button

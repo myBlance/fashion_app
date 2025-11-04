@@ -1,20 +1,32 @@
-import simpleRestProvider from 'ra-data-simple-rest';
-import { fetchUtils, GetListParams, GetListResult, GetOneParams, GetOneResult, UpdateParams, CreateParams, DeleteParams } from 'react-admin';
-import { stringify } from 'query-string';
+import simpleRestProvider from "ra-data-simple-rest";
+import {
+  fetchUtils,
+  GetListParams,
+  GetListResult,
+  GetOneParams,
+  GetOneResult,
+  UpdateParams,
+  CreateParams,
+  DeleteParams,
+} from "react-admin";
+import { stringify } from "query-string";
 
 const baseUrl = `${import.meta.env.VITE_API_BASE_URL}/api`;
+const baseProvider = simpleRestProvider(baseUrl, fetchUtils.fetchJson);
 
-const customDataProvider = simpleRestProvider(baseUrl, fetchUtils.fetchJson);
-
+/**
+ * 🧠 DataProvider tuỳ chỉnh cho backend Node.js + MongoDB
+ * Hỗ trợ upload file, mảng, và parse dữ liệu an toàn
+ */
 const dataProvider = {
-  ...customDataProvider,
+  ...baseProvider,
 
-  // GET LIST
-  getList: async (resource: string, params: GetListParams): Promise<GetListResult> => {
+  /** 🔹 LẤY DANH SÁCH (GET LIST) */
+  async getList(resource: string, params: GetListParams): Promise<GetListResult<any>> {
     const page = params.pagination?.page || 1;
     const perPage = params.pagination?.perPage || 10;
-    const field = params.sort?.field || 'id';
-    const order = params.sort?.order || 'ASC';
+    const field = params.sort?.field || "createdAt";
+    const order = params.sort?.order || "DESC";
 
     const query = {
       _start: (page - 1) * perPage,
@@ -25,95 +37,97 @@ const dataProvider = {
     };
 
     const url = `${baseUrl}/${resource}?${stringify(query)}`;
+    const response = await fetchUtils.fetchJson(url);
 
-    const response = await fetchUtils.fetchJson(url, {
-      credentials: 'include',
-    });
+    const contentRange = response.headers.get("Content-Range");
+    const total = contentRange
+      ? parseInt(contentRange.split("/").pop() || "0", 10)
+      : response.json.length;
 
-    const total = parseInt(response.headers.get('Content-Range')?.split('/')?.[1] || '0', 10);
+    const data = (Array.isArray(response.json) ? response.json : [response.json]).map((item: any) => ({
+      ...item,
+      id: item.id || item._id,
+    }));
 
-    return {
-      data: response.json,
-      total,
-    };
+    return { data, total };
   },
 
-  // GET ONE
-  getOne: async (resource: string, params: GetOneParams): Promise<GetOneResult> => {
+  /** 🔹 LẤY MỘT BẢN GHI (GET ONE) */
+  async getOne(resource: string, params: GetOneParams): Promise<GetOneResult> {
     const url = `${baseUrl}/${resource}/${params.id}`;
     const response = await fetchUtils.fetchJson(url);
-    return { data: response.json };
+    const item = response.json;
+    return { data: { ...item, id: item.id || item._id } };
   },
 
-  // CREATE
-create: async (resource: string, params: CreateParams): Promise<{ data: any }> => {
-    // Chuẩn bị dữ liệu đúng định dạng backend cần
-    const productData = {
-        name: params.data.name,
-        brand: params.data.brand,
-        price: Number(params.data.price),
-        originalPrice: Number(params.data.originalPrice || params.data.price), // Nếu không có originalPrice thì dùng price
-        category: params.data.category,
-        type: params.data.type,
-        style: params.data.style,
-        delivery: params.data.delivery,
-        colors: Array.isArray(params.data.colors) ? params.data.colors : [],
-        sizes: Array.isArray(params.data.sizes) ? params.data.sizes : [],
-        total: Number(params.data.total) || 0,
-        sold: Number(params.data.sold) || 0,
-        status: params.data.status || 'selling',
-        // Xử lý ảnh tạm thời
-        thumbnail: params.data.thumbnail?.src || 'default-thumbnail.jpg',
-        images: params.data.images ? [params.data.images.src] : ['default-image.jpg']
-    };
+  /** 🔹 TẠO MỚI (CREATE) */
+  async create(resource: string, params: CreateParams): Promise<{ data: any }> {
+    const formData = new FormData();
 
-    console.log('Dữ liệu gửi đi:', JSON.stringify(productData, null, 2));
+    Object.entries(params.data).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value)); // gửi mảng dạng JSON
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value as any);
+      }
+    });
 
-    try {
-        const response = await fetchUtils.fetchJson(`${baseUrl}/${resource}`, {
-            method: 'POST',
-            body: JSON.stringify(productData),
-            headers: new Headers({
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            })
-        });
-        return { data: response.json };
-    } catch (error) {
-        console.error('Chi tiết lỗi:', error);
-        let errorMessage = 'Không thể tạo sản phẩm';
-        if (error && typeof error === 'object' && 'message' in error) {
-            errorMessage += `: ${(error as { message: string }).message}`;
-        }
-        throw new Error(errorMessage);
+    if (params.data.thumbnail?.rawFile) {
+      formData.append("thumbnail", params.data.thumbnail.rawFile);
     }
-},
 
+    if (Array.isArray(params.data.images)) {
+      params.data.images.forEach((img: any) => {
+        if (img.rawFile) formData.append("images", img.rawFile);
+      });
+    }
 
-
-  // UPDATE
-  update: async (resource: string, params: UpdateParams): Promise<{ data: any }> => {
-    const url = `${baseUrl}/${resource}/${params.id}`;
-    const response = await fetchUtils.fetchJson(url, {
-      method: 'PUT',
-      body: JSON.stringify(params.data),
+    const response = await fetchUtils.fetchJson(`${baseUrl}/${resource}`, {
+      method: "POST",
+      body: formData,
     });
 
-    return {
-      data: response.json,
-    };
+    const item = response.json;
+    return { data: { ...item, id: item.id || item._id } };
   },
 
-  // DELETE
-  delete: async (resource: string, params: DeleteParams): Promise<{ data: any }> => {
-    const url = `${baseUrl}/${resource}/${params.id}`;
-    const response = await fetchUtils.fetchJson(url, {
-      method: 'DELETE',
+  /** 🔹 CẬP NHẬT (UPDATE) */
+  async update(resource: string, params: UpdateParams): Promise<{ data: any }> {
+    const formData = new FormData();
+
+    Object.entries(params.data).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value)); // gửi mảng dạng JSON
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value as any);
+      }
     });
 
-    return {
-      data: response.json,
-    };
+    // Nếu có file mới
+    if (params.data.thumbnail?.rawFile) {
+      formData.append("thumbnail", params.data.thumbnail.rawFile);
+    }
+
+    if (Array.isArray(params.data.images)) {
+      params.data.images.forEach((img: any) => {
+        if (img.rawFile) formData.append("images", img.rawFile);
+      });
+    }
+
+    const response = await fetchUtils.fetchJson(`${baseUrl}/${resource}/${params.id}`, {
+      method: "PUT",
+      body: formData,
+    });
+
+    const item = response.json;
+    return { data: { ...item, id: item.id || item._id } };
+  },
+
+  /** 🔹 XOÁ (DELETE) */
+  async delete(resource: string, params: DeleteParams): Promise<{ data: any }> {
+    const url = `${baseUrl}/${resource}/${params.id}`;
+    const response = await fetchUtils.fetchJson(url, { method: "DELETE" });
+    return { data: response.json };
   },
 };
 

@@ -3,13 +3,13 @@ import { Box, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../store/cartSlice';
-import { Product } from '../../data/products';
+import { Product as ProductServiceProduct } from '../../services/productService';
 
 
 interface QuickViewProps {
   open: boolean;
   onClose: () => void;
-  product?: Product;
+  product: ProductServiceProduct;
   onAddToCart?: (color: string, size: string, quantity: number) => void;
 }
 

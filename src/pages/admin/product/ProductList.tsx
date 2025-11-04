@@ -32,23 +32,50 @@ import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
 
 
-const ThumbnailField = ({ source }: { source: string, label: string }) => {
+const ThumbnailField = ({ source }: { source: string }) => {
     const record = useRecordContext();
 
-    if (!record || !record[source]) return null;
+    if (!record || !record[source]) {
+        return (
+            <Avatar
+                variant="rounded"
+                src="/no-image.png"
+                alt="No image"
+                sx={{ width: 48, height: 48 }}
+            />
+        );
+    }
 
-    const value = record[source];
-    const imageUrl = Array.isArray(value) ? value[0] : value;
+    let imageUrl = record[source];
+
+    // 🔹 Nếu là object (do multer hoặc data khác)
+    if (typeof imageUrl === 'object') {
+        imageUrl = imageUrl.path || imageUrl.url || '';
+    }
+
+    // 🔹 Nếu không phải URL tuyệt đối → thêm host
+    if (typeof imageUrl === 'string' && !imageUrl.startsWith('http')) {
+        imageUrl = `${import.meta.env.VITE_API_BASE_URL}/uploads/${imageUrl}`;
+    }
 
     return (
         <Avatar
-            variant='rounded'
+            variant="rounded"
             src={imageUrl}
-            alt={record?.name || ''}
-            sx={{ width: 48, height: 48 }}
+            alt={record?.name || 'Thumbnail'}
+            sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '10%',
+                border: '1px solid #ddd',
+                backgroundColor: '#f5f5f5',
+                objectFit: 'cover',
+            }}
         />
     );
 };
+
+
 
 
 const ColorField = ({ source }: { source: string, label: string }) => {
@@ -95,12 +122,10 @@ const ListActions = () => (
 );
 
 
-export const ProductList = () => {
-   
+export const ProductList = () => {  
 
-const [open] = useSidebarState();
+    const [open] = useSidebarState();
     const navigate = useNavigate();
-
     const refresh = useRefresh();
     const notify = useNotify();
     const dataProvider = useDataProvider();
@@ -218,7 +243,7 @@ const [open] = useSidebarState();
                                     theme.palette.mode === 'light' ? '#f7f7f7' : '#1e1e1e',
                             }, 
                             '& .MuiTableRow-root:hover': {
-                            backgroundColor: '#edf7ff',
+                                backgroundColor: '#edf7ff',
                             },
 
                             '& .sticky-actions': {
@@ -253,7 +278,7 @@ const [open] = useSidebarState();
                         })}
                     >
                         <TextField source='id' label='Mã sản phẩm' />
-                        <ThumbnailField source='thumbnail' label='Ảnh'/>
+                        <ThumbnailField source='thumbnail'/>
                         <TextField source='name' label='Tên sản phẩm' sx={{ whiteSpace: 'nowrap' }}/>
                         <TextField source='brand' label='Thương hiệu' sx={{ whiteSpace: 'nowrap' }}/>
                         <FunctionField

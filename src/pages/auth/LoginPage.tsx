@@ -33,29 +33,32 @@ const LoginPage = () => {
             },
         );
 
-    const { token, role } = res.data;
+    const { token, role, userId } = res.data; // server phải trả userId
 
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
 
-    if (role === 'admin') {
+      if (role === 'admin') {
         loginAs('admin');
         navigate('/admin');
-    } else if (role === 'client') {
-        loginAs('client');
+      } else if (role === 'client') {
+        loginAs('client', userId); // đồng bộ giỏ hàng
         navigate('/');
-    } else {
+      } else {
         alert('Vai trò không hợp lệ');
+      }
+    } catch (error) {
+      alert('Sai tài khoản hoặc mật khẩu');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-        } catch (error) {
-            alert('Sai tài khoản hoặc mật khẩu');
-            console.error(error);
-        }
-    };
+  };
 
 // const LoginPage = () => {
 //     const [username, setUsername] = useState('');
 //     const [password, setPassword] = useState('');
+//     const [loading, setLoading] = React.useState(false);
 //     const { loginAs } = useAuth();
 //     const navigate = useNavigate();
 

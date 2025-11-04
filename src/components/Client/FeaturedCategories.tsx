@@ -1,4 +1,4 @@
-import { Box, Typography, Paper } from '@mui/material'; // import đúng
+import { Box, Typography, Paper } from '@mui/material'; 
 
 const categories = [
   { name: 'Áo', image: '/assets/icons/icon1.webp' },

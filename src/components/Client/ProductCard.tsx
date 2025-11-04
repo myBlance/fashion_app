@@ -14,11 +14,11 @@ import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { toggleWishlist } from '../../store/wishlistSlice';
-import { Product } from '../../data/products';
+import { Product as ProductServiceProduct } from '../../services/productService';
 import QuickView from '../Client/QuickView'; 
 
 interface ProductCardProps {
-    product: Product;
+    product: ProductServiceProduct;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
@@ -33,6 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const displayedImage = hovered ? product.images[1] || product.images[0] : product.images[0];
 
     const handleClick = () => {
+        console.log('Clicked product:', product);
         navigate(`/product/${product.id}`);
     };
 
@@ -41,11 +42,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         dispatch(toggleWishlist(product.id));
     };
 
-  // Xem nhanh (popup/modal)
+    // Xem nhanh (popup/modal)
     const [quickViewOpen, setQuickViewOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<ProductServiceProduct | null>(null);
 
-    const handleOpenQuickView = (product: Product) => {
+    const handleOpenQuickView = (product: ProductServiceProduct) => {
         setSelectedProduct(product);
         setQuickViewOpen(true);
     };
@@ -59,25 +60,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className='card-container'>
             <Card
                 sx={{
-                width: 220,
-                position: 'relative',
-                cursor: 'pointer',
-                transition: '0.3s',
-                '&:hover': { boxShadow: 6 },
+                    width: 220,
+                    position: 'relative',
+                    cursor: 'pointer',
+                    transition: '0.3s',
+                    '&:hover': { boxShadow: 6 },
                     overflow: 'visible',
                 }}
-                    onClick={handleClick}
-                    onMouseEnter={() => setHovered(true)}
-                    onMouseLeave={() => setHovered(false)}
+                onClick={handleClick}
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
             >
                 {product.originalPrice > product.price && (
                     <Chip
                         label={`-${Math.round(
                             ((product.originalPrice - product.price) / product.originalPrice) * 100
                         )}%`}
-                            color="error"
-                            size="small"
-                            sx={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}
+                        color="error"
+                        size="small"
+                        sx={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}
                     />
                 )}
 
@@ -89,16 +90,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         right: 8,
                         zIndex: 3,
                         backgroundColor: 'white',
-                        '&:hover': {
-                        backgroundColor: '#fce4ec',
-                        },
+                        '&:hover': { backgroundColor: '#fce4ec' },
                     }}
                 >
-                    {isFavorite ? (
-                        <Favorite sx={{ color: '#e91e63' }} />
-                    ) : (
-                        <FavoriteBorder sx={{ color: '#999' }} />
-                    )}
+                    {isFavorite ? <Favorite sx={{ color: '#e91e63' }} /> : <FavoriteBorder sx={{ color: '#999' }} />}
                 </IconButton>
 
                 <Box sx={{ position: 'relative' }}>
@@ -112,22 +107,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         onDragStart={(e) => e.preventDefault()}
                         style={{ userSelect: 'none' }}
                     />
-                {product.sale && (
-                    <Chip
-                        label="Khuyến mãi đặc biệt"
-                        color="warning"
-                        size="small"
-                        sx={{
-                            position: 'absolute',
-                            bottom: 8,
-                            left: 8,
-                            zIndex: 3,
-                            bgcolor: 'warning.main',
-                            color: 'white',
-                            fontWeight: 'bold',
-                        }}
-                     />
-                )}
+
+                    {product.sale && (
+                        <Chip
+                            label="Khuyến mãi đặc biệt"
+                            color="warning"
+                            size="small"
+                            sx={{
+                                position: 'absolute',
+                                bottom: 8,
+                                left: 8,
+                                zIndex: 3,
+                                bgcolor: 'warning.main',
+                                color: 'white',
+                                fontWeight: 'bold',
+                            }}
+                        />
+                    )}
 
                     <Box
                         sx={{
@@ -175,49 +171,42 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </Box>
 
                 <CardContent>
-                
                     <Typography variant="body1" fontWeight="bold">
                         {product.name.toUpperCase()}
                     </Typography>
                     <Typography variant="body2" color="error" fontWeight="bold">
                         {product.price.toLocaleString()}đ{' '}
-                            <Typography
-                                component="span"
-                                variant="body2"
-                                sx={{ textDecoration: 'line-through', color: '#999' }}
-                            >
-                                {product.originalPrice.toLocaleString()}đ
-                            </Typography>
+                        <Typography
+                            component="span"
+                            variant="body2"
+                            sx={{ textDecoration: 'line-through', color: '#999' }}
+                        >
+                            {product.originalPrice.toLocaleString()}đ
                         </Typography>
+                    </Typography>
                     <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
                         {product.colors.map((color, idx) => (
                             <Box
                                 key={idx}
                                 sx={{
-                                width: 16,
-                                height: 16,
-                                borderRadius: '50%',
-                                bgcolor: color,
-                                border: '1px solid #ccc',
+                                    width: 16,
+                                    height: 16,
+                                    borderRadius: '50%',
+                                    bgcolor: color,
+                                    border: '1px solid #ccc',
                                 }}
                             />
                         ))}
                     </Box>
-                <Box mt={1}>
-                <LinearProgress variant="determinate" value={soldPercentage} />
-                    <Typography variant="caption">
-                        Đã bán {product.sold}
-                    </Typography>
-                </Box>
-
+                    <Box mt={1}>
+                        <LinearProgress variant="determinate" value={soldPercentage} />
+                        <Typography variant="caption">Đã bán {product.sold}</Typography>
+                    </Box>
                 </CardContent>
             </Card>
 
             {selectedProduct && (
-                <QuickView 
-                    open={quickViewOpen} 
-                    onClose={handleCloseQuickView} 
-                    product={selectedProduct} />
+                <QuickView open={quickViewOpen} onClose={handleCloseQuickView} product={selectedProduct} />
             )}
         </div>
     );

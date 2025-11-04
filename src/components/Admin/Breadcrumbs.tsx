@@ -67,8 +67,9 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                             variant="contained"
                             startIcon={<CachedIcon />}
                             onClick={onRefresh}
-                            sx={{ marginRight: 1, marginLeft: 1, backgroundColor: "#1c79dc", color: "#fff" 
-
+                            sx={{ 
+                                marginRight: 1, marginLeft: 1, backgroundColor: "#1c79dc", color: "#fff" ,
+                                borderRadius: "8px",
                             }}
                         >
                             Đồng bộ
@@ -79,7 +80,7 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={onCreate}
-                            sx={{ marginRight: 1, color: "#fff", backgroundColor: "#1c79dc" }}
+                            sx={{ marginRight: 1, color: "#fff", backgroundColor: "#1c79dc", borderRadius: "8px", }}
                         >
                             Thêm mới
                         </Button>
@@ -89,7 +90,7 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                             variant="contained"
                             startIcon={<DownloadIcon />}
                             onClick={onExport}
-                            sx={{ color: "#fff", backgroundColor: "#1c79dc" }}
+                            sx={{ color: "#fff", backgroundColor: "#1c79dc" , borderRadius: "8px",}}
                         >
                             Xuất
                         </Button>

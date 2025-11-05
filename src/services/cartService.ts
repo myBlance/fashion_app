@@ -55,21 +55,21 @@ export const CartService = {
   },
 
   // Xóa sản phẩm khỏi giỏ
-  async removeItem(userId: string, productId: string, color?: string, size?: string) {
-    const payload = { userId, productId, color, size };
+  async removeItem(cartItemId: string, userId: string, color?: string, size?: string) {
+    const payload = { userId, cartItemId, color, size };
     const res = await axios.delete(`${API_URL}`, { data: payload });
     return res.data;
   },
 
   // Cập nhật số lượng
   async updateQuantity(
+    cartItemId: string,
     userId: string,
-    productId: string,
     quantity: number,
     color?: string,
     size?: string
   ) {
-    const payload = { userId, productId, color, size, quantity };
+    const payload = { userId, cartItemId, color, size, quantity };
     const res = await axios.put(`${API_URL}/update`, payload);
     return res.data;
   },

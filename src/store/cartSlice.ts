@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { CartService } from '../services/cartService';
 
 export interface CartItem {
   id?: string;
@@ -13,27 +14,39 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
+  loading: boolean;
+  error: string | null;
 }
+
+// Async action: fetch cart từ backend
+export const fetchCart = createAsyncThunk(
+  'cart/fetchCart',
+  async (userId: string) => {
+    const items = await CartService.getCart(userId);
+    return items; // CartItem[]
+  }
+);
 
 const initialState: CartState = {
   items: [],
+  loading: false,
+  error: null,
 };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    // Gán lại toàn bộ giỏ hàng
     setCartItems: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload;
     },
 
-    // Thêm sản phẩm vào giỏ (nếu trùng productId+color+size thì cộng số lượng)
     addToCart: (state, action: PayloadAction<CartItem>) => {
       const item = state.items.find(
-        i => i.productId === action.payload.productId &&
-             i.color === action.payload.color &&
-             i.size === action.payload.size
+        i =>
+          i.productId === action.payload.productId &&
+          i.color === action.payload.color &&
+          i.size === action.payload.size
       );
       if (item) {
         item.quantity = (item.quantity ?? 1) + (action.payload.quantity ?? 1);
@@ -42,44 +55,61 @@ const cartSlice = createSlice({
       }
     },
 
-    // Tăng số lượng
     increaseQuantity: (state, action: PayloadAction<{ productId: string; color?: string; size?: string }>) => {
       const item = state.items.find(
-        i => i.productId === action.payload.productId &&
-             i.color === action.payload.color &&
-             i.size === action.payload.size
+        i =>
+          i.productId === action.payload.productId &&
+          i.color === action.payload.color &&
+          i.size === action.payload.size
       );
       if (item) item.quantity = (item.quantity ?? 1) + 1;
     },
 
-    // Giảm số lượng
     decreaseQuantity: (state, action: PayloadAction<{ productId: string; color?: string; size?: string }>) => {
       const item = state.items.find(
-        i => i.productId === action.payload.productId &&
-             i.color === action.payload.color &&
-             i.size === action.payload.size
+        i =>
+          i.productId === action.payload.productId &&
+          i.color === action.payload.color &&
+          i.size === action.payload.size
       );
       if (item && (item.quantity ?? 1) > 1) item.quantity!--;
     },
 
-    // Xóa sản phẩm khỏi giỏ
     removeFromCart: (state, action: PayloadAction<{ productId: string; color?: string; size?: string }>) => {
       state.items = state.items.filter(
-        i => !(i.productId === action.payload.productId &&
-               i.color === action.payload.color &&
-               i.size === action.payload.size)
+        i =>
+          !(
+            i.productId === action.payload.productId &&
+            i.color === action.payload.color &&
+            i.size === action.payload.size
+          )
       );
     },
 
-    // Xóa toàn bộ giỏ hàng
     clearCart: (state) => {
       state.items = [];
     },
 
-    // Đồng bộ giỏ hàng sau khi login (merge items cũ + mới)
+    // Đồng bộ giỏ hàng sau khi login
     syncCartAfterLogin: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload;
     },
+  },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCart.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCart.fulfilled, (state, action: PayloadAction<CartItem[]>) => {
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Lỗi khi lấy giỏ hàng';
+      });
   },
 });
 
@@ -90,7 +120,7 @@ export const {
   decreaseQuantity,
   removeFromCart,
   clearCart,
-  syncCartAfterLogin
+  syncCartAfterLogin,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

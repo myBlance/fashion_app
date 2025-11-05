@@ -129,18 +129,7 @@ const CartPage: React.FC = () => {
 
         <div className="cart-summary">
           <div className="shipping-time">
-            <label>Thời gian giao hàng</label>
-            <input type="date" placeholder="Chọn ngày" />
-            <select>
-              <option>Chọn thời gian</option>
-              <option>08h00 - 12h00</option>
-              <option>14h00 - 18h00</option>
-              <option>19h00 - 21h00</option>
-            </select>
-            <div>
-              <input type="checkbox" id="invoice" />
-              <label htmlFor="invoice">Xuất hóa đơn công ty</label>
-            </div>
+            
           </div>
 
           <div className="checkout">

@@ -9,12 +9,17 @@ export const WishlistService = {
   },
 
   async addToWishlist(userId: string, productId: string) {
-    const res = await axios.post(API_URL, { userId, productId });
+    const res = await axios.post(`${API_URL}/toggle`, { userId, productId });
     return res.data;
   },
 
   async removeFromWishlist(userId: string, productId: string) {
-    const res = await axios.delete(API_URL, { data: { userId, productId } });
+    const res = await axios.post(`${API_URL}/toggle`, { userId, productId });
+    return res.data;
+  },
+
+  async toggleItem(userId: string, productId: string) {
+    const res = await axios.post(`${API_URL}/toggle`, { userId, productId });
     return res.data;
   }
 };

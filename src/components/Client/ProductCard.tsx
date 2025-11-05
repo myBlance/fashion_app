@@ -15,7 +15,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { toggleWishlist } from '../../store/wishlistSlice';
 import { Product as ProductServiceProduct } from '../../services/productService';
-import QuickView from '../Client/QuickView'; 
+import QuickView from '../Client/QuickView';
+import { useAuth } from '../../contexts/AuthContext'; // 👈 Import Auth
+import { WishlistService } from '../../services/wishlistService';
 
 interface ProductCardProps {
     product: ProductServiceProduct;
@@ -24,6 +26,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { userId } = useAuth(); // 👈 Lấy userId từ context
     const wishlist = useAppSelector((state) => state.wishlist.items);
     const isFavorite = wishlist.includes(product.id);
 
@@ -37,10 +40,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         navigate(`/product/${product.id}`);
     };
 
-    const handleToggleWishlist = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        dispatch(toggleWishlist(product.id));
-    };
+const handleToggleWishlist = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+  if (!userId) {
+    alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích');
+    return;
+  }
+
+  if (!product.id) {
+    console.error("Product ID is missing!");
+    return;
+  }
+
+  console.log("Toggling wishlist for:", { userId, productId: product.id });
+
+  dispatch(toggleWishlist(product.id));
+
+  try {
+    await WishlistService.toggleItem(userId, product.id);
+  } catch (err) {
+    console.error('Lỗi khi toggle wishlist:', err);
+    dispatch(toggleWishlist(product.id));
+  }
+};
+
 
     // Xem nhanh (popup/modal)
     const [quickViewOpen, setQuickViewOpen] = useState(false);

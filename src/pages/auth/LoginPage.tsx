@@ -23,8 +23,8 @@ const LoginPage = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+        setTimeout(() => {
+        setLoading(false);
     }, 10000);
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {

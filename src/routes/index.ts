@@ -19,6 +19,8 @@ import AuthTabs from '../pages/auth/AuthTabs';
 import AdminApp from '../pages/admin/AdminApp';
 import ProfilePage from '../pages/auth/ProfilePage';
 import ComingSoonPage from '../pages/client/ComingSoonPage';
+import CheckoutPage from '../pages/client/Checkout';
+import ShopeePayPayment from '../components/Client/ShopeePayPayment';
 // import AdminApp from '../pages/admin/AdminApp';
 // import Products from '../pages/admin/Products';
 // import AddProduct from '../pages/admin/AddProduct';
@@ -41,7 +43,8 @@ export const clientRoutes: RouteItem[] = [
     { path: '/about', element: React.createElement(AboutPage), auth: 'client' },
     { path: '/auth', element: React.createElement(AuthTabs), auth: 'client' },
     { path: '/profile', element: React.createElement(ProfilePage), auth: 'client' },
-    // { path: '/checkout', element: <Checkout />, auth: 'client' },
+    { path: '/checkout', element: React.createElement(CheckoutPage), auth: 'client' },
+    { path: '/payment/shopeepay', element: React.createElement(ShopeePayPayment), auth: 'client' },
     { path: '/blog', element: React.createElement(ComingSoonPage), auth: 'client' },
     { path: '/contact', element: React.createElement(ComingSoonPage), auth: 'client' },
 ];

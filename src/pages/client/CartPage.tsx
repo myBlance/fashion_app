@@ -6,12 +6,14 @@ import { CartService } from '../../services/cartService';
 import '../../styles/CartPage.css';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom'; // Thêm dòng này
 
 const CartPage: React.FC = () => {
   const dispatch = useDispatch();
   const { userId } = useAuth();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Khởi tạo hook navigate
 
   // Lấy giỏ hàng
   useEffect(() => {
@@ -71,6 +73,16 @@ const CartPage: React.FC = () => {
       const data = await CartService.getCart(userId);
       dispatch(setCartItems(data));
     }
+  };
+
+  // Hàm xử lý khi nhấn nút "Thanh toán"
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert('Giỏ hàng của bạn đang trống!');
+      return;
+    }
+    // Điều hướng đến trang thanh toán
+    navigate('/checkout');
   };
 
   if (loading) return <div className="loading">Đang tải giỏ hàng...</div>;
@@ -139,7 +151,8 @@ const CartPage: React.FC = () => {
                 {cartItems.reduce((acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1), 0).toLocaleString()}₫
               </span>
             </div>
-            <button className="checkout-btn">Thanh toán</button>
+            {/* Thay đổi: Gọi hàm handleCheckout khi nhấn nút */}
+            <button className="checkout-btn" onClick={handleCheckout}>Thanh toán</button>
           </div>
         </div>
       </div>

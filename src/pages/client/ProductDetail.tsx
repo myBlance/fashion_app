@@ -7,10 +7,13 @@ import { useAppSelector } from "../../store/hooks";
 import "../../styles/ProductDetail.css";
 import DynamicBreadcrumbs from "../../components/Client/DynamicBreadcrumbs";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { getProductById, Product } from "../../services/productService"; 
 import { CartService } from "../../services/cartService";
 import { useAuth } from '../../contexts/AuthContext';
+import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs";
+import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";
+import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -200,8 +203,19 @@ const ProductDetail: React.FC = () => {
             <button className="btn add-to-cart" onClick={handleAddToCart}>THÊM VÀO GIỎ</button>
             <button className="btn buy-now" onClick={() => alert("Chuyển đến thanh toán")}>MUA NGAY</button>
           </div>
+          <div>
+            <StorePolicies />
+          </div>
         </div>
       </div>
+      <Box>
+  {/* Các phần khác của sản phẩm */}
+  <ProductDetailTabs />
+  <SimilarProducts
+      currentProductId={product.id}
+      currentCategory={product.category} // Truyền category
+    />
+</Box>
     </div>
   );
 };

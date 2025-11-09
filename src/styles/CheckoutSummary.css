@@ -269,3 +269,101 @@
 .order-btn:hover {
   background: #e64a19;
 }
+
+/* ✅ Bổ sung CSS cho modal chọn địa chỉ */
+.address-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.address-modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.address-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.address-list {
+  margin: 16px 0;
+}
+
+.address-item {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.2s;
+}
+
+.address-item:hover {
+  border-color: #ff5722;
+}
+
+.address-item.selected {
+  border-color: #ff5722;
+  background-color: #fff8f2;
+}
+
+.address-item > div {
+  flex: 1;
+}
+
+.address-item strong {
+  display: block;
+  color: #222;
+}
+
+.address-item p {
+  margin: 4px 0 0 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.default-tag {
+  background-color: #3498db;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.close-modal-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.close-modal-btn:hover {
+  background-color: #c0392b;
+}

@@ -1,3 +1,4 @@
+// src/pages/client/CartPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
@@ -6,14 +7,14 @@ import { CartService } from '../../services/cartService';
 import '../../styles/CartPage.css';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom'; // Thêm dòng này
+import { useNavigate } from 'react-router-dom';
 
 const CartPage: React.FC = () => {
   const dispatch = useDispatch();
   const { userId } = useAuth();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Khởi tạo hook navigate
+  const navigate = useNavigate();
 
   // Lấy giỏ hàng
   useEffect(() => {
@@ -39,7 +40,8 @@ const CartPage: React.FC = () => {
 
     dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     try {
-      await CartService.updateQuantity(userId, item.productId, newQuantity, item.color, item.size);
+      // ✅ Sửa: Gửi đúng thứ tự tham số: productId, userId, quantity, color, size
+      await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi tăng số lượng:', err);
       dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
@@ -55,7 +57,8 @@ const CartPage: React.FC = () => {
     const newQuantity = currentQty - 1;
     dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     try {
-      await CartService.updateQuantity(userId, item.productId, newQuantity, item.color, item.size);
+      // ✅ Sửa: Gửi đúng thứ tự tham số
+      await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi giảm số lượng:', err);
       dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
@@ -67,7 +70,8 @@ const CartPage: React.FC = () => {
     if (!userId) return;
     dispatch(removeFromCart({ productId: item.productId, color: item.color, size: item.size }));
     try {
-      await CartService.removeItem(userId, item.productId, item.color, item.size);
+      // ✅ Sửa: Gửi đúng thứ tự tham số
+      await CartService.removeItem(item.productId, userId, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi xóa sản phẩm:', err);
       const data = await CartService.getCart(userId);

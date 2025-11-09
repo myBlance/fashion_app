@@ -1,6 +1,19 @@
-import React, { useState } from 'react';
+// src/pages/client/CheckoutSummary.tsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../../styles/CheckoutSummary.css';
+
+// Import các component mới
+// import VoucherModal from '../../components/Client/Voucher/VoucherModal';
+
+interface Address {
+  _id: string;
+  name: string;
+  phone: string;
+  address: string;
+  isDefault: boolean;
+}
 
 interface CheckoutSummaryProps {
   cartItems: Array<{
@@ -13,22 +26,56 @@ interface CheckoutSummaryProps {
     size: string;
   }>;
   totalAmount: number;
-  onPlaceOrder?: () => void; // Bây giờ là tùy chọn
+  onPlaceOrder?: () => void;
 }
 
 const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmount }) => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('shopeepay');
   const [shippingMethod, setShippingMethod] = useState('standard');
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState<any>(null); // Lưu voucher đã chọn
   const navigate = useNavigate();
 
-  // Giả lập phí vận chuyển
-  const shippingFee = 16500;
+  const token = localStorage.getItem('token');
 
-  // Tính tổng tiền sau khi cộng phí vận chuyển
+  const shippingFee = 16500;
   const finalTotal = totalAmount + shippingFee;
 
-  // Hàm xử lý khi nhấn nút "Đặt hàng"
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      if (!token) return;
+
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/addresses`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const addrList = res.data.data || [];
+        setAddresses(addrList);
+
+        const defaultAddr = addrList.find((addr: Address) => addr.isDefault);
+        if (defaultAddr) {
+          setSelectedAddress(defaultAddr);
+        } else if (addrList.length > 0) {
+          setSelectedAddress(addrList[0]);
+        }
+      } catch (err) {
+        console.error('Lỗi khi tải địa chỉ:', err);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
+
   const handlePlaceOrder = () => {
+    if (!selectedAddress) {
+      alert('Vui lòng chọn địa chỉ nhận hàng.');
+      return;
+    }
+
     if (selectedPaymentMethod === 'shopeepay') {
       navigate('/payment/shopeepay');
     } else if (selectedPaymentMethod === 'credit-card') {
@@ -42,22 +89,72 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     }
   };
 
+  const handleSelectVoucher = (voucher: any) => {
+    setSelectedVoucher(voucher);
+  };
+
   return (
     <div className="checkout-summary">
+      {/* Modal chọn địa chỉ */}
+      {isAddressModalOpen && (
+        <div className="address-modal-overlay" onClick={() => setIsAddressModalOpen(false)}>
+          <div className="address-modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Chọn địa chỉ nhận hàng</h3>
+            <div className="address-list">
+              {addresses.map((addr) => (
+                <div
+                  key={addr._id}
+                  className={`address-item ${selectedAddress?._id === addr._id ? 'selected' : ''}`}
+                  onClick={() => {
+                    setSelectedAddress(addr);
+                    setIsAddressModalOpen(false);
+                  }}
+                >
+                  <div>
+                    <strong>{addr.name} (+84) {addr.phone}</strong>
+                    <p>{addr.address}</p>
+                  </div>
+                  {addr.isDefault && <span className="default-tag">Mặc định</span>}
+                </div>
+              ))}
+            </div>
+            <button className="close-modal-btn" onClick={() => setIsAddressModalOpen(false)}>
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal chọn voucher */}
+      {/* <VoucherModal
+        open={isVoucherModalOpen}
+        onClose={() => setIsVoucherModalOpen(false)}
+        onSelect={handleSelectVoucher}
+        selectedVoucher={selectedVoucher}
+      /> */}
+
       {/* Địa chỉ nhận hàng */}
       <div className="section address-section">
         <div className="section-header">
           <span className="icon">📍</span>
           <h3>Địa Chỉ Nhận Hàng</h3>
-          <button className="change-btn">Thay đổi</button>
+          <button className="change-btn" onClick={() => setIsAddressModalOpen(true)}>
+            Thay đổi
+          </button>
         </div>
         <div className="address-info">
-          <strong>Trần Long (+84) 776 467 128</strong>
-          <p>Số 45, Ngõ 57 Mễ Trì, Phường Mễ Trì, Quận Nam Từ Liêm, Hà Nội</p>
+          {selectedAddress ? (
+            <>
+              <strong>{selectedAddress.name} (+84) {selectedAddress.phone}</strong>
+              <p>{selectedAddress.address}</p>
+            </>
+          ) : (
+            <p>Chưa có địa chỉ nào</p>
+          )}
         </div>
       </div>
 
-      {/* Sản phẩm */}
+      {/* Các phần còn lại giữ nguyên */}
       <div className="section products-section">
         <div className="section-header">
           <h3>Sản phẩm</h3>
@@ -85,11 +182,45 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       <div className="section voucher-section">
         <div className="voucher-row">
           <div className="voucher-label">Voucher từ Shop</div>
-          <button className="choose-voucher">Chọn Voucher</button>
+          <button
+            className="choose-voucher"
+            onClick={() => setIsVoucherModalOpen(true)}
+          >
+            Chọn Voucher
+          </button>
         </div>
+
+        {/* Hiển thị voucher đã chọn */}
+        {selectedVoucher && (
+          <div className="selected-voucher" style={{
+            marginTop: '12px',
+            padding: '12px',
+            background: '#fff8e1',
+            border: '1px solid #ffd54f',
+            borderRadius: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+            <div>
+              <strong>{selectedVoucher.code}</strong> - {selectedVoucher.discountText}
+            </div>
+            <button
+              onClick={() => setSelectedVoucher(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#d32f2f',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+              }}
+            >
+              Xóa
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Phương thức vận chuyển */}
       <div className="section shipping-section">
         <div className="section-header">
           <h3>Phương Thức Vận Chuyển</h3>
@@ -130,7 +261,6 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         </div>
       </div>
 
-      {/* Phương thức thanh toán */}
       <div className="section payment-section">
         <div className="section-header">
           <h3>Phương Thức Thanh Toán</h3>
@@ -195,7 +325,6 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         </div>
       </div>
 
-      {/* Tổng kết */}
       <div className="section total-section">
         <div className="total-row">
           <span>Tổng tiền hàng</span>
@@ -211,7 +340,6 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         </div>
       </div>
 
-      {/* Nút đặt hàng */}
       <div className="place-order-button">
         <button onClick={handlePlaceOrder} className="order-btn">
           Đặt hàng

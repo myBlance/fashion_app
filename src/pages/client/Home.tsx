@@ -7,12 +7,14 @@ import ShirtCollection from '../../components/Client/ShirtCollection';
 import AboutIntro from '../../components/Client/AboutIntro';
 import NewProducts from '../../components/Client/NewProducts';
 import BestSellers from '../../components/Client/BestSellers';
+import VoucherList from '../../components/Client/Voucher/VoucherList';
 
 const Home: React.FC = () => {
     return (
         <div>
             <BannerSlider />
             <FeaturedCategories/>
+            <VoucherList/>
             <HotDeals/>
             <DressCollection/>
             <ShirtCollection/>

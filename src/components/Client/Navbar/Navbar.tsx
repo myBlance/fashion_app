@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { useAuth } from '../../contexts/AuthContext';
-import { fetchWishlist } from '../../store/wishlistSlice';
-import { fetchCart } from '../../store/cartSlice';
+import { Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../contexts/AuthContext';
+import { fetchCart } from '../../../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { fetchWishlist } from '../../../store/wishlistSlice';
 
-import '/src/styles/Navbar.css';
+import '../../../styles/Navbar.css';
 
 const textList = [
   'Dola Style xin chào bạn!',

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '../../store/cartSlice';
+import { addToCart, CartItem } from "../../store/cartSlice";
+import { useAuth } from '../../contexts/AuthContext';
+import { CartService } from "../../services/cartService";
 import { Product as ProductServiceProduct } from '../../services/productService';
 
 
@@ -20,6 +22,11 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
+   const { userId: authUserId, loading: authLoading } = useAuth();
+  const userId = authUserId || sessionStorage.getItem("userId");
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -47,31 +54,39 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
     setQuantity((prev) => Math.max(1, prev + delta));
   };
 
-  const handleAddToCart = () => {
-    if (!selectedColor || !selectedSize) {
-      alert('Vui lòng chọn màu và size');
-      return;
-    }
-
-    if (onAddToCart) {
-      onAddToCart(selectedColor, selectedSize, quantity);
-    } else {
-      dispatch(
-        addToCart({
-          id: product.id,
-          name: product.name,
-          color: selectedColor,
-          size: selectedSize,
-          price: product.price,
-          quantity,
-          image: product.images[selectedImage],
-        })
-      );
-      alert('Đã thêm vào giỏ!');
-      // navigate('/cart'); // nếu bạn dùng react-router, nhớ import và gọi navigate ở đây
-    }
-  };
-
+  const handleAddToCart = async () => {
+      if (!product) return;
+      if (!userId) {
+        alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
+        return;
+      }
+  
+      // Chỉ gửi productId cho backend, id sẽ lấy từ backend
+      const newItem: Omit<CartItem, "id"> = {
+        productId: product.id,
+        name: product.name,
+        color: product.colors[selectedColorIndex] || "Chưa chọn",
+        size: selectedSize,
+        price: product.price,
+        quantity,
+        image: product.images[selectedColorIndex] || product.thumbnail || "",
+      };
+  
+      try {
+        const savedItem = await CartService.addToCart(userId, newItem);
+        const cartItem: CartItem = {
+          ...newItem,
+          id: savedItem.id, // _id từ backend
+        };
+        dispatch(addToCart(cartItem));
+        alert("Đã thêm vào giỏ!");
+      } catch (err) {
+        console.error("Lỗi khi thêm vào giỏ:", err);
+        alert("Thêm vào giỏ thất bại. Vui lòng thử lại.");
+      }
+    };
+    if (loading || authLoading) return <div className="loading">Đang tải dữ liệu...</div>;
+  if (error || !product) return <div className="not-found">{error || "Không tìm thấy sản phẩm"}</div>;
   return (
     <>
       {open && (

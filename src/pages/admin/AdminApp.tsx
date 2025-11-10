@@ -33,6 +33,7 @@ const AdminApp = () => (
             create={ProductCreate}
             icon={StorefrontIcon} 
         />
+        
         <CustomRoutes>
             <Route path="profile" element={<AdminProfilePage />} />
         </CustomRoutes>

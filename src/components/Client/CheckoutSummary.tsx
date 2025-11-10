@@ -5,7 +5,9 @@ import axios from 'axios';
 import '../../styles/CheckoutSummary.css';
 
 // Import các component mới
-// import VoucherModal from '../../components/Client/Voucher/VoucherModal';
+import VoucherModal from '../../components/Client/Voucher/VoucherModal';
+// ✅ Import interface Voucher từ service
+import { Voucher } from '../../services/voucherService';
 
 interface Address {
   _id: string;
@@ -36,13 +38,36 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
-  const [selectedVoucher, setSelectedVoucher] = useState<any>(null); // Lưu voucher đã chọn
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null); // ✅ Dùng interface từ service
   const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
 
-  const shippingFee = 16500;
-  const finalTotal = totalAmount + shippingFee;
+  // Tính phí vận chuyển
+  const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
+
+  // Kiểm tra điều kiện áp dụng voucher
+  const isVoucherValid = selectedVoucher && totalAmount >= selectedVoucher.minOrderValue;
+
+  // Tính giảm giá từ voucher
+  const calculateDiscount = () => {
+    if (!selectedVoucher || !isVoucherValid) return 0;
+
+    if (selectedVoucher.discountType === 'fixed') {
+      return Math.min(selectedVoucher.discountValue, totalAmount);
+    }
+
+    if (selectedVoucher.discountType === 'percent') {
+      const discount = (totalAmount * selectedVoucher.discountValue) / 100;
+      return Math.min(discount, totalAmount);
+    }
+
+    return 0;
+  };
+
+  // Tính tổng tiền sau khi áp dụng voucher
+  const discountAmount = calculateDiscount();
+  const finalTotal = totalAmount - discountAmount + shippingFee;
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -76,6 +101,11 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       return;
     }
 
+    if (selectedVoucher && !isVoucherValid) {
+      alert(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${selectedVoucher.minOrderValue.toLocaleString()}đ).`);
+      return;
+    }
+
     if (selectedPaymentMethod === 'shopeepay') {
       navigate('/payment/shopeepay');
     } else if (selectedPaymentMethod === 'credit-card') {
@@ -89,7 +119,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     }
   };
 
-  const handleSelectVoucher = (voucher: any) => {
+  const handleSelectVoucher = (voucher: Voucher | null) => {
     setSelectedVoucher(voucher);
   };
 
@@ -126,12 +156,12 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       )}
 
       {/* Modal chọn voucher */}
-      {/* <VoucherModal
+      <VoucherModal
         open={isVoucherModalOpen}
         onClose={() => setIsVoucherModalOpen(false)}
         onSelect={handleSelectVoucher}
         selectedVoucher={selectedVoucher}
-      /> */}
+      />
 
       {/* Địa chỉ nhận hàng */}
       <div className="section address-section">
@@ -195,8 +225,8 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
           <div className="selected-voucher" style={{
             marginTop: '12px',
             padding: '12px',
-            background: '#fff8e1',
-            border: '1px solid #ffd54f',
+            background: isVoucherValid ? '#fff8e1' : '#ffebee',
+            border: `1px solid ${isVoucherValid ? '#ffd54f' : '#f44336'}`,
             borderRadius: '6px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -204,6 +234,11 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
           }}>
             <div>
               <strong>{selectedVoucher.code}</strong> - {selectedVoucher.discountText}
+              {!isVoucherValid && (
+                <span style={{ color: '#d32f2f', fontWeight: 'bold', marginLeft: '8px' }}>
+                  (Không đủ điều kiện)
+                </span>
+              )}
             </div>
             <button
               onClick={() => setSelectedVoucher(null)}
@@ -330,6 +365,18 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
           <span>Tổng tiền hàng</span>
           <span>{totalAmount.toLocaleString()}₫</span>
         </div>
+        {selectedVoucher && isVoucherValid && (
+          <div className="total-row">
+            <span>Giảm giá ({selectedVoucher.code})</span>
+            <span style={{ color: 'green' }}>-{discountAmount.toLocaleString()}₫</span>
+          </div>
+        )}
+        {selectedVoucher && !isVoucherValid && (
+          <div className="total-row">
+            <span>Giảm giá ({selectedVoucher.code})</span>
+            <span style={{ color: '#d32f2f' }}>Không áp dụng</span>
+          </div>
+        )}
         <div className="total-row">
           <span>Phí vận chuyển</span>
           <span>{shippingFee.toLocaleString()}₫</span>

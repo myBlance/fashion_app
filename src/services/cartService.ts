@@ -1,5 +1,3 @@
-// src/services/cartService.ts
-
 import axios from "axios";
 
 export interface CartItem {

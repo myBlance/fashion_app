@@ -4,7 +4,7 @@ import ProductCard from '../../components/Client/ProductCard';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 import { Product, getProducts } from '../../services/productService';
 import { WishlistService } from '../../services/wishlistService';
-import { useAuth } from '../../contexts/AuthContext'; // Lấy userId từ context
+import { useAuth } from '../../contexts/AuthContext'; 
 
 const WishlistPage: React.FC = () => {
     const { userId } = useAuth(); // User đã đăng nhập

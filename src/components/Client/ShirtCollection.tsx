@@ -106,7 +106,7 @@ const ShirtCollection: React.FC = () => {
                             flex="0 0 auto"
                             sx={{ minWidth: productWidth, pl: 1, mr: 1, mb: 2, mt: 2 }}
                         >
-                            <ProductCard product={product} />
+                            <ProductCard product={{...product, status: product.status ? 'true' : 'false'}} />
                         </Box>
                     ))}
                 </Box>

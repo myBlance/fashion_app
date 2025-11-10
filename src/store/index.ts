@@ -2,13 +2,17 @@ import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from './cartSlice';
 import wishlistReducer from './wishlistSlice';
 
+// Tạo store
 export const store = configureStore({
   reducer: {
     cart: cartReducer,
     wishlist: wishlistReducer,
-    // ... các reducer khác nếu có
+    // thêm các reducer khác ở đây
   },
+  // tùy chọn thêm nếu muốn debug Redux devtools
+  devTools: import.meta.env.MODE !== 'production',
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+// Typescript types
+export type RootState = ReturnType<typeof store.getState>; // Kiểu state toàn cục
+export type AppDispatch = typeof store.dispatch; // Kiểu dispatch

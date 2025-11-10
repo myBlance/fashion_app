@@ -7,7 +7,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import { CartService } from "../../services/cartService";
 import { Product as ProductServiceProduct } from '../../services/productService';
 
-
 interface QuickViewProps {
   open: boolean;
   onClose: () => void;
@@ -22,11 +21,8 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
-   const { userId: authUserId, loading: authLoading } = useAuth();
+  const { userId: authUserId } = useAuth();
   const userId = authUserId || sessionStorage.getItem("userId");
-  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -55,38 +51,44 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
   };
 
   const handleAddToCart = async () => {
-      if (!product) return;
-      if (!userId) {
-        alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
-        return;
-      }
-  
-      // Chỉ gửi productId cho backend, id sẽ lấy từ backend
-      const newItem: Omit<CartItem, "id"> = {
-        productId: product.id,
-        name: product.name,
-        color: product.colors[selectedColorIndex] || "Chưa chọn",
-        size: selectedSize,
-        price: product.price,
-        quantity,
-        image: product.images[selectedColorIndex] || product.thumbnail || "",
-      };
-  
-      try {
-        const savedItem = await CartService.addToCart(userId, newItem);
-        const cartItem: CartItem = {
-          ...newItem,
-          id: savedItem.id, // _id từ backend
-        };
-        dispatch(addToCart(cartItem));
-        alert("Đã thêm vào giỏ!");
-      } catch (err) {
-        console.error("Lỗi khi thêm vào giỏ:", err);
-        alert("Thêm vào giỏ thất bại. Vui lòng thử lại.");
-      }
+    if (!product) return;
+    if (!userId) {
+      alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
+      return;
+    }
+
+    // Lấy index của màu đã chọn trong mảng colors
+    const colorIndex = product.colors.indexOf(selectedColor);
+    const actualColorIndex = colorIndex >= 0 ? colorIndex : 0;
+
+    const newItem: Omit<CartItem, "id"> = {
+      productId: product.id,
+      name: product.name,
+      color: product.colors[actualColorIndex] || "Chưa chọn",
+      size: selectedSize,
+      price: product.price,
+      quantity,
+      image: product.images[actualColorIndex] || product.thumbnail || "",
     };
-    if (loading || authLoading) return <div className="loading">Đang tải dữ liệu...</div>;
-  if (error || !product) return <div className="not-found">{error || "Không tìm thấy sản phẩm"}</div>;
+
+    try {
+      const savedItem = await CartService.addToCart(userId, newItem);
+      const cartItem: CartItem = {
+        ...newItem,
+        id: savedItem.id,
+      };
+      dispatch(addToCart(cartItem));
+      alert("Đã thêm vào giỏ!");
+      // Gọi callback nếu có
+      if (onAddToCart) {
+        onAddToCart(product.colors[actualColorIndex], selectedSize, quantity);
+      }
+    } catch (err) {
+      console.error("Lỗi khi thêm vào giỏ:", err);
+      alert("Thêm vào giỏ thất bại. Vui lòng thử lại.");
+    }
+  };
+
   return (
     <>
       {open && (
@@ -206,7 +208,9 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
                   variant={selectedColor === color ? 'contained' : 'outlined'}
                   color={selectedColor === color ? 'error' : 'inherit'}
                   size="small"
-                  onClick={() => setSelectedColor(color)}
+                  onClick={() => {
+                    setSelectedColor(color);
+                  }}
                   sx={{
                     textTransform: 'none',
                     minWidth: 70,

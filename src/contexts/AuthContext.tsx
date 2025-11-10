@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { clearCart, syncCartAfterLogin } from '../store/cartSlice';
 import { useAppDispatch } from './../store/hooks';
-import { useNavigate } from 'react-router-dom'; // Thêm import
+import { useNavigate } from 'react-router-dom';
 
 type Role = 'admin' | 'client' | null;
 
@@ -11,7 +11,7 @@ type AuthContextType = {
   loading: boolean;
   loginAs: (role: Role, userId?: string) => void;
   logout: () => void;
-  checkAuthStatus: () => void; // Hàm mới để kiểm tra phiên
+  checkAuthStatus: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,24 +20,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<Role>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Khởi tạo navigate
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Hàm kiểm tra phiên đăng nhập
   const checkAuthStatus = () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      // Không có token → đăng xuất
       logout();
       return;
     }
 
-    // Giải mã token để kiểm tra hết hạn (nếu cần)
+    // ✅ Kiểm tra token có đúng định dạng JWT không
+    const tokenParts = token.split('.');
+    if (tokenParts.length !== 3) {
+      console.warn('Token không đúng định dạng JWT');
+      logout();
+      return;
+    }
+
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload.exp * 1000; // Thời gian hết hạn tính bằng ms
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const exp = payload.exp * 1000;
       if (Date.now() >= exp) {
-        // Token đã hết hạn → đăng xuất
         logout();
         return;
       }
@@ -47,24 +51,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Token còn hiệu lực
-    const storedRole = sessionStorage.getItem('role') as Role | null;
-    const storedUserId = sessionStorage.getItem('userId');
+    const storedRole = localStorage.getItem('role') as Role | null; // ✅ Dùng localStorage thay vì sessionStorage
+    const storedUserId = localStorage.getItem('userId'); // ✅ Dùng localStorage thay vì sessionStorage
     if (storedRole) setRole(storedRole);
     if (storedUserId) setUserId(storedUserId);
-    setLoading(false);
   };
 
   useEffect(() => {
     checkAuthStatus();
+    setLoading(false); // ✅ Đảm bảo setLoading(false) được gọi
   }, []);
 
   const loginAs = (newRole: Role, newUserId?: string) => {
-    if (newRole) sessionStorage.setItem('role', newRole);
-    else sessionStorage.removeItem('role');
+    if (newRole) localStorage.setItem('role', newRole);
+    else localStorage.removeItem('role');
 
-    if (newUserId) sessionStorage.setItem('userId', newUserId);
-    else sessionStorage.removeItem('userId');
+    if (newUserId) localStorage.setItem('userId', newUserId);
+    else localStorage.removeItem('userId');
 
     setRole(newRole);
     setUserId(newUserId || null);
@@ -75,8 +78,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    sessionStorage.removeItem('role');
-    sessionStorage.removeItem('userId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userId');
     setRole(null);
     setUserId(null);
 
@@ -84,13 +87,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
-    // ✅ Điều hướng về trang chủ khi đăng xuất
     navigate('/');
   };
 
+  // ✅ Luôn render children, không phụ thuộc vào loading
   return (
     <AuthContext.Provider value={{ role, userId, loading, loginAs, logout, checkAuthStatus }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

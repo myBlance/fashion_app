@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from './store';
 import { AuthProvider } from './contexts/AuthContext'; // Kiểm tra file này
 import App from './App';
+import './index.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

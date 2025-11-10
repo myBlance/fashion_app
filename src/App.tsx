@@ -4,6 +4,7 @@ import { clientRoutes, adminRoutes } from './routes';
 import ClientLayout from './layouts/ClientLayout';
 import PrivateRoute from './components/Client/PrivateRoute';
 import LoginPage from './pages/auth/LoginPage';
+import './App.css';
 
 const App: React.FC = () => {
     return (

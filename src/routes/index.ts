@@ -20,7 +20,9 @@ import AdminApp from '../pages/admin/AdminApp';
 import ProfilePage from '../pages/auth/ProfilePage';
 import ComingSoonPage from '../pages/client/ComingSoonPage';
 import CheckoutPage from '../pages/client/Checkout';
-import ShopeePayPayment from '../components/Client/ShopeePayPayment';
+import ShopeePayPayment from '../components/Client/Pay/ShopeePayPayment';
+import SeepayPaymentPage from '../components/Client/Pay/SeepayPayment';
+import CODPaymentPage from '../components/Client/Pay/CODPaymentPage';
 // import AdminApp from '../pages/admin/AdminApp';
 // import Products from '../pages/admin/Products';
 // import AddProduct from '../pages/admin/AddProduct';
@@ -45,6 +47,10 @@ export const clientRoutes: RouteItem[] = [
     { path: '/profile', element: React.createElement(ProfilePage), auth: 'client' },
     { path: '/checkout', element: React.createElement(CheckoutPage), auth: 'client' },
     { path: '/payment/shopeepay', element: React.createElement(ShopeePayPayment), auth: 'client' },
+    { path: '/payment/seepay', element: React.createElement(SeepayPaymentPage), auth: 'client' },
+    { path: '/payment/cod', element: React.createElement(CODPaymentPage), auth: 'client' },
+
+
     { path: '/blog', element: React.createElement(ComingSoonPage), auth: 'client' },
     { path: '/contact', element: React.createElement(ComingSoonPage), auth: 'client' },
 ];

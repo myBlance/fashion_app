@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../styles/CheckoutSummary.css';
 
-// Import các component mới
 import VoucherModal from '../../components/Client/Voucher/VoucherModal';
-// ✅ Import interface Voucher từ service
 import { Voucher } from '../../services/voucherService';
 
 interface Address {
@@ -38,7 +36,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
-  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null); // ✅ Dùng interface từ service
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
@@ -95,7 +93,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     fetchAddresses();
   }, []);
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!selectedAddress) {
       alert('Vui lòng chọn địa chỉ nhận hàng.');
       return;
@@ -106,14 +104,55 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       return;
     }
 
+    // ✅ Gọi API để lấy thông tin người dùng (bao gồm _id)
+    let userId = null;
+    if (token) {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        userId = res.data.data._id; // ✅ Lấy _id từ API
+      } catch (err) {
+        console.error('Lỗi khi lấy thông tin người dùng:', err);
+        alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        navigate('/login');
+        return;
+      }
+    }
+
+    if (!userId) {
+      alert('Vui lòng đăng nhập để đặt hàng.');
+      navigate('/login');
+      return;
+    }
+
     if (selectedPaymentMethod === 'shopeepay') {
       navigate('/payment/shopeepay');
     } else if (selectedPaymentMethod === 'credit-card') {
       navigate('/payment/credit-card');
-    } else if (selectedPaymentMethod === 'google-pay') {
-      navigate('/payment/google-pay');
+    } else if (selectedPaymentMethod === 'seepay') {
+      navigate('/payment/seepay', {
+        state: {
+          cartItems,
+          totalAmount,
+          shippingFee,
+          discountAmount,
+          selectedAddress,
+          userId,
+        },
+      });
     } else if (selectedPaymentMethod === 'cash-on-delivery') {
-      navigate('/payment/cod');
+      // ✅ Sửa: Chỉ giữ lại 1 dòng, truyền đầy đủ state
+      navigate('/payment/cod', {
+        state: {
+          cartItems,
+          totalAmount,
+          shippingFee,
+          discountAmount,
+          selectedAddress,
+          userId,
+        },
+      });
     } else {
       alert('Phương thức thanh toán chưa được hỗ trợ');
     }
@@ -331,17 +370,17 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
           </div>
           <div className="payment-method">
             <input
-              type="radio"
-              id="google-pay"
-              name="payment"
-              value="google-pay"
-              checked={selectedPaymentMethod === 'google-pay'}
-              onChange={() => setSelectedPaymentMethod('google-pay')}
-            />
-            <label htmlFor="google-pay">
-              <img src="/assets/images/google-pay.png" alt="SeePay" className="payment-icon" />
-              SeePay
-            </label>
+  type="radio"
+  id="seepay"
+  name="payment"
+  value="seepay"
+  checked={selectedPaymentMethod === 'seepay'}
+  onChange={() => setSelectedPaymentMethod('seepay')}
+/>
+<label htmlFor="seepay">
+  <img src="/assets/images/seepay.png" alt="SeePay" className="payment-icon" />
+  SeePay (Quét QR)
+</label>
           </div>
           <div className="payment-method">
             <input

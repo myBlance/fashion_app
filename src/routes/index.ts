@@ -23,6 +23,7 @@ import CheckoutPage from '../pages/client/Checkout';
 import ShopeePayPayment from '../components/Client/Pay/ShopeePayPayment';
 import SeepayPaymentPage from '../components/Client/Pay/SeepayPayment';
 import CODPaymentPage from '../components/Client/Pay/CODPaymentPage';
+import OrderHistoryPage from '../pages/client/OrderHistoryPage';
 // import AdminApp from '../pages/admin/AdminApp';
 // import Products from '../pages/admin/Products';
 // import AddProduct from '../pages/admin/AddProduct';
@@ -40,6 +41,7 @@ export const clientRoutes: RouteItem[] = [
     { path: '/', element: React.createElement(Home), auth: 'client' },
     { path: '/product/:id', element: React.createElement(ProductDetail) , auth: 'client' },
     { path: '/shop', element: React.createElement(ShopPage), auth: 'client' },
+    { path: '/orders', element: React.createElement(OrderHistoryPage), auth: 'client' },
     { path: '/cart', element: React.createElement(CartPage), auth: 'client' },
     { path: '/wishlist', element: React.createElement(WishlistPage), auth: 'client' },
     { path: '/about', element: React.createElement(AboutPage), auth: 'client' },

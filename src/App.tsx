@@ -16,7 +16,7 @@ const App: React.FC = () => {
             <Route path="/" element={<ClientLayout />}>
                 {clientRoutes.map(({ path, element, auth }, index) => {
                     const routePath = path === '/' ? '' : path.slice(1);
-                    const isPrivate = auth === 'client' && (path === '/wishlist' || path === '/cart' || path === '/profile');
+                    const isPrivate = auth === 'client' && (path === '/wishlist' || path === '/cart' || path === '/profile' || path === '/orders');
 
                     return (
                         <Route

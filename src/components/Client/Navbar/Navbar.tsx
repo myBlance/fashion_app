@@ -124,7 +124,7 @@ const Navbar: React.FC = () => {
 
         {/* Icons */}
         <div className="navbar-icons">
-          <div className="navbar-icon">
+          <div className="navbar-icon" onClick={() => navigate('/orders')}>
             <AssignmentTurnedInOutlinedIcon />
             <span>Kiểm tra</span>
           </div>

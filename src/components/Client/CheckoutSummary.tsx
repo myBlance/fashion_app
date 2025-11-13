@@ -1,4 +1,3 @@
-// src/pages/client/CheckoutSummary.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -45,18 +44,21 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
 
   // Kiểm tra điều kiện áp dụng voucher
-  const isVoucherValid = selectedVoucher && totalAmount >= selectedVoucher.minOrderValue;
+  const isVoucherValid = selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
 
-  // Tính giảm giá từ voucher
+  // ✅ Tính giảm giá từ voucher
   const calculateDiscount = () => {
     if (!selectedVoucher || !isVoucherValid) return 0;
 
-    if (selectedVoucher.discountType === 'fixed') {
-      return Math.min(selectedVoucher.discountValue, totalAmount);
+    if (selectedVoucher.type === 'fixed') {
+      // ✅ Giảm giá cố định: không vượt quá tổng tiền
+      return Math.min(selectedVoucher.value || 0, totalAmount);
     }
 
-    if (selectedVoucher.discountType === 'percent') {
-      const discount = (totalAmount * selectedVoucher.discountValue) / 100;
+    if (selectedVoucher.type === 'percentage') {
+      // ✅ Giảm giá theo %: tính phần trăm của tổng tiền, không vượt quá tổng tiền
+      const percentage = selectedVoucher.value || 0;
+      const discount = (totalAmount * percentage) / 100;
       return Math.min(discount, totalAmount);
     }
 
@@ -100,7 +102,8 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     }
 
     if (selectedVoucher && !isVoucherValid) {
-      alert(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${selectedVoucher.minOrderValue.toLocaleString()}đ).`);
+      // ✅ Sửa lại thông báo lỗi voucher
+      alert(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${(selectedVoucher.minOrderValue || 0).toLocaleString()}đ).`);
       return;
     }
 

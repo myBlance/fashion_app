@@ -1,4 +1,3 @@
-// src/components/Client/Voucher/VoucherModal.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -6,19 +5,13 @@ import {
   DialogContent,
   DialogActions,
   Box,
-  Typography,
   Button,
-  Chip,
-  Divider,
-  Tooltip,
   CircularProgress,
   Alert,
 } from '@mui/material';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-
 import { VoucherService, Voucher } from '../../../services/voucherService';
+import VoucherCard from './VoucherCard'; // ✅ Import VoucherCard
+
 interface VoucherModalProps {
   open: boolean;
   onClose: () => void;
@@ -32,7 +25,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
   onSelect,
   selectedVoucher,
 }) => {
-  const [selectedId, setSelectedId] = useState<string | null>(selectedVoucher?._id || null); // ✅ Sửa `id` thành `_id`
+  const [selectedId, setSelectedId] = useState<string | null>(selectedVoucher?._id || null);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,13 +63,13 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
   }, [selectedVoucher]);
 
   const handleSelect = (voucher: Voucher) => {
-    setSelectedId(voucher._id); // ✅ Dùng `_id` thay vì `id`
+    setSelectedId(voucher._id);
     onSelect(voucher);
   };
 
   const handleConfirm = () => {
     if (selectedId) {
-      const selected = vouchers.find(v => v._id === selectedId); // ✅ Dùng `_id`
+      const selected = vouchers.find(v => v._id === selectedId);
       onSelect(selected || null);
     } else {
       onSelect(null);
@@ -115,7 +108,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md" // ✅ Tăng kích thước để chứa card
       fullWidth
       PaperProps={{
         sx: {
@@ -137,97 +130,52 @@ const VoucherModal: React.FC<VoucherModalProps> = ({
       </DialogTitle>
 
       <DialogContent sx={{ backgroundColor: '#fafafa' }}>
-        <Box sx={{ maxHeight: 450, overflowY: 'auto', mt: 1 }}>
+        <Box
+          sx={{
+            maxHeight: 500,
+            overflowY: 'auto',
+            mt: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2, // Khoảng cách giữa các card
+            alignItems: 'center', // Căn giữa các card
+          }}
+        >
           {vouchers.map((voucher) => (
             <Box
-              key={voucher._id} // ✅ Dùng `_id` làm key
+              key={voucher._id}
               onClick={() => handleSelect(voucher)}
               sx={{
-                p: 2.5,
-                mb: 2,
-                border: selectedId === voucher._id ? '2px solid #f57c00' : '1px solid #ddd',
-                borderRadius: 2.5,
-                backgroundColor: selectedId === voucher._id ? '#fff3e0' : '#fff',
-                transition: 'all 0.25s ease',
-                boxShadow:
-                  selectedId === voucher._id
-                    ? '0 4px 12px rgba(255,152,0,0.2)'
-                    : '0 2px 6px rgba(0,0,0,0.05)',
                 cursor: 'pointer',
+                border: selectedId === voucher._id ? '3px solid #f57c00' : '1px solid transparent', // Viền nổi bật khi chọn
+                borderRadius: 3,
+                transition: 'border-color 0.2s',
                 '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                  backgroundColor: '#fffefb',
+                  border: '3px solid #ffa726', // Viền khi hover
                 },
               }}
             >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold" color="primary">
-                    {voucher.code}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {voucher.shopName}
-                  </Typography>
-                </Box>
-
-                {voucher.isFreeShip && (
-                  <Chip
-                    icon={<DirectionsCarIcon />}
-                    label="Miễn phí vận chuyển"
-                    size="small"
-                    sx={{
-                      backgroundColor: '#ffecb3',
-                      color: '#795548',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                )}
-              </Box>
-
-              <Divider sx={{ my: 1 }} />
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                  <Typography variant="body1" sx={{ color: '#d32f2f', fontWeight: 'bold' }}>
-                    {voucher.discountText}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Đơn Tối Thiểu {voucher.minOrderValue.toLocaleString()}đ
-                  </Typography>
-                </Box>
-                <Tooltip title={voucher.conditionText}>
-                  <Chip
-                    icon={<LocalOfferIcon />}
-                    label="Áp dụng có điều kiện"
-                    size="small"
-                    sx={{
-                      backgroundColor: '#c62828',
-                      color: 'white',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                </Tooltip>
-              </Box>
-
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                HSD: {voucher.expiryDate}
-              </Typography>
-
-              {selectedId === voucher._id && (
-                <Box sx={{ textAlign: 'right', mt: 1 }}>
-                  <Chip
-                    icon={<CheckCircleIcon />}
-                    label="Đã chọn"
-                    size="small"
-                    color="success"
-                    sx={{
-                      fontWeight: 'bold',
-                      boxShadow: '0 2px 6px rgba(76,175,80,0.4)',
-                    }}
-                  />
-                </Box>
-              )}
+              {/* ✅ Dùng VoucherCard thay vì render thủ công */}
+              <VoucherCard
+                _id={voucher._id}
+                code={voucher.code}
+                name={voucher.name}
+                description={voucher.description}
+                type={voucher.type}
+                value={voucher.value}
+                shopName={voucher.shopName}
+                validFrom={voucher.validFrom}
+                validUntil={voucher.validUntil}
+                minOrderAmount={voucher.minOrderValue} // ✅ Dùng minOrderValue
+                maxUses={voucher.maxUses}
+                maxUsesPerUser={voucher.maxUsesPerUser}
+                isActive={voucher.isActive}
+                discountText={voucher.discountText}
+                conditionText={voucher.conditionText}
+                isFreeShip={voucher.isFreeShip}
+                currentTotalAmount={undefined} // Không có tổng tiền trong modal
+                onCopy={() => handleSelect(voucher)} // ✅ Gọi handleSelect khi nhấn vào card
+              />
             </Box>
           ))}
         </Box>

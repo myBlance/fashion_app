@@ -1,30 +1,28 @@
 import axios from 'axios';
 
 export interface Voucher {
-  _id: string;
-  code: string;
-  name?: string;
-  description?: string;
-    type?: 'fixed' | 'percentage'; // ✅ Thêm trường này
-  value?: number;               // ✅ Thêm trường này
-  discountType: 'fixed' | 'percentage';
-  discountValue: number;
-  discountText: string;
-  conditionText: string;
-  minOrderAmount: number;
-  minOrderValue?: number;
-  shopName?: string;
-  expiryDate: string; // ISO string
-  validFrom?: string;
-  validUntil?: string;
-  isFreeShip?: boolean;
-  isActive: boolean;
-  usageLimit: number;
-  usedCount: number;
-  createdAt: string;
-  updatedAt: string;
-  maxUses?: number;
-  maxUsesPerUser?: number;
+    _id: string;
+    code: string;
+    name?: string;
+    description?: string;
+    type?: 'fixed' | 'percentage'; 
+    value?: number;               
+    discountText: string;
+    conditionText: string;
+    minOrderAmount: number;
+    minOrderValue?: number;
+    shopName?: string;
+    expiryDate: string; // ISO string
+    validFrom?: string;
+    validUntil?: string;
+    isFreeShip?: boolean;
+    isActive: boolean;
+    usageLimit: number;
+    usedCount: number;
+    createdAt: string;
+    updatedAt: string;
+    maxUses?: number;
+    maxUsesPerUser?: number;
 }
 
 export interface VoucherListResponse {

@@ -65,7 +65,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     return 0;
   };
 
-  // Tính tổng tiền sau khi áp dụng voucher
+  // ✅ Tính tổng tiền sau khi áp dụng voucher
   const discountAmount = calculateDiscount();
   const finalTotal = totalAmount - discountAmount + shippingFee;
 
@@ -102,19 +102,17 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     }
 
     if (selectedVoucher && !isVoucherValid) {
-      // ✅ Sửa lại thông báo lỗi voucher
       alert(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${(selectedVoucher.minOrderValue || 0).toLocaleString()}đ).`);
       return;
     }
 
-    // ✅ Gọi API để lấy thông tin người dùng (bao gồm _id)
     let userId = null;
     if (token) {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        userId = res.data.data._id; // ✅ Lấy _id từ API
+        userId = res.data.data._id;
       } catch (err) {
         console.error('Lỗi khi lấy thông tin người dùng:', err);
         alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -129,6 +127,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       return;
     }
 
+    // ✅ Điều hướng tới đúng trang thanh toán
     if (selectedPaymentMethod === 'shopeepay') {
       navigate('/payment/shopeepay');
     } else if (selectedPaymentMethod === 'credit-card') {
@@ -145,7 +144,6 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         },
       });
     } else if (selectedPaymentMethod === 'cash-on-delivery') {
-      // ✅ Sửa: Chỉ giữ lại 1 dòng, truyền đầy đủ state
       navigate('/payment/cod', {
         state: {
           cartItems,
@@ -159,6 +157,21 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     } else {
       alert('Phương thức thanh toán chưa được hỗ trợ');
     }
+  };
+
+  // ✅ Hàm để hiển thị thông tin giảm giá của voucher
+  const getVoucherDisplayText = (voucher: Voucher | null) => {
+    if (!voucher) return '';
+
+    if (voucher.type === 'percentage') {
+      return `Giảm ${voucher.value}%`;
+    }
+
+    if (voucher.type === 'fixed') {
+      return `Giảm ${(voucher.value || 0).toLocaleString()}₫`;
+    }
+
+    return 'Giảm giá';
   };
 
   const handleSelectVoucher = (voucher: Voucher | null) => {
@@ -262,7 +275,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
           </button>
         </div>
 
-        {/* Hiển thị voucher đã chọn */}
+        {/* ✅ Hiển thị voucher đã chọn với thông tin giảm giá */}
         {selectedVoucher && (
           <div className="selected-voucher" style={{
             marginTop: '12px',
@@ -275,7 +288,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
             alignItems: 'center',
           }}>
             <div>
-              <strong>{selectedVoucher.code}</strong> - {selectedVoucher.discountText}
+              <strong>{selectedVoucher.code}</strong> - {getVoucherDisplayText(selectedVoucher)}
               {!isVoucherValid && (
                 <span style={{ color: '#d32f2f', fontWeight: 'bold', marginLeft: '8px' }}>
                   (Không đủ điều kiện)
@@ -373,17 +386,17 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
           </div>
           <div className="payment-method">
             <input
-  type="radio"
-  id="seepay"
-  name="payment"
-  value="seepay"
-  checked={selectedPaymentMethod === 'seepay'}
-  onChange={() => setSelectedPaymentMethod('seepay')}
-/>
-<label htmlFor="seepay">
-  <img src="/assets/images/seepay.png" alt="SeePay" className="payment-icon" />
-  SeePay (Quét QR)
-</label>
+              type="radio"
+              id="seepay"
+              name="payment"
+              value="seepay"
+              checked={selectedPaymentMethod === 'seepay'}
+              onChange={() => setSelectedPaymentMethod('seepay')}
+            />
+            <label htmlFor="seepay">
+              <img src="/assets/images/seepay.png" alt="SeePay" className="payment-icon" />
+              SeePay (Quét QR)
+            </label>
           </div>
           <div className="payment-method">
             <input

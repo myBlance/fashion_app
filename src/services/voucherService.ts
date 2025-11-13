@@ -3,14 +3,28 @@ import axios from 'axios';
 export interface Voucher {
   _id: string;
   code: string;
+  name?: string;
+  description?: string;
+    type?: 'fixed' | 'percentage'; // ✅ Thêm trường này
+  value?: number;               // ✅ Thêm trường này
+  discountType: 'fixed' | 'percentage';
+  discountValue: number;
   discountText: string;
   conditionText: string;
-  isFreeShip?: boolean;
-  shopName: string;
-  minOrderValue: number;
+  minOrderAmount: number;
+  minOrderValue?: number;
+  shopName?: string;
   expiryDate: string; // ISO string
-  discountType: 'fixed' | 'percent';
-  discountValue: number;
+  validFrom?: string;
+  validUntil?: string;
+  isFreeShip?: boolean;
+  isActive: boolean;
+  usageLimit: number;
+  usedCount: number;
+  createdAt: string;
+  updatedAt: string;
+  maxUses?: number;
+  maxUsesPerUser?: number;
 }
 
 export interface VoucherListResponse {
@@ -32,8 +46,8 @@ export interface VoucherResponse {
 export interface UserVoucher {
   id: string;
   voucher: Voucher;
-  claimedAt: string; // ISO string
-  usedAt: string | null; // ISO string or null
+  claimedAt: string;
+  usedAt: string | null;
   isUsed: boolean;
 }
 
@@ -53,7 +67,6 @@ export interface ClaimVoucherResponse {
 }
 
 export const VoucherService = {
-  // Lấy danh sách voucher (public - dành cho khách xem chung)
   async getVouchers(params?: {
     shopName?: string;
     isActive?: boolean;
@@ -62,68 +75,48 @@ export const VoucherService = {
     sort?: string;
     expired?: boolean;
   }): Promise<VoucherListResponse> {
-    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/public`, {
-      params,
-    });
+    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/public`, { params });
     return res.data;
   },
 
-  // Lấy voucher theo ID (public)
   async getVoucherById(id: string): Promise<VoucherResponse> {
     const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/${id}`);
     return res.data;
   },
 
-  // CLAIM voucher (dành cho người dùng - yêu cầu token)
   async claimVoucher(code: string, token: string): Promise<ClaimVoucherResponse> {
     const res = await axios.post(
       `${import.meta.env.VITE_API_BASE_URL}/api/vouchers/claim`,
       { code },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     return res.data;
   },
 
-  // Lấy danh sách voucher của người dùng (riêng tư)
   async getMyVouchers(token: string): Promise<UserVoucherListResponse> {
     const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/my`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   },
 
-  // Tạo voucher mới (admin)
   async createVoucher(voucherData: Omit<Voucher, '_id'>, token: string): Promise<VoucherResponse> {
     const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers`, voucherData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   },
 
-  // Cập nhật voucher (admin)
   async updateVoucher(id: string, voucherData: Partial<Voucher>, token: string): Promise<VoucherResponse> {
     const res = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/${id}`, voucherData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   },
 
-  // Xóa voucher (admin)
   async deleteVoucher(id: string, token: string): Promise<{ success: boolean; message: string }> {
     const res = await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   },

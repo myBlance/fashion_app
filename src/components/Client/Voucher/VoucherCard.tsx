@@ -2,33 +2,55 @@
 import React from 'react';
 import { Box, Typography, Button, Chip } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 
-interface VoucherCardProps {
+export interface VoucherCardProps {
+  _id: string;
   code: string;
-  discountText: string;
-  conditionText: string;
+  name?: string;
+  description?: string;
+  type?: 'fixed' | 'percentage';
+  value?: number;
+  shopName?: string;
+  validFrom?: string;
+  validUntil?: string;
+  minOrderAmount?: number;
+  maxUses?: number;
+  maxUsesPerUser?: number;
+  isActive?: boolean;
+
+  discountText?: string;
+  conditionText?: string;
   isFreeShip?: boolean;
-  shopName: string;
-  minOrderValue: number;
-  expiryDate: string;
-  currentTotalAmount?: number; 
+
+  currentTotalAmount?: number;
   onCopy: () => void;
 }
 
 const VoucherCard: React.FC<VoucherCardProps> = ({
   code,
+  name,
+  type,
+  value,
+  validFrom,
+  validUntil,
+  minOrderAmount = 0,
+  maxUses,
+  maxUsesPerUser,
+  isActive = true,
   discountText,
-  conditionText,
   isFreeShip = false,
-  shopName,
-  minOrderValue,
-  expiryDate,
-  currentTotalAmount, // ✅ Nhận vào, có thể là undefined
+  currentTotalAmount,
   onCopy,
 }) => {
-  // ✅ Kiểm tra nếu có totalAmount thì mới so sánh
-  const isEligible = currentTotalAmount !== undefined ? currentTotalAmount >= minOrderValue : true;
+  const isEligible =
+    currentTotalAmount !== undefined ? currentTotalAmount >= minOrderAmount && isActive : isActive;
+
+  // ✅ Tính toán discountText nếu không có
+  const displayDiscountText = discountText || (type && value !== undefined
+    ? type === 'percentage'
+      ? `Giảm ${value}%`
+      : `Giảm ${value.toLocaleString()}đ`
+    : 'Giảm giá');
 
   return (
     <Box
@@ -62,7 +84,7 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
           borderBottom: '2px dashed rgba(255,255,255,0.3)',
         }}
       >
-        🎟 {code}
+        🎟 {code} {name && `- ${name}`}
       </Box>
 
       {/* Nội dung chính */}
@@ -70,43 +92,42 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
         sx={{
           p: 2,
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: 'column',
+          gap: 0.5,
           backgroundColor: '#fafafa',
         }}
       >
-        <Box>
-          <Typography
-            variant="subtitle1"
-            sx={{ fontWeight: 'bold', color: isEligible ? '#d32f2f' : '#9e9e9e', mb: 0.5 }}
-          >
-            {discountText}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {conditionText}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Shop: {shopName}
-          </Typography>
-        </Box>
+        <Typography
+          variant="subtitle1"
+          sx={{ fontWeight: 'bold', color: isEligible ? '#d32f2f' : '#9e9e9e' }}
+        >
+          {displayDiscountText}
+        </Typography>
 
-        {isFreeShip && (
-          <Box
-            sx={{
-              backgroundColor: '#ffeb3b',
-              color: '#333',
-              px: 1.5,
-              py: 0.5,
-              borderRadius: 2,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-              fontWeight: 600,
-            }}
-          >
-            <DirectionsCarIcon sx={{ fontSize: 18 }} />
-            <Typography variant="body2">Miễn phí</Typography>
-          </Box>
+        
+
+        {minOrderAmount !== undefined && (
+          <Typography variant="caption" color="text.secondary">
+            Đơn tối thiểu: {minOrderAmount.toLocaleString()}đ
+          </Typography>
+        )}
+
+        {validFrom && validUntil && (
+          <Typography variant="caption" display="block" color="text.secondary">
+            {`Hiệu lực: ${new Date(validFrom).toLocaleDateString()} - ${new Date(validUntil).toLocaleDateString()}`}
+          </Typography>
+        )}
+
+        {maxUses !== undefined && (
+          <Typography variant="caption" color="text.secondary">
+            Số lần tối đa: {maxUses}
+          </Typography>
+        )}
+
+        {maxUsesPerUser !== undefined && (
+          <Typography variant="caption" color="text.secondary">
+            Mỗi người tối đa: {maxUsesPerUser}
+          </Typography>
         )}
       </Box>
 
@@ -121,31 +142,22 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
           backgroundColor: '#fff',
         }}
       >
-        <Box>
-          <Chip
-            icon={<LocalOfferIcon />}
-            label={isEligible ? 'Có thể áp dụng' : 'Không đủ điều kiện'}
-            size="small"
-            sx={{
-              backgroundColor: isEligible ? '#e8f5e9' : '#ffebee',
-              color: isEligible ? '#2e7d32' : '#c62828',
-              fontWeight: 'bold',
-              mb: 0.5,
-            }}
-          />
-          <Typography variant="caption" display="block">
-            Đơn tối thiểu: {minOrderValue.toLocaleString()}đ
-          </Typography>
-          <Typography variant="caption" display="block">
-            HSD: {expiryDate}
-          </Typography>
-        </Box>
-
+        <Chip
+          icon={<LocalOfferIcon />}
+          label={isEligible ? 'Có thể áp dụng' : 'Không đủ điều kiện'}
+          size="small"
+          sx={{
+            backgroundColor: isEligible ? '#e8f5e9' : '#ffebee',
+            color: isEligible ? '#2e7d32' : '#c62828',
+            fontWeight: 'bold',
+            mb: 0.5,
+          }}
+        />
         <Button
           variant="contained"
           size="small"
           onClick={onCopy}
-          disabled={currentTotalAmount !== undefined && !isEligible} // ✅ Vô hiệu hóa nếu có totalAmount và không đủ điều kiện
+          disabled={currentTotalAmount !== undefined && !isEligible}
           sx={{
             background: isEligible
               ? 'linear-gradient(90deg, #ff9800, #f57c00)'

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout } from 'react-admin';
 
-import { MoreVert, ShoppingCart, Store } from '@mui/icons-material';
+import { MoreVert, ShoppingCart, Store, Loyalty } from '@mui/icons-material';
 import {
     Avatar,
     Box,
@@ -154,6 +154,19 @@ const MyMenu: React.FC<MenuProps> = (props) => (
                     to="/admin/products"
                     primaryText="Product" 
                     leftIcon={<Store />} 
+                    sx={{ color: "#fff",
+                    "& .MuiListItemIcon-root": { color: "#fff"  },
+                    "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
+                    "&.RaMenuItemLink-active": {
+                        backgroundColor: "#3873d1",  
+                        color: "#fff",               
+                    }
+                    }} 
+                />
+                <Menu.Item 
+                    to="/admin/vouchers"
+                    primaryText="Voucher" 
+                    leftIcon={<Loyalty />} 
                     sx={{ color: "#fff",
                     "& .MuiListItemIcon-root": { color: "#fff"  },
                     "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,

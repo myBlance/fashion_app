@@ -1,8 +1,8 @@
-// src/components/client/Voucher/VoucherList.tsx
+// src/components/Client/Voucher/VoucherList.tsx
 import React, { useState, useEffect } from 'react';
-import VoucherCard from './VoucherCard';
 import { Box, CircularProgress, Alert } from '@mui/material';
-import { VoucherService, Voucher } from '../../../services/voucherService'; // Điều chỉnh đường dẫn nếu cần
+import VoucherCard from './VoucherCard';
+import { VoucherService, Voucher } from '../../../services/voucherService';
 
 interface VoucherListProps {
   totalAmount?: number;
@@ -17,22 +17,40 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
     const fetchVouchers = async () => {
       try {
         const res = await VoucherService.getVouchers();
-        console.log('DEBUG: Response from VoucherService.getVouchers:', res); // Log để debug
 
-        // 🔴 Kiểm tra cấu trúc phản hồi
-        if (res && typeof res === 'object' && res.success === true && Array.isArray(res.data)) {
-          // Gán mảng trực tiếp nếu cấu trúc đúng
-          setVouchers(res.data);
+        if (res && res.success && Array.isArray(res.data)) {
+          // ✅ Ánh xạ dữ liệu từ backend sang interface Voucher
+          const mappedVouchers: Voucher[] = res.data.map(v => ({
+            ...v,
+            // ✅ Đảm bảo type và value luôn có giá trị
+            type: v.type || 'fixed',
+            value: v.value || 0,
+            // ✅ Tính toán discountText nếu chưa có
+            discountText: v.discountText || (
+              v.type && v.value !== undefined
+                ? v.type === 'percentage'
+                  ? `Giảm ${v.value}%`
+                  : `Giảm ${v.value.toLocaleString()}đ`
+                : 'Giảm giá'
+            ),
+            // ✅ Tính toán conditionText nếu chưa có
+            conditionText: v.conditionText || (
+              v.minOrderAmount !== undefined
+                ? `Đơn tối thiểu ${v.minOrderAmount.toLocaleString()}đ`
+                : 'Không có điều kiện'
+            ),
+          }));
+
+          setVouchers(mappedVouchers);
         } else {
-          // Nếu cấu trúc không đúng, có thể backend trả về lỗi hoặc cấu trúc khác
           console.error('Cấu trúc phản hồi voucher không hợp lệ:', res);
           setError('Dữ liệu voucher không hợp lệ.');
-          setVouchers([]); // Gán mảng rỗng để tránh lỗi render
+          setVouchers([]);
         }
       } catch (err: any) {
         console.error('Lỗi khi lấy danh sách voucher:', err);
         setError('Lỗi kết nối đến máy chủ');
-        setVouchers([]); // Gán mảng rỗng để tránh lỗi render
+        setVouchers([]);
       } finally {
         setLoading(false);
       }
@@ -62,13 +80,6 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
     );
   }
 
-  // 🔴 Kiểm tra an toàn trước khi map (dù đã setVouchers([]) trong catch)
-  // Dòng này chỉ an toàn hơn, nhưng nếu setVouchers luôn được gọi với mảng, thì không cần thiết
-  if (!Array.isArray(vouchers)) {
-    console.error('Biến vouchers không phải là mảng:', vouchers);
-    return <Box sx={{ px: 2 }}><Alert severity="error">Dữ liệu voucher bị lỗi.</Alert></Box>;
-  }
-
   return (
     <Box
       sx={{
@@ -80,16 +91,25 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
         backgroundColor: '#f9f9f9',
       }}
     >
-      {vouchers.map((voucher) => ( // <-- Bây giờ `vouchers` chắc chắn là mảng
+      {vouchers.map((voucher) => (
         <VoucherCard
           key={voucher._id}
+          _id={voucher._id}
           code={voucher.code}
+          name={voucher.name}
+          description={voucher.description}
+          type={voucher.type}
+          value={voucher.value}
+          shopName={voucher.shopName}
+          minOrderAmount={voucher.minOrderAmount}
+          validFrom={voucher.validFrom}
+          validUntil={voucher.validUntil}
+          maxUses={voucher.maxUses}
+          maxUsesPerUser={voucher.maxUsesPerUser}
+          isActive={voucher.isActive}
           discountText={voucher.discountText}
           conditionText={voucher.conditionText}
           isFreeShip={voucher.isFreeShip}
-          shopName={voucher.shopName}
-          minOrderValue={voucher.minOrderValue}
-          expiryDate={voucher.expiryDate}
           currentTotalAmount={totalAmount}
           onCopy={() => handleCopy(voucher.code)}
         />

@@ -1,18 +1,24 @@
-// src/types/Voucher.ts
 export interface Voucher {
   _id: string;
   code: string;
-  discountType: 'fixed' | 'percent';
+  name?: string;
+  description?: string;
+  discountType: 'fixed' | 'percentage';
   discountValue: number;
   discountText: string;
   conditionText: string;
-  minOrderValue: number;
-  shopName: string;
+  minOrderAmount: number;   // trùng với VoucherCard
+  minOrderValue?: number;   // nếu cần hiển thị thêm
+  shopName?: string;
   expiryDate: string; // ISO string
-  isFreeShip: boolean;
+  validFrom?: string; // ISO string
+  validUntil?: string; // ISO string
+  isFreeShip?: boolean;
   isActive: boolean;
   usageLimit: number;
   usedCount: number;
+  maxUses?: number;
+  maxUsesPerUser?: number;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
 }

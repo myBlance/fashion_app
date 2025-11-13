@@ -11,6 +11,9 @@ import { OrderShow } from './order/OrderShow';
 import AdminProfilePage from './AdminProfilePage';
 import { Route } from 'react-router-dom';
 import dataProvider from '../../data/dataProvider';
+import { VoucherList } from './voucher/VoucherList';
+import { VoucherCreate } from './voucher/VoucherCreate';
+import { VoucherEdit } from './voucher/VoucherEdit';
 
 const AdminApp = () => (
     <Admin 
@@ -33,7 +36,13 @@ const AdminApp = () => (
             create={ProductCreate}
             icon={StorefrontIcon} 
         />
-        
+        <Resource 
+            name ='vouchers'
+            list = {VoucherList}
+            edit = {VoucherEdit}
+            create = {VoucherCreate}
+        />
+
         <CustomRoutes>
             <Route path="profile" element={<AdminProfilePage />} />
         </CustomRoutes>

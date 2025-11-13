@@ -1,4 +1,3 @@
-// src/services/voucherService.ts
 import axios from 'axios';
 
 export interface Voucher {
@@ -30,8 +29,31 @@ export interface VoucherResponse {
   data: Voucher;
 }
 
+export interface UserVoucher {
+  id: string;
+  voucher: Voucher;
+  claimedAt: string; // ISO string
+  usedAt: string | null; // ISO string or null
+  isUsed: boolean;
+}
+
+export interface UserVoucherListResponse {
+  success: boolean;
+  data: UserVoucher[];
+}
+
+export interface ClaimVoucherRequest {
+  code: string;
+}
+
+export interface ClaimVoucherResponse {
+  success: boolean;
+  message: string;
+  voucher?: Voucher;
+}
+
 export const VoucherService = {
-  // Lấy danh sách voucher
+  // Lấy danh sách voucher (public - dành cho khách xem chung)
   async getVouchers(params?: {
     shopName?: string;
     isActive?: boolean;
@@ -40,15 +62,39 @@ export const VoucherService = {
     sort?: string;
     expired?: boolean;
   }): Promise<VoucherListResponse> {
-    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers`, {
+    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/public`, {
       params,
     });
     return res.data;
   },
 
-  // Lấy voucher theo mã
-  async getVoucherByCode(code: string): Promise<VoucherResponse> {
-    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/${code}`);
+  // Lấy voucher theo ID (public)
+  async getVoucherById(id: string): Promise<VoucherResponse> {
+    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/${id}`);
+    return res.data;
+  },
+
+  // CLAIM voucher (dành cho người dùng - yêu cầu token)
+  async claimVoucher(code: string, token: string): Promise<ClaimVoucherResponse> {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/vouchers/claim`,
+      { code },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return res.data;
+  },
+
+  // Lấy danh sách voucher của người dùng (riêng tư)
+  async getMyVouchers(token: string): Promise<UserVoucherListResponse> {
+    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/vouchers/my`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   },
 

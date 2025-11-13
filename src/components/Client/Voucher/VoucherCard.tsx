@@ -12,7 +12,7 @@ interface VoucherCardProps {
   shopName: string;
   minOrderValue: number;
   expiryDate: string;
-  currentTotalAmount?: number; // ✅ Sửa thành optional
+  currentTotalAmount?: number; 
   onCopy: () => void;
 }
 

@@ -10,6 +10,7 @@ import BankSettings from "../../components/Client/Profile/BankSettings";
 import ProfileContent from "../../components/Client/Profile/ProfileContent";
 import ProfileTabs from "../../components/Client/Profile/ProfileTabs";
 import SecuritySettings from "../../components/Client/Profile/SecuritySettings";
+import UserSavedVouchers from "../../components/Client/Profile/UserSavedVouchers";
 
 interface UserProfile {
     username: string;
@@ -183,6 +184,8 @@ const ProfilePage: React.FC = () => {
                     message={passwordMessage}
                 />
             );
+            case 8: return <UserSavedVouchers />;
+            
             default: return (
                 <ProfileContent
                     profile={profile}

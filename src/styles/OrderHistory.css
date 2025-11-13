@@ -298,3 +298,47 @@
     object-fit: cover;
   }
 }
+
+/* Trạng thái nổi bật */
+.status-pending {
+  color: #f59e0b;
+  font-weight: 600;
+  background: #fff7e6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.status-paid {
+  color: #0284c7;
+  font-weight: 600;
+  background: #e0f2fe;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.status-processing {
+  color: #7c3aed;
+  font-weight: 600;
+  background: #f3e8ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.status-shipped {
+  color: #0ea5e9;
+  font-weight: 600;
+  background: #e0f7fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.status-delivered {
+  color: #16a34a;
+  font-weight: 600;
+  background: #dcfce7;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.status-cancelled {
+  color: #dc2626;
+  font-weight: 600;
+  background: #fee2e2;
+  padding: 2px 6px;
+  border-radius: 4px;
+}

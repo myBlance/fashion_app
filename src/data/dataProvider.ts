@@ -1,4 +1,3 @@
-// src/data/dataProvider.ts
 import {
   fetchUtils,
   GetListParams,
@@ -122,22 +121,76 @@ const dataProvider = {
   },
 
   /** 🔹 CẬP NHẬT (UPDATE) */
-  async update(resource: string, params: UpdateParams): Promise<UpdateResult> {
-    const formData = new FormData();
+async update(resource: string, params: UpdateParams): Promise<UpdateResult> {
+  // ✅ Chỉ gửi những trường thực sự cần cập nhật
+  const updateData: any = {};
+
+  if (resource === 'orders' && params.data.status !== undefined) {
+    // ✅ Nếu là cập nhật trạng thái đơn hàng, chỉ gửi `status`
+    updateData.status = params.data.status;
+  } else {
+    // ✅ Với các resource khác, gửi toàn bộ dữ liệu (trừ id)
     Object.entries(params.data).forEach(([key, value]) => {
-      if (Array.isArray(value)) formData.append(key, JSON.stringify(value));
-      else if (value !== undefined && value !== null) formData.append(key, value as any);
+      if (key !== 'id' && key !== '_id' && value !== undefined && value !== null) {
+        updateData[key] = value;
+      }
     });
-    if (params.data.thumbnail?.rawFile) formData.append("thumbnail", params.data.thumbnail.rawFile);
-    if (Array.isArray(params.data.images))
+  }
+
+  const hasFile = params.data.thumbnail?.rawFile ||
+                 (Array.isArray(params.data.images) && params.data.images.some((img: any) => img.rawFile));
+
+  let response;
+
+  if (hasFile) {
+    // Nếu có file, dùng FormData
+    const formData = new FormData();
+    Object.entries(updateData).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value as any);
+      }
+    });
+
+    if (params.data.thumbnail?.rawFile) {
+      formData.append("thumbnail", params.data.thumbnail.rawFile);
+    }
+
+    if (Array.isArray(params.data.images)) {
       params.data.images.forEach((img: any) => {
         if (img.rawFile) formData.append("images", img.rawFile);
       });
+    }
 
-    const response = await httpClient(`${baseUrl}/${resource}/${params.id}`, { method: "PUT", body: formData });
-    const item = response.json.data || response.json;
-    return { data: { ...item, id: item.id || item._id } };
-  },
+    response = await httpClient(`${baseUrl}/${resource}/${params.id}`, {
+      method: "PUT",
+      body: formData,
+    });
+  } else {
+    // Nếu không có file, gửi JSON
+    const headers = new Headers({ "Content-Type": "application/json" });
+    const token = localStorage.getItem("token");
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+
+    response = await fetch(`${baseUrl}/${resource}/${params.id}`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(updateData), // ✅ Sửa: gửi updateData thay vì params.data
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+    }
+
+    response.json = await response.json();
+  }
+
+  const item = response.json.data || response.json;
+  return { data: { ...item, id: item.id || item._id } };
+},
+
 
   /** 🔹 XOÁ (DELETE) */
   async delete(resource: string, params: DeleteParams): Promise<DeleteResult> {

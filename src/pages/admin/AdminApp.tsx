@@ -7,14 +7,13 @@ import { ProductList } from './product/ProductList';
 import { ProductEdit } from './product/ProductEdit';
 import { AdminLayout } from '../../layouts/AdminLayout';
 import { ProductCreate } from './product/ProductCreate';
-import { OrderShow } from './order/OrderShow';
 import AdminProfilePage from './AdminProfilePage';
 import { Route } from 'react-router-dom';
 import dataProvider from '../../data/dataProvider';
 import { VoucherList } from './voucher/VoucherList';
 import { VoucherCreate } from './voucher/VoucherCreate';
 import { VoucherEdit } from './voucher/VoucherEdit';
-
+import { OrderEdit } from './order/OrderEdit';
 const AdminApp = () => (
     <Admin 
         basename="/admin"
@@ -26,7 +25,7 @@ const AdminApp = () => (
         <Resource 
             name="orders" 
             list={OrderList} 
-            show={OrderShow}
+            edit={OrderEdit}
             icon={ShoppingCartIcon}
         />
         <Resource 

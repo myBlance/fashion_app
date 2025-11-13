@@ -26,8 +26,8 @@ export interface Order {
   products: ProductInOrder[];
   totalPrice: number;
   status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  paymentMethod: string; // e.g., 'cod', 'seepay'
-  paymentStatus: 'paid' | 'unpaid'; // Thêm trường này
+  paymentMethod: string;
+  paymentStatus: 'paid' | 'unpaid';
   shippingAddress: {
     fullName: string;
     phone: string;
@@ -35,6 +35,19 @@ export interface Order {
   };
   createdAt: string;
 }
+
+// --- Chuyển trạng thái sang tiếng Việt ---
+const getStatusLabel = (status: Order['status']) => {
+  switch (status) {
+    case 'pending': return 'Chờ xác nhận';
+    case 'paid': return 'Đã thanh toán';
+    case 'processing': return 'Đang xử lý';
+    case 'shipped': return 'Đang giao';
+    case 'delivered': return 'Đã giao';
+    case 'cancelled': return 'Đã hủy';
+    default: return status;
+  }
+};
 
 // --- Error Boundary ---
 class OrderHistoryErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
@@ -109,7 +122,7 @@ const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onC
       <div className="order-info">
         <p><strong>Mã đơn:</strong> {order.id}</p>
         <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
-        <p><strong>Trạng thái:</strong> <span className={`status-${order.status}`}>{order.status}</span></p>
+        <p><strong>Trạng thái:</strong> <span className={`status-${order.status}`}>{getStatusLabel(order.status)}</span></p>
         <p><strong>Tổng tiền:</strong> {order.totalPrice.toLocaleString()}₫</p>
       </div>
       <button className="view-details-btn" onClick={onClick}>
@@ -123,15 +136,18 @@ const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onC
 const ModalContent: React.FC<{
   order: Order;
   onClose: () => void;
-  onCancel: (order: Order) => void; // Truyền order vào hàm hủy
+  onCancel: (order: Order) => void;
+  onMarkDelivered: (order: Order) => void;
   cancelLoading: boolean;
   cancelError: string | null;
-  // canCancel: boolean; // Không còn cần thiết
-}> = ({ order, onClose, onCancel, cancelLoading, cancelError }) => {
-  // Kiểm tra điều kiện hủy đơn
+  markDeliveredLoading: boolean;
+  markDeliveredError: string | null;
+}> = ({ order, onClose, onCancel, onMarkDelivered, cancelLoading, cancelError, markDeliveredLoading, markDeliveredError }) => {
   const canCancel = order.paymentMethod === 'cod'
     ? ['pending', 'paid'].includes(order.status)
     : order.status === 'pending' && order.paymentStatus === 'unpaid';
+
+  const canMarkDelivered = order.status === 'shipped';
 
   return (
     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -152,33 +168,52 @@ const ModalContent: React.FC<{
         </div>
 
         <div className="order-summary">
-          <p><strong>Trạng thái:</strong> <span className={`status-${order.status}`}>{order.status}</span></p>
+          <p><strong>Trạng thái:</strong> <span className={`status-${order.status}`}>{getStatusLabel(order.status)}</span></p>
           <p><strong>Phương thức thanh toán:</strong> {order.paymentMethod}</p>
-          <p><strong>Trạng thái thanh toán:</strong> {order.paymentStatus}</p> {/* Hiển thị trạng thái thanh toán */}
+          <p><strong>Trạng thái thanh toán:</strong> {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
           <p><strong>Tổng tiền:</strong> {order.totalPrice.toLocaleString()}₫</p>
         </div>
       </div>
 
-      {canCancel ? (
-        <div className="modal-actions">
-          {cancelError && <p className="error-message">{cancelError}</p>}
-          <button className="cancel-order-btn" onClick={() => onCancel(order)} disabled={cancelLoading}>
-            {cancelLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
-          </button>
-        </div>
-      ) : (
-        <div className="modal-actions">
-          {order.paymentStatus === 'paid' && order.paymentMethod !== 'cod' ? (
-            <p>Đơn hàng đã được thanh toán, không thể hủy.</p>
-          ) : (
-            <p>Không thể hủy đơn ở trạng thái này.</p>
-          )}
-        </div>
-      )}
+      <div className="modal-actions">
+        {canMarkDelivered && (
+          <div className="mark-delivered-section">
+            {markDeliveredError && <p className="error-message">{markDeliveredError}</p>}
+            <button
+              className="mark-delivered-btn"
+              onClick={() => onMarkDelivered(order)}
+              disabled={markDeliveredLoading}
+            >
+              {markDeliveredLoading ? 'Đang cập nhật...' : 'Đã nhận hàng'}
+            </button>
+          </div>
+        )}
 
-      <button className="close-modal-btn" onClick={onClose}>
-        Đóng
-      </button>
+        {canCancel && (
+          <div className="cancel-section">
+            {cancelError && <p className="error-message">{cancelError}</p>}
+            <button
+              className="cancel-order-btn"
+              onClick={() => onCancel(order)}
+              disabled={cancelLoading}
+            >
+              {cancelLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
+            </button>
+          </div>
+        )}
+
+        {!canCancel && !canMarkDelivered && (
+          <div className="no-action-section">
+            {order.paymentStatus === 'paid' && order.paymentMethod !== 'cod' && order.status !== 'shipped' ? (
+              <p>Đơn hàng đã được thanh toán, không thể hủy.</p>
+            ) : (
+              <p>Không thể thực hiện hành động ở trạng thái này.</p>
+            )}
+          </div>
+        )}
+      </div>
+
+      <button className="close-modal-btn" onClick={onClose}>Đóng</button>
     </div>
   );
 };
@@ -193,6 +228,8 @@ const OrderHistoryPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [markDeliveredLoading, setMarkDeliveredLoading] = useState(false);
+  const [markDeliveredError, setMarkDeliveredError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -213,11 +250,10 @@ const OrderHistoryPage: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Giả định backend trả về paymentStatus, nếu không có thì gán mặc định
-      const ordersWithDefaultPaymentStatus = Array.isArray(res.data) 
+      const ordersWithDefaultPaymentStatus = Array.isArray(res.data)
         ? res.data.map(order => ({
           ...order,
-          paymentStatus: order.paymentStatus || 'unpaid' // Gán 'unpaid' nếu không có
+          paymentStatus: order.paymentStatus || 'unpaid'
         }))
         : [];
 
@@ -232,26 +268,52 @@ const OrderHistoryPage: React.FC = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [selectedStatus]); // token và navigate không nên thêm vào dependency
+  }, [selectedStatus]);
 
   const openModal = (order: Order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
     setCancelError(null);
+    setMarkDeliveredError(null);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
     setCancelError(null);
+    setMarkDeliveredError(null);
   };
 
-  // Hàm kiểm tra thanh toán trước khi hủy
+  const markOrderAsDelivered = async (order: Order) => {
+    if (!token) return;
+
+    setMarkDeliveredLoading(true);
+    setMarkDeliveredError(null);
+
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/mark-delivered`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        alert('Đơn hàng đã được đánh dấu là đã nhận.');
+        await fetchOrders();
+        closeModal();
+      }
+    } catch (err: any) {
+      console.error('Lỗi khi đánh dấu đơn hàng đã nhận:', err);
+      setMarkDeliveredError(err.response?.data?.message || 'Không thể cập nhật trạng thái. Vui lòng thử lại.');
+    } finally {
+      setMarkDeliveredLoading(false);
+    }
+  };
+
   const checkPaymentAndCancel = async (order: Order) => {
     if (!token) return;
 
     if (order.paymentMethod === 'cod') {
-      // Nếu là COD, kiểm tra status và hủy trực tiếp
       if (['pending', 'paid'].includes(order.status)) {
         await performCancel(order);
       } else {
@@ -260,7 +322,6 @@ const OrderHistoryPage: React.FC = () => {
       return;
     }
 
-    // Nếu không phải COD, kiểm tra trạng thái thanh toán
     setCancelLoading(true);
     setCancelError(null);
 
@@ -274,7 +335,6 @@ const OrderHistoryPage: React.FC = () => {
       if (res.data.status === 'paid') {
         setCancelError('Đơn hàng đã được thanh toán, không thể hủy.');
       } else {
-        // Nếu chưa thanh toán, cho phép hủy
         await performCancel(order);
       }
     } catch (err: any) {
@@ -285,7 +345,6 @@ const OrderHistoryPage: React.FC = () => {
     }
   };
 
-  // Hàm thực hiện hủy đơn
   const performCancel = async (order: Order) => {
     if (!token) return;
 
@@ -298,7 +357,7 @@ const OrderHistoryPage: React.FC = () => {
 
       if (res.data.success) {
         alert('Đơn hàng đã được hủy.');
-        await fetchOrders(); // Làm mới danh sách
+        await fetchOrders();
         closeModal();
       }
     } catch (err: any) {
@@ -372,10 +431,12 @@ const OrderHistoryPage: React.FC = () => {
             <ModalContent
               order={selectedOrder}
               onClose={closeModal}
-              onCancel={checkPaymentAndCancel} // Gọi hàm kiểm tra trước
+              onCancel={checkPaymentAndCancel}
+              onMarkDelivered={markOrderAsDelivered}
               cancelLoading={cancelLoading}
               cancelError={cancelError}
-              // canCancel prop không còn được dùng
+              markDeliveredLoading={markDeliveredLoading}
+              markDeliveredError={markDeliveredError}
             />
           </div>
         )}

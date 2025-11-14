@@ -1,20 +1,22 @@
-// src/pages/client/OrderHistoryPage.tsx
 import React, { useState, useEffect, Component } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Tabs, Tab, Box } from '@mui/material';
+import { Tabs, Tab, Box, Divider } from '@mui/material';
 import '../../styles/OrderHistory.css';
+import { ProductRating } from '../../components/Client/Review/ProductRating'; // ✅ Import component mới
 
 // --- Interfaces ---
 interface Product {
-  _id: string;
+  _id: string; // ✅ ID MongoDB
+  code: string; // ✅ mã sản phẩm duy nhất, ví dụ "DOLA3901"
   name: string;
-  image: string;
+  image?: string;
   price: number;
 }
 
 interface ProductInOrder {
   product: Product | null;
+  productId: string; // ✅ thêm productId để đồng nhất với backend (được dùng khi gửi review)
   quantity: number;
   selectedColor?: string;
   selectedSize?: string;
@@ -36,8 +38,8 @@ export interface Order {
   createdAt: string;
 }
 
-// --- Chuyển trạng thái sang tiếng Việt ---
-const getStatusLabel = (status: Order['status']) => {
+// ✅ Hàm chuyển đổi trạng thái
+const getStatusLabel = (status: string) => {
   switch (status) {
     case 'pending': return 'Chờ xác nhận';
     case 'paid': return 'Đã thanh toán';
@@ -77,7 +79,8 @@ class OrderHistoryErrorBoundary extends Component<{ children: React.ReactNode },
 }
 
 // --- Product Item ---
-const ProductItem: React.FC<{ item: ProductInOrder }> = ({ item }) => {
+// Trước: { item, orderId }
+const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus: string }> = ({ item, orderId, orderStatus }) => {
   const product = item.product;
 
   if (!product) {
@@ -111,9 +114,21 @@ const ProductItem: React.FC<{ item: ProductInOrder }> = ({ item }) => {
         {item.selectedColor && <p>Màu: {item.selectedColor}</p>}
         {item.selectedSize && <p>Kích cỡ: {item.selectedSize}</p>}
       </div>
+
+      {/* Sửa: sử dụng orderStatus và orderId từ props */}
+      {orderStatus === 'delivered' && (
+        <div className="product-rating-section">
+          <ProductRating 
+  item={item} 
+  orderId={orderId} 
+    productId={item.product?.code || item.product?._id || ''} // ✅ Truyền mã sản phẩm
+/>
+        </div>
+      )}
     </div>
   );
 };
+
 
 // --- Order Item ---
 const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onClick }) => (
@@ -148,6 +163,7 @@ const ModalContent: React.FC<{
     : order.status === 'pending' && order.paymentStatus === 'unpaid';
 
   const canMarkDelivered = order.status === 'shipped';
+  const canRate = order.status === 'delivered';
 
   return (
     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -156,7 +172,11 @@ const ModalContent: React.FC<{
         <div className="products-list">
           <h4>Sản phẩm trong đơn:</h4>
           {order.products.map((item, idx) => (
-            <ProductItem key={idx} item={item} />
+            <div key={idx}>
+              <ProductItem item={item} orderId={order.id} orderStatus={order.status} />
+      {canRate && <Divider sx={{ my: 1 }} />}
+              {canRate && <Divider sx={{ my: 1 }} />} {/* Thêm line giữa các sản phẩm nếu có đánh giá */}
+            </div>
           ))}
         </div>
 
@@ -176,6 +196,7 @@ const ModalContent: React.FC<{
       </div>
 
       <div className="modal-actions">
+        {/* Nút đánh dấu đã nhận hàng */}
         {canMarkDelivered && (
           <div className="mark-delivered-section">
             {markDeliveredError && <p className="error-message">{markDeliveredError}</p>}
@@ -189,6 +210,7 @@ const ModalContent: React.FC<{
           </div>
         )}
 
+        {/* Nút hủy đơn */}
         {canCancel && (
           <div className="cancel-section">
             {cancelError && <p className="error-message">{cancelError}</p>}
@@ -202,18 +224,17 @@ const ModalContent: React.FC<{
           </div>
         )}
 
+        {/* Thông báo nếu không thể thực hiện hành động */}
         {!canCancel && !canMarkDelivered && (
           <div className="no-action-section">
-            {order.paymentStatus === 'paid' && order.paymentMethod !== 'cod' && order.status !== 'shipped' ? (
-              <p>Đơn hàng đã được thanh toán, không thể hủy.</p>
-            ) : (
-              <p>Không thể thực hiện hành động ở trạng thái này.</p>
-            )}
+            <p>Không thể thực hiện hành động ở trạng thái này.</p>
           </div>
         )}
       </div>
 
-      <button className="close-modal-btn" onClick={onClose}>Đóng</button>
+      <button className="close-modal-btn" onClick={onClose}>
+        Đóng
+      </button>
     </div>
   );
 };

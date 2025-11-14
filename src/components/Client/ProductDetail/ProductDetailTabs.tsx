@@ -13,11 +13,17 @@ const productDetails = [
   "Xuất xứ: Việt Nam",
 ];
 
+interface ProductDetailTabsProps {
+  productId: string;
+}
+
+
 function TabPanel({ children, value, index }: { children: React.ReactNode; value: number; index: number }) {
   return value === index ? <Box p={3} sx={{ pt: 1 }}>{children}</Box> : null;
 }
 
-export default function ProductDetailTabs() {
+export default function ProductDetailTabs({ productId }: ProductDetailTabsProps) {
+    
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -93,7 +99,7 @@ export default function ProductDetailTabs() {
         />
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
-        <ProductReviews />
+        <ProductReviews productId={productId} />
       </TabPanel>
       <TabPanel value={tabIndex} index={2}> 
         <BuyingGuide />

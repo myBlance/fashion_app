@@ -11,12 +11,12 @@ import { Box, IconButton } from "@mui/material";
 import { getProductById, Product } from "../../services/productService"; 
 import { CartService } from "../../services/cartService";
 import { useAuth } from '../../contexts/AuthContext';
-import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs";
+import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs"; // Đảm bảo component này đã được cập nhật
 import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";
 import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
 
 const ProductDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>(); // id là productId
   const dispatch = useDispatch();
   const { userId: authUserId, loading: authLoading } = useAuth();
 
@@ -95,7 +95,7 @@ const ProductDetail: React.FC = () => {
       const savedItem = await CartService.addToCart(userId, newItem);
       const cartItem: CartItem = {
         ...newItem,
-        id: savedItem.id, // _id từ backend
+        id: savedItem.id, 
       };
       dispatch(addToCart(cartItem));
       alert("Đã thêm vào giỏ!");
@@ -208,14 +208,15 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
       <Box>
-  {/* Các phần khác của sản phẩm */}
-  <ProductDetailTabs />
-  <SimilarProducts
-      currentProductId={product.id}
-      currentCategory={product.category} // Truyền category
-    />
-</Box>
+        {/* ✅ Truyền productId vào ProductDetailTabs */}
+        <ProductDetailTabs productId={product._id} />
+        <SimilarProducts
+          currentProductId={product.id}
+          currentCategory={product.category} // Truyền category
+        />
+      </Box>
     </div>
   );
 };

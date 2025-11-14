@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -12,55 +12,27 @@ import {
   IconButton,
   Tooltip,
   useTheme,
+  LinearProgress,
+  Alert,
 } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
-// Giả lập dữ liệu đánh giá
-const mockReviews = [
-  {
-    id: 1,
-    username: 'trangthoonth',
-    rating: 5,
-    date: '2022-11-13 10:53',
-    variant: 'Đen + Lót chuột',
-    content: 'Chất lượng sản phẩm: Ổn áp, giá thành rẻ, hoạt động khá ok.\n\nTính năng nổi bật: chuột không dây, click ko phát ra âm thanh, cầm vừa tay, nhỏ, dễ mang theo khi ra ngoài, hàng tặng đẹp, mới. Rất đáng mua nha.\n\nGiao hàng nhanh, đóng gói hàng kỹ, giá rẻ còn dc tặng thêm lót chuột và pin nữa. Nói chung là chuột đẹp, nhỏ gọn nhìn cute xíu luôn á. Mình khuyên mọi người nên mua hàng nha. Chắc chắn sẽ không khiến mọi người thất vọng đâu :)) Tuy mình vẫn chưa sử dụng sản phẩm lâu nhưng nhìn cách đóng gói và các món hàng tặng được gọn gàng, an toàn và vẫn còn mới tỉnh thì mình khá là an tâm.',
-    images: [
-      'https://via.placeholder.com/100?text=Image+1',
-      'https://via.placeholder.com/100?text=Image+2',
-    ],
-    likes: 19,
-  },
-  {
-    id: 2,
-    username: 'm****5',
-    rating: 5,
-    date: '2023-03-30 17:10',
-    variant: 'Hồng + Lót chuột',
-    content: 'Chất lượng sản phẩm: tốt, giao hàng nhanh, đóng gói cẩn thận. Mình rất hài lòng với sản phẩm này!',
-    images: [],
-    likes: 7,
-  },
-  {
-    id: 3,
-    username: 'nguyen_van_a',
-    rating: 4,
-    date: '2023-05-20 14:30',
-    variant: 'Trắng + Không tặng kèm',
-    content: 'Sản phẩm tốt, giá hợp lý. Tuy nhiên có một số điểm nhỏ chưa ưng ý.',
-    images: ['https://via.placeholder.com/100?text=Video+0:06'],
-    likes: 3,
-  },
-  {
-    id: 4,
-    username: 'le_thi_b',
-    rating: 3,
-    date: '2023-06-01 09:15',
-    variant: 'Xanh + Lót chuột',
-    content: '',
-    images: [],
-    likes: 0,
-  },
-];
+// Định nghĩa kiểu dữ liệu đánh giá
+interface Review {
+  _id: string;
+  orderId: string;
+  productId: string;
+  userId: {
+    _id: string;
+    username: string;
+    avatar?: string;
+  };
+  rating: number;
+  comment: string;
+  images: string[];
+  createdAt: string;
+  likes: number;
+}
 
 // Component hiển thị hình ảnh/video
 const ReviewMedia = ({ media }: { media: string[] }) => {
@@ -92,7 +64,6 @@ const ReviewMedia = ({ media }: { media: string[] }) => {
               transition: 'transform 0.2s ease',
             }}
           />
-          {/* Nếu là video, thêm icon play */}
           {url.includes('Video') && (
             <Box
               sx={{
@@ -118,41 +89,81 @@ const ReviewMedia = ({ media }: { media: string[] }) => {
   );
 };
 
+// Props cho component
+interface ProductReviewsProps {
+  productId: string; // Truyền vào ID sản phẩm để lấy đánh giá
+}
+
 // Component đánh giá sản phẩm
-const ProductReviews: React.FC = () => {
+const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
   const theme = useTheme();
+
+  // Trạng thái dữ liệu
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Trạng thái lọc
   const [selectedStars, setSelectedStars] = useState<number | null>(null);
   const [hasCommentFilter, setHasCommentFilter] = useState<boolean | null>(null);
   const [hasMediaFilter, setHasMediaFilter] = useState<boolean | null>(null);
 
+  // Lấy dữ liệu từ backend
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!productId || typeof productId !== 'string' || productId.length < 1) {
+        setError('productId không hợp lệ');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+        const response = await fetch(`${baseURL}/api/reviews/product/${productId}`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Lỗi từ server (text):", errorText);
+          throw new Error(`Lỗi từ server: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setReviews(data.reviews || []);
+        } else {
+          throw new Error(data.message || 'Lỗi từ server');
+        }
+      } catch (err: any) {
+        setError(err.message || 'Lỗi không xác định');
+        console.error('Lỗi khi lấy đánh giá:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [productId]);
+
   // Thống kê tổng quan
-  const totalReviews = mockReviews.length;
-  const averageRating = mockReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews;
+  const totalReviews = reviews.length;
+  const averageRating = totalReviews > 0
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+    : 0;
 
   const starCounts = [5, 4, 3, 2, 1].map(star => ({
     star,
-    count: mockReviews.filter(r => r.rating === star).length,
+    count: reviews.filter(r => r.rating === star).length,
   }));
 
-  const hasComments = mockReviews.filter(r => r.content.trim().length > 0).length;
-  const hasMedia = mockReviews.filter(r => r.images.length > 0).length;
+  const hasComments = reviews.filter(r => r.comment.trim().length > 0).length;
+  const hasMedia = reviews.filter(r => r.images.length > 0).length;
 
   // Lọc đánh giá theo trạng thái
-  const filteredReviews = mockReviews.filter(review => {
-    // Lọc theo số sao
-    if (selectedStars !== null && review.rating !== selectedStars) {
-      return false;
-    }
-    // Lọc theo có bình luận
-    if (hasCommentFilter !== null && hasCommentFilter !== (review.content.trim().length > 0)) {
-      return false;
-    }
-    // Lọc theo có hình ảnh/video
-    if (hasMediaFilter !== null && hasMediaFilter !== (review.images.length > 0)) {
-      return false;
-    }
+  const filteredReviews = reviews.filter(review => {
+    if (selectedStars !== null && review.rating !== selectedStars) return false;
+    if (hasCommentFilter !== null && hasCommentFilter !== (review.comment.trim().length > 0)) return false;
+    if (hasMediaFilter !== null && hasMediaFilter !== (review.images.length > 0)) return false;
     return true;
   });
 
@@ -179,6 +190,22 @@ const ProductReviews: React.FC = () => {
   };
 
   const isAnyFilterActive = selectedStars !== null || hasCommentFilter !== null || hasMediaFilter !== null;
+
+  if (loading) {
+    return (
+      <Box sx={{ mt: 4, p: 2 }}>
+        <LinearProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ mt: 4, p: 2 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ mt: 4 }}>
@@ -242,26 +269,26 @@ const ProductReviews: React.FC = () => {
       {/* Danh sách đánh giá */}
       {filteredReviews.length > 0 ? (
         filteredReviews.map((review) => (
-          <Card key={review.id} sx={{ mb: 2, boxShadow: 'none', border: `1px solid ${theme.palette.divider}` }}>
+          <Card key={review._id} sx={{ mb: 2, boxShadow: 'none', border: `1px solid ${theme.palette.divider}` }}>
             <CardContent>
               <Stack direction="row" alignItems="flex-start" spacing={2}>
                 <Avatar sx={{ bgcolor: 'grey.300' }}>
-                  {review.username.charAt(0).toUpperCase()}
+                  {review.userId.username.charAt(0).toUpperCase()}
                 </Avatar>
                 <Box sx={{ flexGrow: 1 }}>
                   <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
                     <Typography variant="subtitle1" fontWeight="bold">
-                      {review.username.replace(/^(.{1})(.*)(.{1})$/, '$1****$3')} {/* Ẩn một phần tên */}
+                      {review.userId.username.replace(/^(.{1})(.*)(.{1})$/, '$1****$3')}
                     </Typography>
                     <Rating value={review.rating} readOnly size="small" />
                   </Stack>
 
                   <Typography variant="caption" color="text.secondary" mb={1}>
-                    {review.date} | Phân loại hàng: {review.variant}
+                    {new Date(review.createdAt).toLocaleString('vi-VN')} | Phân loại hàng: {review.productId}
                   </Typography>
 
                   <Typography variant="body2" paragraph sx={{ whiteSpace: 'pre-line' }}>
-                    {review.content || <i>Không có bình luận</i>}
+                    {review.comment || <i>Không có bình luận</i>}
                   </Typography>
 
                   <ReviewMedia media={review.images} />
@@ -271,7 +298,7 @@ const ProductReviews: React.FC = () => {
                       <IconButton size="small" sx={{ color: 'grey.600' }}>
                         <ThumbUpIcon fontSize="small" />
                         <Typography variant="caption" ml={0.5}>
-                          {review.likes}
+                          {review.likes || 0}
                         </Typography>
                       </IconButton>
                     </Tooltip>
@@ -289,7 +316,7 @@ const ProductReviews: React.FC = () => {
       )}
 
       {/* Xem thêm nếu cần */}
-      {filteredReviews.length < mockReviews.length && (
+      {filteredReviews.length < reviews.length && (
         <Box sx={{ textAlign: 'center', mt: 2 }}>
           <Typography
             variant="body2"

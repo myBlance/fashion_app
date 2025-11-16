@@ -211,7 +211,11 @@ const ProductDetail: React.FC = () => {
 
       <Box>
         {/* ✅ Truyền productId vào ProductDetailTabs */}
-        <ProductDetailTabs productId={product._id} />
+        <ProductDetailTabs
+            productId={product._id}
+            description={product.description || ''}
+            details={product.details || ''}
+        />
         <SimilarProducts
           currentProductId={product.id}
           currentCategory={product.category} // Truyền category

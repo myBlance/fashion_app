@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 
 interface ProductDescriptionProps {
   description: string;
-  details: string[];
+  details: string;
 }
 
 const ProductDescription: React.FC<ProductDescriptionProps> = ({ description, details }) => {
@@ -19,13 +19,9 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({ description, de
       <Typography variant="h6" fontWeight="bold" gutterBottom mt={2}>
         Chi tiết sản phẩm
       </Typography>
-      <ul>
-        {details.map((detail, index) => (
-          <li key={index}>
-            <Typography variant="body2">{detail}</Typography>
-          </li>
-        ))}
-      </ul>
+      <Typography variant="body2" paragraph>
+        {details}
+      </Typography>
     </Box>
   );
 };

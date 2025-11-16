@@ -2,28 +2,23 @@ import React, { useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import ProductDescription from './ProductDescription';
 import ProductReviews from './ProductReviews';
-import BuyingGuide from './BuyingGuide'; 
-
-// Giả lập dữ liệu mô tả
-const productDescription = "Đây là sản phẩm tuyệt vời, chất lượng cao, thiết kế thời trang, phù hợp với mọi lứa tuổi.";
-const productDetails = [
-  "Chất liệu: 100% cotton",
-  "Màu sắc: Đen, Trắng, Xanh",
-  "Kích thước: S, M, L, XL",
-  "Xuất xứ: Việt Nam",
-];
+import BuyingGuide from './BuyingGuide';
 
 interface ProductDetailTabsProps {
   productId: string;
+  description: string;   // ✅ Thêm prop description
+  details: string;       // ✅ Thêm prop details
 }
-
 
 function TabPanel({ children, value, index }: { children: React.ReactNode; value: number; index: number }) {
   return value === index ? <Box p={3} sx={{ pt: 1 }}>{children}</Box> : null;
 }
 
-export default function ProductDetailTabs({ productId }: ProductDetailTabsProps) {
-    
+export default function ProductDetailTabs({
+  productId,
+  description = '',
+  details = ''
+}: ProductDetailTabsProps) {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -74,7 +69,7 @@ export default function ProductDetailTabs({ productId }: ProductDetailTabsProps)
             '&:hover': { backgroundColor: 'transparent' },
           }}
         />
-        <Tab // 👈 Thêm tab mới
+        <Tab
           label="HƯỚNG DẪN MUA HÀNG"
           disableRipple
           sx={{
@@ -94,14 +89,14 @@ export default function ProductDetailTabs({ productId }: ProductDetailTabsProps)
 
       <TabPanel value={tabIndex} index={0}>
         <ProductDescription
-          description={productDescription}
-          details={productDetails}
+          description={description}
+          details={details}
         />
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
         <ProductReviews productId={productId} />
       </TabPanel>
-      <TabPanel value={tabIndex} index={2}> 
+      <TabPanel value={tabIndex} index={2}>
         <BuyingGuide />
       </TabPanel>
     </Box>

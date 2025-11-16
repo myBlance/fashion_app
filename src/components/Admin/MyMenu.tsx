@@ -129,12 +129,12 @@ const MyMenu: React.FC<MenuProps> = (props) => (
             <Menu {...props}>
                 <Menu.DashboardItem 
                     sx={{ color: "#fff",
-                    "& .MuiListItemIcon-root": { color: "#fff"  },
-                    "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                    "&.RaMenuItemLink-active": {
-                        backgroundColor: "#3873d1",  
-                        color: "#fff",               
-                    }
+                        "& .MuiListItemIcon-root": { color: "#fff"  },
+                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
+                        "&.RaMenuItemLink-active": {
+                            backgroundColor: "#3873d1",  
+                            color: "#fff",               
+                        }
                     }} 
                 />
                 <Menu.Item 
@@ -142,12 +142,12 @@ const MyMenu: React.FC<MenuProps> = (props) => (
                     primaryText="Order" 
                     leftIcon={<ShoppingCart />} 
                     sx={{ color: "#fff",
-                    "& .MuiListItemIcon-root": { color: "#fff"  },
-                    "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                    "&.RaMenuItemLink-active": {
-                        backgroundColor: "#3873d1",  
-                        color: "#fff",               
-                    }
+                        "& .MuiListItemIcon-root": { color: "#fff"  },
+                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
+                        "&.RaMenuItemLink-active": {
+                            backgroundColor: "#3873d1",  
+                            color: "#fff",               
+                        }
                     }} 
                 />
                 <Menu.Item 
@@ -155,12 +155,12 @@ const MyMenu: React.FC<MenuProps> = (props) => (
                     primaryText="Product" 
                     leftIcon={<Store />} 
                     sx={{ color: "#fff",
-                    "& .MuiListItemIcon-root": { color: "#fff"  },
-                    "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                    "&.RaMenuItemLink-active": {
-                        backgroundColor: "#3873d1",  
-                        color: "#fff",               
-                    }
+                        "& .MuiListItemIcon-root": { color: "#fff"  },
+                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
+                        "&.RaMenuItemLink-active": {
+                            backgroundColor: "#3873d1",  
+                            color: "#fff",               
+                        }
                     }} 
                 />
                 <Menu.Item 
@@ -168,12 +168,25 @@ const MyMenu: React.FC<MenuProps> = (props) => (
                     primaryText="Voucher" 
                     leftIcon={<Loyalty />} 
                     sx={{ color: "#fff",
-                    "& .MuiListItemIcon-root": { color: "#fff"  },
-                    "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                    "&.RaMenuItemLink-active": {
-                        backgroundColor: "#3873d1",  
-                        color: "#fff",               
-                    }
+                        "& .MuiListItemIcon-root": { color: "#fff"  },
+                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
+                        "&.RaMenuItemLink-active": {
+                            backgroundColor: "#3873d1",  
+                            color: "#fff",               
+                        }
+                    }} 
+                />
+                <Menu.Item 
+                    to="/admin/reviews"
+                    primaryText="Review" 
+                    leftIcon={<Loyalty />} 
+                    sx={{ color: "#fff",
+                        "& .MuiListItemIcon-root": { color: "#fff"  },
+                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
+                        "&.RaMenuItemLink-active": {
+                            backgroundColor: "#3873d1",  
+                            color: "#fff",               
+                        }
                     }} 
                 />
                 {/* Thêm mục menu khác tại đây */}

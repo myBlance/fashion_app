@@ -14,6 +14,7 @@ import { VoucherList } from './voucher/VoucherList';
 import { VoucherCreate } from './voucher/VoucherCreate';
 import { VoucherEdit } from './voucher/VoucherEdit';
 import { OrderEdit } from './order/OrderEdit';
+import { ReviewList } from './review/ReviewList';
 const AdminApp = () => (
     <Admin 
         basename="/admin"
@@ -40,6 +41,10 @@ const AdminApp = () => (
             list = {VoucherList}
             edit = {VoucherEdit}
             create = {VoucherCreate}
+        />
+        <Resource 
+            name="reviews" 
+            list = {ReviewList}
         />
 
         <CustomRoutes>

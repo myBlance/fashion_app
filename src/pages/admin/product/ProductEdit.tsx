@@ -41,7 +41,7 @@ const fieldStyle = {
     marginBottom: 2,
 };
 
-// ✅ Component hiển thị và cho phép xóa ảnh thumbnail
+// ✅ Component hiển thị và cho phép xáy ảnh thumbnail
 const ThumbnailInput = () => {
     const record = useRecordContext();
     const [thumbnail, setThumbnail] = useState(record?.thumbnail || null);
@@ -237,6 +237,43 @@ export const ProductEdit = () => {
                                 variant="outlined"
                             />
                         </Box>
+                    </Box>
+
+                    {/* --- MÔ TẢ SẢN PHẨM --- */}
+                    <Box mb={2}>
+                        <Typography variant="h6">Mô tả sản phẩm</Typography>
+                        <Divider />
+                    </Box>
+
+                    <Box mb={2}>
+                        <TextInput
+                            source="description"
+                            label="Mô tả ngắn"
+                            multiline
+                            minRows={3}
+                            fullWidth
+                            variant="outlined"
+                            helperText="Nhập mô tả ngắn gọn về sản phẩm"
+                        />
+                    </Box>
+
+                    {/* --- CHI TIẾT SẢN PHẨM --- */}
+                    <Box mb={2}>
+                        <Typography variant="h6">Chi tiết sản phẩm</Typography>
+                        <Divider />
+                    </Box>
+
+                    <Box mb={2}>
+                        {/* ✅ Thay bằng textarea MUI */}
+                        <TextInput
+                            source="details"
+                            label="Chi tiết sản phẩm"
+                            multiline
+                            minRows={4}
+                            fullWidth
+                            variant="outlined"
+                            helperText="Nhập chi tiết sản phẩm (dưới dạng văn bản)"
+                        />
                     </Box>
 
                     {/* --- Thuộc tính sản phẩm --- */}

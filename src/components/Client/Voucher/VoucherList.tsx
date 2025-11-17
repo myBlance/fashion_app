@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress, Alert } from '@mui/material';
 import VoucherCard from './VoucherCard';
-import { VoucherService, Voucher } from '../../../services/voucherService';
+import { VoucherService, Voucher, UserVoucher } from '../../../services/voucherService';
 
 interface VoucherListProps {
   totalAmount?: number;
-  // token?: string; // ❌ Xóa token khỏi props
 }
 
 const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
+  const [claimedVoucherCodes, setClaimedVoucherCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,11 +53,27 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
       }
     };
 
+    const fetchClaimedVouchers = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return;
+      }
+      try {
+        const res = await VoucherService.getMyVouchers(token);
+        if (res && res.success && Array.isArray(res.data)) {
+          const codes = res.data.map((uv: UserVoucher) => uv.voucher.code);
+          setClaimedVoucherCodes(codes);
+        }
+      } catch (err) {
+        console.error('Lỗi khi lấy danh sách voucher đã lưu:', err);
+      }
+    };
+
     fetchVouchers();
+    fetchClaimedVouchers();
   }, []);
 
   const handleClaim = async (code: string) => {
-    // ✅ Lấy token từ đúng nơi
     const token = localStorage.getItem('token');
     if (!token) {
       alert('Bạn cần đăng nhập để lưu voucher.');
@@ -67,6 +83,8 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
       const res = await VoucherService.claimVoucher(code, token);
       if (res.success) {
         alert(res.message);
+        // ✅ Cập nhật lại danh sách đã lưu sau khi claim thành công
+        setClaimedVoucherCodes(prev => [...prev, code]);
       } else {
         alert(`Lỗi: ${res.message}`);
       }
@@ -130,6 +148,7 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
           currentTotalAmount={totalAmount}
           onCopy={() => handleCopy(voucher.code)}
           onClaim={handleClaim}
+          isClaimed={claimedVoucherCodes.includes(voucher.code)} // ✅ Truyền trạng thái đúng
         />
       ))}
     </Box>

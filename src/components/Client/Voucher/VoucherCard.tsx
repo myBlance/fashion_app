@@ -1,6 +1,6 @@
 // src/components/Client/Voucher/VoucherCard.tsx
 import React from 'react';
-import { Box, Typography, Button, Chip, Alert } from '@mui/material';
+import { Box, Typography, Button, Chip } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 export interface VoucherCardProps {
@@ -24,7 +24,8 @@ export interface VoucherCardProps {
 
   currentTotalAmount?: number;
   onCopy: () => void;
-  onClaim?: (code: string) => void; // Không còn token
+  onClaim?: (code: string) => void;
+  isClaimed?: boolean; // ✅ Thêm prop mới
 }
 
 const VoucherCard: React.FC<VoucherCardProps> = ({
@@ -44,12 +45,13 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
   currentTotalAmount,
   onCopy,
   onClaim,
+  isClaimed = false, // ✅ Mặc định là chưa lưu
 }) => {
   const isEligible =
     currentTotalAmount !== undefined ? currentTotalAmount >= minOrderAmount && isActive : isActive;
 
   const handleClaim = () => {
-    if (onClaim) {
+    if (onClaim && !isClaimed) {
       onClaim(code);
     }
   };
@@ -181,10 +183,12 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
             variant="contained"
             size="small"
             onClick={handleClaim}
-            disabled={currentTotalAmount !== undefined && !isEligible}
+            disabled={currentTotalAmount !== undefined && !isEligible || isClaimed} // ✅ Vô hiệu hóa nếu đã lưu
             sx={{
-              background: isEligible
-                ? 'linear-gradient(90deg, #4caf50, #2e7d32)'
+              background: isClaimed
+                ? 'linear-gradient(90deg, #9e9e9e, #616161)' // Màu xám nếu đã lưu
+                : isEligible
+                ? 'linear-gradient(90deg, #4caf50, #2e7d32)' // Màu xanh nếu có thể lưu
                 : '#bdbdbd',
               color: '#fff',
               textTransform: 'none',
@@ -192,13 +196,15 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
               px: 1.5,
               borderRadius: 2,
               '&:hover': {
-                background: isEligible
-                  ? 'linear-gradient(90deg, #2e7d32, #1b5e20)'
+                background: isClaimed
+                  ? 'linear-gradient(90deg, #9e9e9e, #616161)' // Không đổi nếu đã lưu
+                  : isEligible
+                  ? 'linear-gradient(90deg, #2e7d32, #1b5e20)' // Hover xanh
                   : '#bdbdbd',
               },
             }}
           >
-            Lưu
+            {isClaimed ? 'Đã lưu' : 'Lưu'} {/* ✅ Hiển thị trạng thái */}
           </Button>
         </Box>
       </Box>

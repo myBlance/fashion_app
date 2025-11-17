@@ -22,6 +22,8 @@ export interface Product {
   sale: boolean;
   delivery: string;
   createdAt: string;
+  description?: string;
+    details?: string;
 }
 
 // Lấy danh sách sản phẩm với phân trang, lọc, sắp xếp

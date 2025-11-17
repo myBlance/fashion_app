@@ -1,123 +1,134 @@
-import React, { useRef, useState } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
+import React, { useRef, useState, useEffect } from 'react';
+import { Box, Typography, IconButton, CircularProgress, Alert } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from './ProductCard';
-import { products } from '../../data/products';
+import { Product } from '../../types/Product'; // ✅ Import type
+
+// ✅ Hàm gọi API
+const fetchProducts = async (): Promise<Product[]> => {
+  try {
+    const response = await fetch('/api/products');
+    if (!response.ok) {
+      throw new Error(`Lỗi API: ${response.status} - ${response.statusText}`);
+    }
+    // ✅ Sửa lỗi cú pháp: nhận đúng kiểu dữ liệu
+    const data: Product[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('❌ Lỗi khi gọi API /api/products:', error);
+    throw error;
+  }
+};
 
 const NewProducts: React.FC = () => {
-    const productWidth = 220;
-    const productMarginRight = 16;
-    const visibleCount = 5;
-    const containerWidth = visibleCount * (productWidth + productMarginRight);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const isDown = useRef(false);
-    const startX = useRef(0);
-    const scrollLeft = useRef(0);
-    const [isDragging, setIsDragging] = useState(false);
+  const productWidth = 220;
+  const productMarginRight = 16;
+  const visibleCount = 5;
+  const containerWidth = visibleCount * (productWidth + productMarginRight);
 
-    const onMouseDown = (e: React.MouseEvent) => {
-        isDown.current = true;
-        setIsDragging(false);
-        startX.current = e.pageX - (scrollRef.current?.offsetLeft ?? 0);
-        scrollLeft.current = scrollRef.current?.scrollLeft ?? 0;
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // ✅ Lấy dữ liệu từ backend
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Lỗi không xác định');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const onMouseLeave = () => {
-        isDown.current = false;
-    };
+    loadProducts();
+  }, []);
 
-    const onMouseUp = () => {
-        isDown.current = false;
-        setTimeout(() => setIsDragging(false), 0);
-        window.getSelection()?.removeAllRanges();
-    };
+  // ✅ Sắp xếp theo ngày tạo (mới nhất lên đầu) và lấy 10 sản phẩm đầu tiên
+  const newProducts = [...products]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 10);
 
-    const onMouseMove = (e: React.MouseEvent) => {
-        if (!isDown.current || !scrollRef.current) return;
-        const x = e.pageX - scrollRef.current.offsetLeft;
-        const walk = (x - startX.current) * 1;
-        scrollRef.current.scrollLeft = scrollLeft.current - walk;
+  const scrollByOneProduct = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const scrollAmount = productWidth + productMarginRight;
+    scrollRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
 
-        if (Math.abs(walk) > 5) {
-            setIsDragging(true);
-        }
-    };
-
-    const handleClickCapture = (e: React.MouseEvent) => {
-        if (isDragging) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-    };
-
-    const scrollByOneProduct = (direction: 'left' | 'right') => {
-        if (!scrollRef.current) return;
-        const scrollAmount = productWidth + productMarginRight;
-        scrollRef.current.scrollBy({
-            left: direction === 'left' ? -scrollAmount : scrollAmount,
-            behavior: 'smooth',
-        });
-    };
-
+  if (loading) {
     return (
-        <Box p={4}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom align='center'>
-                Sản phẩm mới ✨
-            </Typography>
-            <Typography variant="body2" mb={3} align='center'>
-                Cập nhật những mẫu thiết kế mới nhất từ Dola Style!
-            </Typography>
-
-            <Box display="flex" alignItems="center" gap={1} justifyContent="center">
-                <IconButton onClick={() => scrollByOneProduct('left')} size="large">
-                    <ChevronLeftIcon />
-                </IconButton>
-
-                <Box
-                    ref={scrollRef}
-                    display="flex"
-                    onMouseDown={onMouseDown}
-                    onMouseLeave={onMouseLeave}
-                    onMouseUp={onMouseUp}
-                    onMouseMove={onMouseMove}
-                    onClickCapture={handleClickCapture}
-                    sx={{
-                        overflowX: 'auto',
-                        width: containerWidth,
-                        cursor: isDown.current ? 'grabbing' : 'grab',
-                        userSelect: 'none',
-                        WebkitUserDrag: 'none',
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                        '&::-webkit-scrollbar': 
-                        { 
-                            display: 'none' 
-                        },
-                    }}
-                >
-                    {[...products]
-                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                        .slice(0, 10)
-                        .map((product) => (
-                            <Box 
-                                key={product.id} 
-                                flex="0 0 auto" 
-                                sx={{ minWidth: productWidth,  pl:1 , mr:1, mb:2 , mt:2 }}
-                            >
-                                <ProductCard product={{...product, status: product.status ? 'true' : 'false'}} />
-                            </Box>
-                        ))}
-
-                </Box>
-
-                <IconButton onClick={() => scrollByOneProduct('right')} size="large">
-                    <ChevronRightIcon />
-                </IconButton>
-            </Box>
-        </Box>
+      <Box display="flex" justifyContent="center" p={4}>
+        <CircularProgress />
+      </Box>
     );
+  }
+
+  if (error) {
+    return (
+      <Box p={4}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+
+  return (
+    <Box p={4}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
+        Sản phẩm mới ✨
+      </Typography>
+      <Typography variant="body2" mb={3} align="center">
+        Cập nhật những mẫu thiết kế mới nhất từ Dola Style!
+      </Typography>
+
+      <Box display="flex" alignItems="center" gap={1} justifyContent="center">
+        <IconButton onClick={() => scrollByOneProduct('left')} size="large">
+          <ChevronLeftIcon />
+        </IconButton>
+
+        <Box
+          ref={scrollRef}
+          display="flex"
+          sx={{
+            overflowX: 'auto',
+            width: containerWidth,
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            '&::-webkit-scrollbar': { display: 'none' },
+          }}
+        >
+          {newProducts.length > 0 ? (
+            newProducts.map((product) => (
+              <Box
+                key={product.id}
+                flex="0 0 auto"
+                sx={{ minWidth: productWidth, pl: 1, mr: 1, mb: 2, mt: 2 }}
+              >
+                {/* ✅ Bỏ `status` sai kiểu */}
+                <ProductCard product={product} />
+              </Box>
+            ))
+          ) : (
+            <Typography variant="body1" align="center" width="100%">
+              Không có sản phẩm mới nào.
+            </Typography>
+          )}
+        </Box>
+
+        <IconButton onClick={() => scrollByOneProduct('right')} size="large">
+          <ChevronRightIcon />
+        </IconButton>
+      </Box>
+    </Box>
+  );
 };
 
 export default NewProducts;

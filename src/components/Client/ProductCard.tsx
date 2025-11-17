@@ -14,13 +14,13 @@ import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { toggleWishlist } from '../../store/wishlistSlice';
-import { Product as ProductServiceProduct } from '../../services/productService';
 import QuickView from '../Client/QuickView';
+import { Product } from '../../types/Product';
 import { useAuth } from '../../contexts/AuthContext';
 import { WishlistService } from '../../services/wishlistService';
 
 interface ProductCardProps {
-  product: ProductServiceProduct;
+  product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
@@ -66,9 +66,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   // QuickView
   const [quickViewOpen, setQuickViewOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductServiceProduct | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const handleOpenQuickView = (product: ProductServiceProduct) => {
+  const handleOpenQuickView = (product: Product) => {
     setSelectedProduct(product);
     setQuickViewOpen(true);
   };

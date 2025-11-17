@@ -1,16 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { CartService } from '../services/cartService';
-
-export interface CartItem {
-  id?: string;
-  productId: string;
-  name: string;
-  color?: string;
-  size?: string;
-  price?: number;
-  quantity?: number;
-  image?: string;
-}
+import { CartItem } from '../types/CartItem';
 
 interface CartState {
   items: CartItem[];

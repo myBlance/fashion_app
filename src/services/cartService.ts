@@ -1,15 +1,5 @@
 import axios from "axios";
-
-export interface CartItem {
-  id?: string;       // _id của CartItem trong MongoDB
-  productId: string;
-  name: string;
-  color?: string;
-  size?: string;
-  price?: number;
-  quantity?: number;
-  image?: string;
-}
+import { CartItem } from "../types/CartItem";
 
 const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/carts`;
 

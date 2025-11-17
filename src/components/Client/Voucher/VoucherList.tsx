@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress, Alert } from '@mui/material';
 import VoucherCard from './VoucherCard';
-import { VoucherService, Voucher, UserVoucher } from '../../../services/voucherService';
+import { VoucherService, UserVoucher } from '../../../services/voucherService';
+import { Voucher } from '../../../types/Voucher';
 
 interface VoucherListProps {
   totalAmount?: number;

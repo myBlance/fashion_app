@@ -1,34 +1,11 @@
 import axios from 'axios';
+import { Voucher } from '../types/Voucher';
 
-export interface Voucher {
-    _id: string;
-    code: string;
-    name?: string;
-    description?: string;
-    type?: 'fixed' | 'percentage'; 
-    value?: number;               
-    discountText: string;
-    conditionText: string;
-    minOrderAmount: number;
-    minOrderValue?: number;
-    shopName?: string;
-    expiryDate: string; // ISO string
-    validFrom?: string;
-    validUntil?: string;
-    isFreeShip?: boolean;
-    isActive: boolean;
-    usageLimit: number;
-    usedCount: number;
-    createdAt: string;
-    updatedAt: string;
-    maxUses?: number;
-    maxUsesPerUser?: number;
-}
 
 export interface VoucherListResponse {
-  success: boolean;
-  data: Voucher[];
-  pagination?: {
+    success: boolean;
+    data: Voucher[];
+    pagination?: {
     page: number;
     limit: number;
     total: number;
@@ -37,8 +14,8 @@ export interface VoucherListResponse {
 }
 
 export interface VoucherResponse {
-  success: boolean;
-  data: Voucher;
+    success: boolean;
+    data: Voucher;
 }
 
 export interface UserVoucher {

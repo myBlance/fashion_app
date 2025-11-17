@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addToCart, CartItem } from "../../store/cartSlice";
+import { addToCart } from "../../store/cartSlice";
+import { CartItem } from "../../types/CartItem";
 import { toggleWishlist } from "../../store/wishlistSlice";
 import { useAppSelector } from "../../store/hooks";
 import "../../styles/ProductDetail.css";
 import DynamicBreadcrumbs from "../../components/Client/DynamicBreadcrumbs";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import { getProductById, Product } from "../../services/productService"; 
+import { getProductById } from "../../services/productService"; 
 import { CartService } from "../../services/cartService";
+import { Product } from "../../types/Product";
 import { useAuth } from '../../contexts/AuthContext';
 import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs"; // Đảm bảo component này đã được cập nhật
 import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";

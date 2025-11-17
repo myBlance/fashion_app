@@ -96,14 +96,9 @@ export const ProductCreate = () => {
             formData.append('sold', data.sold || 0);
             formData.append('total', data.total || 0);
             formData.append('status', data.status || 'selling');
-            formData.append('delivery', data.delivery || '');
             formData.append('style', data.style || '');
             formData.append('type', data.type || '');
-
-            // ✅ Thêm description
             formData.append('description', data.description || '');
-
-            // ✅ Thêm details (dưới dạng string)
             formData.append('details', data.details || '');
 
             // Chuyển mảng sang JSON string

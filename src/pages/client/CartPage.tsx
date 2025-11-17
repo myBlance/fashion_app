@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
-import { setCartItems, increaseQuantity, decreaseQuantity, removeFromCart, CartItem } from '../../store/cartSlice';
+import { setCartItems, increaseQuantity, decreaseQuantity, removeFromCart } from '../../store/cartSlice';
 import { CartService } from '../../services/cartService';
+import { CartItem } from '../../types/CartItem';
 import '../../styles/CartPage.css';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 import { useAuth } from '../../contexts/AuthContext';

@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material';
 import ProductCard from '../../components/Client/ProductCard';
-import { Product, getProducts } from '../../services/productService';
+import { getProducts } from '../../services/productService';
+import { Product } from "../../types/Product";
 import {
   priceOptions,
   typeOptions,
   styleOptions,
   sizeOptions,
   colorOptions,
-  deliveryOptions,
 } from "../../constants/filterOptions";
 import FilterSelect from '../../components/Client/FilterSelect';
 import ActiveFilters from '../../components/Client/ActiveFilters';
@@ -21,7 +21,6 @@ interface Filters {
   style: string[];
   size: string[];
   color: string[];
-  delivery: string[];
 }
 
 const ShopPage: React.FC = () => {
@@ -36,7 +35,6 @@ const ShopPage: React.FC = () => {
     style: [],
     size: [],
     color: [],
-    delivery: [],
   });
   const [loading, setLoading] = useState(false);
 
@@ -112,7 +110,6 @@ const ShopPage: React.FC = () => {
       style: [],
       size: [],
       color: [],
-      delivery: [],
     });
     setPage(0);
   };
@@ -147,7 +144,6 @@ const ShopPage: React.FC = () => {
           <FilterSelect label="Phong cách" value={filters.style} onChange={handleFilterChange('style')} options={styleOptions} ariaLabel="Phong cách" />
           <FilterSelect label="Size" value={filters.size} onChange={handleFilterChange('size')} options={sizeOptions} ariaLabel="Size" />
           <FilterSelect label="Màu sắc" value={filters.color} onChange={handleFilterChange('color')} options={colorOptions} ariaLabel="Màu sắc" />
-          <FilterSelect label="Dịch vụ giao hàng" value={filters.delivery} onChange={handleFilterChange('delivery')} options={deliveryOptions} ariaLabel="Dịch vụ giao hàng" />
         </Box>
       </Box>
 

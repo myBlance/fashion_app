@@ -17,11 +17,9 @@ export interface VoucherCardProps {
   maxUses?: number;
   maxUsesPerUser?: number;
   isActive?: boolean;
-
   discountText?: string;
   conditionText?: string;
   isFreeShip?: boolean;
-
   currentTotalAmount?: number;
   onCopy: () => void;
   onClaim?: (code: string) => void;

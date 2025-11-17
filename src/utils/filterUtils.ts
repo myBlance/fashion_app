@@ -1,20 +1,21 @@
 import { 
-    priceOptions,
-    typeOptions,
-    styleOptions,
-    sizeOptions,
-    colorOptions,
-    deliveryOptions,
+  priceOptions,
+  typeOptions,
+  styleOptions,
+  sizeOptions,
+  colorOptions,
 } from "../constants/filterOptions";
-import { Product } from "../data/products";
+
+
+// ✅ Giả định Product interface (bạn có thể điều chỉnh theo schema)
+import { Product } from "../types/Product";
 
 export interface Filters {
-  price: string[];
+  price: string[]; // ['1', '2', ...]
   type: string[];
   style: string[];
   size: string[];
   color: string[];
-  delivery: string[];
 }
 
 export const getLabel = (key: string, value: string) => {
@@ -35,36 +36,42 @@ export const getLabel = (key: string, value: string) => {
     case 'color':
       options = colorOptions;
       break;
-    case 'delivery':
-      options = deliveryOptions;
-      break;
+    default:
+      return value;
   }
   const option = options.find((opt) => opt.value === value);
   return option ? option.label : value;
 };
 
+// ✅ Cải thiện filterProducts
 export const filterProducts = (products: Product[], filters: Filters) => {
-  const { price, type, style, size, color, delivery } = filters;
+  const { price, type, style, size, color } = filters;
 
   return products.filter((product) => {
-    const matchPrice =
-      price.length === 0 ||
-      price.some((p) => {
-        if (p === '1') return product.price >= 200000 && product.price <= 300000;
-        if (p === '2') return product.price >= 300000 && product.price <= 500000;
-        return true;
-      });
+    // ✅ Price range filter
+    const matchPrice = price.length === 0 || price.some((p) => {
+      if (p === '1') return product.price >= 50000 && product.price <= 100000;
+      if (p === '2') return product.price > 100000 && product.price <= 200000;
+      if (p === '3') return product.price > 200000 && product.price <= 300000;
+      if (p === '4') return product.price > 300000 && product.price <= 500000;
+      if (p === '5') return product.price > 500000 && product.price <= 1000000;
+      if (p === '6') return product.price > 1000000;
+      return false;
+    });
 
-    const matchType = type.length === 0 || type.includes(product.type.toLowerCase());
-    const matchStyle = style.length === 0 || style.includes(product.style.toLowerCase());
-    const matchSize = size.length === 0 || size.some((s) => product.sizes.includes(s));
-    const matchColor = color.length === 0 || color.some((c) => product.colors.includes(c));
-    const matchDelivery = delivery.length === 0 || delivery.includes(product.delivery);
+    // ✅ Type, Style filter (case-insensitive)
+    const matchType = type.length === 0 || type.some(t => product.type.toLowerCase().includes(t.toLowerCase()));
+    const matchStyle = style.length === 0 || style.some(s => product.style.toLowerCase().includes(s.toLowerCase()));
 
-    return matchPrice && matchType && matchStyle && matchSize && matchColor && matchDelivery;
+    // ✅ Size, Color filter
+    const matchSize = size.length === 0 || size.some(s => product.sizes.includes(s));
+    const matchColor = color.length === 0 || color.some(c => product.colors.includes(c));
+
+    return matchPrice && matchType && matchStyle && matchSize && matchColor;
   });
 };
 
+// ✅ Cải thiện sortProducts
 export const sortProducts = (products: Product[], sort: string) => {
   return [...products].sort((a, b) => {
     switch (sort) {
@@ -76,6 +83,14 @@ export const sortProducts = (products: Product[], sort: string) => {
         return a.price - b.price;
       case 'price-desc':
         return b.price - a.price;
+      case 'newest':
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case 'oldest':
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case 'best-selling':
+        return b.sold - a.sold;
+      case 'rating':
+        return (b.rating || 0) - (a.rating || 0);
       default:
         return 0;
     }

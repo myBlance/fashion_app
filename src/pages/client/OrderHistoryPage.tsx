@@ -23,19 +23,19 @@ interface ProductInOrder {
 }
 
 export interface Order {
-  id: string;
-  user: string;
-  products: ProductInOrder[];
-  totalPrice: number;
-  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  paymentMethod: string;
-  paymentStatus: 'paid' | 'unpaid';
-  shippingAddress: {
-    fullName: string;
-    phone: string;
-    addressLine: string;
-  };
-  createdAt: string;
+    id: string;
+    user: string;
+    products: ProductInOrder[];
+    totalPrice: number;
+    status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+    paymentMethod: string;
+    paymentStatus: 'paid' | 'unpaid';
+    shippingAddress: {
+        fullName: string;
+        phone: string;
+        addressLine: string;
+    };
+    createdAt: string;
 }
 
 const getStatusLabel = (status: string) => {

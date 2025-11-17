@@ -5,9 +5,10 @@ import { useAppSelector } from '../../store/hooks';
 import { useAppDispatch } from '../../store/hooks';
 import ProductCard from '../../components/Client/ProductCard';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
-import { Product, getProducts } from '../../services/productService';
+import { getProducts } from '../../services/productService';
 import { useAuth } from '../../contexts/AuthContext';
 import { fetchWishlist } from '../../store/wishlistSlice';
+import { Product } from "../../types/Product";
 
 const WishlistPage: React.FC = () => {
     const { userId } = useAuth();

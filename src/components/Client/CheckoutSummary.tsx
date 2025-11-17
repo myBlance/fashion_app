@@ -4,7 +4,7 @@ import axios from 'axios';
 import '../../styles/CheckoutSummary.css';
 
 import VoucherModal from '../../components/Client/Voucher/VoucherModal';
-import { Voucher } from '../../services/voucherService';
+import { Voucher } from '../../types/Voucher';
 
 interface Address {
   _id: string;

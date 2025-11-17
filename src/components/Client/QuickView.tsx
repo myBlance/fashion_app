@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch } from 'react-redux';
-import { addToCart, CartItem } from "../../store/cartSlice";
+import { addToCart } from "../../store/cartSlice";
 import { useAuth } from '../../contexts/AuthContext';
 import { CartService } from "../../services/cartService";
-import { Product as ProductServiceProduct } from '../../services/productService';
+import { Product } from '../../types/Product';
+import { CartItem } from '../../types/CartItem';
 
 interface QuickViewProps {
   open: boolean;
   onClose: () => void;
-  product: ProductServiceProduct;
+  product: Product;
   onAddToCart?: (color: string, size: string, quantity: number) => void;
 }
 

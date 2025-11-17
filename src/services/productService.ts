@@ -2,29 +2,8 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/products';
 
-export interface Product {
-    _id: string;
-  id: string;
-  name: string;
-  brand: string;
-  price: number;
-  originalPrice: number;
-  category: string;
-  status: string;
-  colors: string[];
-  type: string;
-  style: string;
-  sizes: string[];
-  sold: number;
-  total: number;
-  thumbnail: string;
-  images: string[];
-  sale: boolean;
-  delivery: string;
-  createdAt: string;
-  description?: string;
-    details?: string;
-}
+import { Product } from "../types/Product";
+
 
 // Lấy danh sách sản phẩm với phân trang, lọc, sắp xếp
 export const getProducts = async (

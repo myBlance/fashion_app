@@ -3,8 +3,8 @@ export interface Voucher {
   code: string;
   name?: string;
   description?: string;
-  discountType: 'fixed' | 'percentage';
-  discountValue: number;
+  type?: 'fixed' | 'percentage'; 
+  value?: number;
   discountText: string;
   conditionText: string;
   minOrderAmount: number;   // trùng với VoucherCard

@@ -6,9 +6,6 @@ import { io } from 'socket.io-client';
 import '../../../styles/SeepayPayment.css';
 
 
-const socket = io("http://localhost:5000", {
-  withCredentials: true
-});
 interface OrderResponse {
   orderId: string;
   qrUrl: string;

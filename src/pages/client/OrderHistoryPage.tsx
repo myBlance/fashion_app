@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Tabs, Tab, Box, Divider } from '@mui/material';
 import '../../styles/OrderHistory.css';
-import { ProductRating } from '../../components/Client/Review/ProductRating';
+import { ProductRating } from '../../components/Client/Review/ProductRating'; // ✅ Import component mới
 
 // --- Interfaces ---
 interface Product {
-  _id: string;
-  code: string;
+  _id: string; // ✅ ID MongoDB
+  code: string; // ✅ mã sản phẩm duy nhất, ví dụ "DOLA3901"
   name: string;
   image?: string;
   price: number;
@@ -16,7 +16,7 @@ interface Product {
 
 interface ProductInOrder {
   product: Product | null;
-  productId: string;
+  productId: string; // ✅ thêm productId để đồng nhất với backend (được dùng khi gửi review)
   quantity: number;
   selectedColor?: string;
   selectedSize?: string;
@@ -36,9 +36,6 @@ export interface Order {
     addressLine: string;
   };
   createdAt: string;
-  // ✅ Giả định backend cũng trả về thông tin phí vận chuyển và giảm giá
-  shippingFee?: number;
-  discountAmount?: number;
 }
 
 // ✅ Hàm chuyển đổi trạng thái
@@ -82,6 +79,7 @@ class OrderHistoryErrorBoundary extends Component<{ children: React.ReactNode },
 }
 
 // --- Product Item ---
+// Trước: { item, orderId }
 const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus: string }> = ({ item, orderId, orderStatus }) => {
   const product = item.product;
 
@@ -117,18 +115,20 @@ const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus
         {item.selectedSize && <p>Kích cỡ: {item.selectedSize}</p>}
       </div>
 
+      {/* Sửa: sử dụng orderStatus và orderId từ props */}
       {orderStatus === 'delivered' && (
         <div className="product-rating-section">
           <ProductRating 
-            item={item} 
-            orderId={orderId} 
-            productId={item.product?.code || item.product?._id || ''}
-          />
+  item={item} 
+  orderId={orderId} 
+    productId={item.product?.code || item.product?._id || ''} // ✅ Truyền mã sản phẩm
+/>
         </div>
       )}
     </div>
   );
 };
+
 
 // --- Order Item ---
 const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onClick }) => (
@@ -147,41 +147,23 @@ const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onC
   </div>
 );
 
-// --- Modal Content (CẬP NHẬT) ---
+// --- Modal Content ---
 const ModalContent: React.FC<{
   order: Order;
   onClose: () => void;
   onCancel: (order: Order) => void;
   onMarkDelivered: (order: Order) => void;
-  onRetryPayment: (order: Order) => void; // ✅ Thêm prop
   cancelLoading: boolean;
   cancelError: string | null;
   markDeliveredLoading: boolean;
   markDeliveredError: string | null;
-  retryPaymentLoading: boolean; // ✅ Thêm state
-  retryPaymentError: string | null; // ✅ Thêm state
-}> = ({ 
-  order, 
-  onClose, 
-  onCancel, 
-  onMarkDelivered, 
-  onRetryPayment, // ✅ Nhận prop
-  cancelLoading, 
-  cancelError, 
-  markDeliveredLoading, 
-  markDeliveredError,
-  retryPaymentLoading, // ✅ Nhận state
-  retryPaymentError // ✅ Nhận state
-}) => {
+}> = ({ order, onClose, onCancel, onMarkDelivered, cancelLoading, cancelError, markDeliveredLoading, markDeliveredError }) => {
   const canCancel = order.paymentMethod === 'cod'
     ? ['pending', 'paid'].includes(order.status)
     : order.status === 'pending' && order.paymentStatus === 'unpaid';
 
   const canMarkDelivered = order.status === 'shipped';
   const canRate = order.status === 'delivered';
-
-  // ✅ Kiểm tra xem có thể thanh toán lại hay không
-  const canRetryPayment = order.paymentMethod === 'seepay' && order.paymentStatus === 'unpaid';
 
   return (
     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -192,7 +174,8 @@ const ModalContent: React.FC<{
           {order.products.map((item, idx) => (
             <div key={idx}>
               <ProductItem item={item} orderId={order.id} orderStatus={order.status} />
-              {canRate && <Divider sx={{ my: 1 }} />}
+      {canRate && <Divider sx={{ my: 1 }} />}
+              {canRate && <Divider sx={{ my: 1 }} />} {/* Thêm line giữa các sản phẩm nếu có đánh giá */}
             </div>
           ))}
         </div>
@@ -241,22 +224,8 @@ const ModalContent: React.FC<{
           </div>
         )}
 
-        {/* ✅ Nút Thanh toán lại cho đơn chưa thanh toán (chỉ cho SeePay) */}
-        {canRetryPayment && (
-          <div className="retry-payment-section">
-            {retryPaymentError && <p className="error-message">{retryPaymentError}</p>}
-            <button
-              className="retry-payment-btn"
-              onClick={() => onRetryPayment(order)}
-              disabled={retryPaymentLoading}
-            >
-              {retryPaymentLoading ? 'Đang xử lý...' : 'Thanh toán lại bằng SeePay'}
-            </button>
-          </div>
-        )}
-
         {/* Thông báo nếu không thể thực hiện hành động */}
-        {!canCancel && !canMarkDelivered && !canRetryPayment && (
+        {!canCancel && !canMarkDelivered && (
           <div className="no-action-section">
             <p>Không thể thực hiện hành động ở trạng thái này.</p>
           </div>
@@ -282,9 +251,6 @@ const OrderHistoryPage: React.FC = () => {
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [markDeliveredLoading, setMarkDeliveredLoading] = useState(false);
   const [markDeliveredError, setMarkDeliveredError] = useState<string | null>(null);
-  // ✅ Thêm state mới cho thanh toán lại
-  const [retryPaymentLoading, setRetryPaymentLoading] = useState(false);
-  const [retryPaymentError, setRetryPaymentError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -306,7 +272,7 @@ const OrderHistoryPage: React.FC = () => {
       });
 
       const ordersWithDefaultPaymentStatus = Array.isArray(res.data)
-        ? res.data.map((order: any) => ({
+        ? res.data.map(order => ({
           ...order,
           paymentStatus: order.paymentStatus || 'unpaid'
         }))
@@ -330,8 +296,6 @@ const OrderHistoryPage: React.FC = () => {
     setIsModalOpen(true);
     setCancelError(null);
     setMarkDeliveredError(null);
-    // ✅ Reset lỗi thanh toán lại khi mở modal
-    setRetryPaymentError(null);
   };
 
   const closeModal = () => {
@@ -339,8 +303,6 @@ const OrderHistoryPage: React.FC = () => {
     setSelectedOrder(null);
     setCancelError(null);
     setMarkDeliveredError(null);
-    // ✅ Reset lỗi thanh toán lại khi đóng modal
-    setRetryPaymentError(null);
   };
 
   const markOrderAsDelivered = async (order: Order) => {
@@ -358,7 +320,7 @@ const OrderHistoryPage: React.FC = () => {
 
       if (res.data.success) {
         alert('Đơn hàng đã được đánh dấu là đã nhận.');
-        await fetchOrders(); // Cập nhật lại danh sách
+        await fetchOrders();
         closeModal();
       }
     } catch (err: any) {
@@ -416,70 +378,12 @@ const OrderHistoryPage: React.FC = () => {
 
       if (res.data.success) {
         alert('Đơn hàng đã được hủy.');
-        await fetchOrders(); // Cập nhật lại danh sách
+        await fetchOrders();
         closeModal();
       }
     } catch (err: any) {
       console.error('Lỗi khi hủy đơn:', err);
       setCancelError(err.response?.data?.message || 'Không thể hủy đơn. Vui lòng thử lại.');
-    }
-  };
-
-  // ✅ Hàm xử lý thanh toán lại
-  const handleRetryPayment = async (order: Order) => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    if (order.paymentMethod !== 'seepay' || order.paymentStatus !== 'unpaid') {
-      setRetryPaymentError("Không thể thanh toán lại đơn hàng này.");
-      return;
-    }
-
-    setRetryPaymentLoading(true);
-    setRetryPaymentError(null);
-
-    try {
-      // 1. ✅ Gọi API để đặt lại trạng thái đơn hàng về 'pending' trên backend
-      // Backend cần có endpoint này và xử lý logic reset (nếu cần) như trạng thái thanh toán, mã QR cũ, v.v.
-      await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/reset-for-payment`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // 2. ✅ Điều hướng đến trang thanh toán với dữ liệu từ đơn hàng
-      // Cấu trúc dữ liệu phải giống như CheckoutSummary gửi đi
-      const retryData = {
-        // ✅ Thêm orderId vào dữ liệu để phân biệt "tạo đơn mới" và "thanh toán lại đơn cũ"
-        orderId: order.id,
-        cartItems: order.products.map(p => ({
-          productId: p.productId,
-          name: p.product?.name || 'Sản phẩm không xác định',
-          image: p.product?.image || '',
-          price: p.product?.price || 0,
-          quantity: p.quantity,
-          color: p.selectedColor || '',
-          size: p.selectedSize || '',
-        })),
-        totalAmount: order.totalPrice,
-        shippingFee: order.shippingFee || 0, // ✅ Lấy từ đơn hàng
-        discountAmount: order.discountAmount || 0, // ✅ Lấy từ đơn hàng
-        selectedAddress: {
-          name: order.shippingAddress.fullName,
-          phone: order.shippingAddress.phone,
-          address: order.shippingAddress.addressLine,
-        },
-        userId: order.user, // ✅ Lấy từ đơn hàng
-      };
-
-      navigate('/payment/seepay', { state: retryData });
-
-    } catch (err: any) {
-      console.error('Lỗi khi chuẩn bị thanh toán lại:', err);
-      setRetryPaymentError(err.response?.data?.message || 'Không thể bắt đầu quá trình thanh toán lại. Vui lòng thử lại.');
-      setRetryPaymentLoading(false);
     }
   };
 
@@ -550,10 +454,6 @@ const OrderHistoryPage: React.FC = () => {
               onClose={closeModal}
               onCancel={checkPaymentAndCancel}
               onMarkDelivered={markOrderAsDelivered}
-              // ✅ Truyền hàm và state mới
-              onRetryPayment={handleRetryPayment}
-              retryPaymentLoading={retryPaymentLoading}
-              retryPaymentError={retryPaymentError}
               cancelLoading={cancelLoading}
               cancelError={cancelError}
               markDeliveredLoading={markDeliveredLoading}

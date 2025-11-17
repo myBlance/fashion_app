@@ -1,12 +1,27 @@
-// src/pages/client/CODPaymentPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '../../../styles/CODPayment.css';
 
 interface OrderResponse {
-  orderId: string;
+  _id: string;
+  id: string;
   status: string;
+  user: string;
+  products: Array<{
+    product: string;
+    quantity: number;
+    selectedColor: string;
+    selectedSize: string;
+  }>;
+  totalPrice: number;
+  paymentMethod: string;
+  shippingAddress: {
+    fullName: string;
+    phone: string;
+    addressLine: string;
+  };
+  createdAt: string;
 }
 
 interface CartItem {
@@ -19,13 +34,6 @@ interface CartItem {
   size: string;
 }
 
-interface Address {
-  _id: string;
-  name: string;
-  phone: string;
-  address: string;
-  isDefault: boolean;
-}
 
 const CODPaymentPage: React.FC = () => {
   const [order, setOrder] = useState<OrderResponse | null>(null);
@@ -55,25 +63,38 @@ const CODPaymentPage: React.FC = () => {
     const createOrder = async () => {
       try {
         const name = selectedAddress?.name || 'Khách hàng';
+        const token = localStorage.getItem('token'); // ✅ Lấy token
+
+        if (!token) {
+          setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          setIsLoading(false);
+          navigate('/login');
+          return;
+        }
 
         const res = await axios.post<OrderResponse>(
           `${import.meta.env.VITE_API_BASE_URL}/api/orders`,
           {
-            id: `ORDER${Date.now()}`, // hoặc để backend tự tạo
-            user: userId,
+            id: `ORDER${Date.now()}`,
+            // ✅ Bỏ 'user: userId' vì backend sẽ lấy từ token
             products: cartItems.map((item: CartItem) => ({
-              product: item.productId, // Dùng productId từ frontend (String)
+              product: item.productId,
               quantity: item.quantity,
               selectedColor: item.color,
               selectedSize: item.size,
             })),
             totalPrice: finalAmount,
-            status: 'pending', // Chờ xác nhận
-            paymentMethod: 'cod', // Thanh toán khi nhận hàng
+            status: 'pending',
+            paymentMethod: 'cod',
             shippingAddress: {
               fullName: selectedAddress.name,
               phone: selectedAddress.phone,
               addressLine: selectedAddress.address,
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // ✅ Gửi token
             },
           }
         );
@@ -97,7 +118,7 @@ const CODPaymentPage: React.FC = () => {
 
   const handleViewOrder = () => {
     // Có thể chuyển đến trang chi tiết đơn hàng hoặc lịch sử đơn hàng
-    navigate('/orders');
+    navigate('/order-history');
   };
 
   if (isLoading) {
@@ -122,7 +143,7 @@ const CODPaymentPage: React.FC = () => {
     <div className="cod-container success">
       <div className="success-icon">📦</div>
       <h2>Đặt hàng thành công!</h2>
-      <p>Đơn hàng <strong>{order?.orderId}</strong> đã được tạo.</p>
+      <p>Đơn hàng <strong>{order?.id}</strong> đã được tạo.</p>
       <p>Phương thức thanh toán: <strong>Thanh toán khi nhận hàng (COD)</strong></p>
       <p>Số tiền cần thanh toán: <strong>{finalAmount.toLocaleString()}₫</strong></p>
       <div className="buttons">

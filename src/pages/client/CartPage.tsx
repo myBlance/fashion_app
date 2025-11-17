@@ -14,6 +14,7 @@ const CartPage: React.FC = () => {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
 
   // Lấy giỏ hàng
   useEffect(() => {
@@ -39,7 +40,6 @@ const CartPage: React.FC = () => {
 
     dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     try {
-      // ✅ Sửa: Gửi đúng thứ tự tham số: productId, userId, quantity, color, size
       await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi tăng số lượng:', err);
@@ -56,7 +56,6 @@ const CartPage: React.FC = () => {
     const newQuantity = currentQty - 1;
     dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     try {
-      // ✅ Sửa: Gửi đúng thứ tự tham số
       await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi giảm số lượng:', err);
@@ -69,7 +68,6 @@ const CartPage: React.FC = () => {
     if (!userId) return;
     dispatch(removeFromCart({ productId: item.productId, color: item.color, size: item.size }));
     try {
-      // ✅ Sửa: Gửi đúng thứ tự tham số
       await CartService.removeItem(item.productId, userId, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi xóa sản phẩm:', err);
@@ -84,9 +82,30 @@ const CartPage: React.FC = () => {
       alert('Giỏ hàng của bạn đang trống!');
       return;
     }
-    // Điều hướng đến trang thanh toán
-    navigate('/checkout');
+
+    // ✅ Lọc các item được chọn
+    const selectedCartItems = cartItems.filter(item => {
+      const id = `${item.productId}-${item.color}-${item.size}`;
+      return selectedItems[id] ?? false;
+    });
+
+    if (selectedCartItems.length === 0) {
+      alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+      return;
+    }
+
+    // ✅ Truyền data qua state khi điều hướng
+    navigate('/checkout', { state: { selectedCartItems } });
   };
+
+  // ✅ Tính tổng tiền chỉ cho các sản phẩm được chọn
+  const totalSelectedAmount = cartItems.reduce((acc, item) => {
+    const id = `${item.productId}-${item.color}-${item.size}`;
+    if (selectedItems[id]) {
+      return acc + (item.price ?? 0) * (item.quantity ?? 1);
+    }
+    return acc;
+  }, 0);
 
   if (loading) return <div className="loading">Đang tải giỏ hàng...</div>;
 
@@ -111,6 +130,23 @@ const CartPage: React.FC = () => {
         <table className="cart-table">
           <thead>
             <tr>
+              {/* Thêm cột checkbox cho "Chọn tất cả" */}
+              <th>
+                <input
+                  type="checkbox"
+                  checked={cartItems.length > 0 && cartItems.every(item => 
+                    selectedItems[`${item.productId}-${item.color}-${item.size}`]
+                  )}
+                  onChange={(e) => {
+                    const newSelected = {};
+                    cartItems.forEach(item => {
+                      const id = `${item.productId}-${item.color}-${item.size}`;
+                      (newSelected as Record<string, boolean>)[id] = e.target.checked;
+                    });
+                    setSelectedItems(newSelected);
+                  }}
+                />
+              </th>
               <th>Thông tin sản phẩm</th>
               <th>Đơn giá</th>
               <th>Số lượng</th>
@@ -118,27 +154,47 @@ const CartPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {cartItems.map((item) => (
-              <tr key={`${item.productId}-${item.color}-${item.size}`}>
-                <td className="product-info">
-                  <img src={item.image} alt={item.name} />
-                  <div>
-                    <div className="product-name">{item.name}</div>
-                    <div className="product-variant">{item.color} / {item.size}</div>
-                    <button className="delete-btn" onClick={() => handleRemove(item)}>Xóa</button>
-                  </div>
-                </td>
-                <td className="price">{(item.price ?? 0).toLocaleString()}₫</td>
-                <td className="quantity">
-                  <div className="quantity-controls">
-                    <button onClick={() => handleDecrease(item)}>−</button>
-                    <input type="text" readOnly value={item.quantity ?? 1} />
-                    <button onClick={() => handleIncrease(item)}>+</button>
-                  </div>
-                </td>
-                <td className="total-price">{((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}₫</td>
-              </tr>
-            ))}
+            {cartItems.map((item) => {
+              const itemId = `${item.productId}-${item.color}-${item.size}`;
+              const isChecked = selectedItems[itemId] ?? false;
+
+              return (
+                <tr key={itemId}>
+                  {/* CỘT CHECKBOX */}
+                  <td className="select-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => {
+                        setSelectedItems(prev => ({
+                          ...prev,
+                          [itemId]: e.target.checked
+                        }));
+                      }}
+                    />
+                  </td>
+
+                  {/* CỘT THÔNG TIN SẢN PHẨM */}
+                  <td className="product-info">
+                    <img src={item.image} alt={item.name} />
+                    <div>
+                      <div className="product-name">{item.name}</div>
+                      <div className="product-variant">{item.color} / {item.size}</div>
+                      <button className="delete-btn" onClick={() => handleRemove(item)}>Xóa</button>
+                    </div>
+                  </td>
+                  <td className="price">{(item.price ?? 0).toLocaleString()}₫</td>
+                  <td className="quantity">
+                    <div className="quantity-controls">
+                      <button onClick={() => handleDecrease(item)}>−</button>
+                      <input type="text" readOnly value={item.quantity ?? 1} />
+                      <button onClick={() => handleIncrease(item)}>+</button>
+                    </div>
+                  </td>
+                  <td className="total-price">{((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}₫</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
@@ -151,10 +207,10 @@ const CartPage: React.FC = () => {
             <div className="total">
               Tổng tiền:{' '}
               <span className="total-amount">
-                {cartItems.reduce((acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1), 0).toLocaleString()}₫
+                {/* ✅ Hiển thị tổng tiền của các sản phẩm được chọn */}
+                {totalSelectedAmount.toLocaleString()}₫
               </span>
             </div>
-            {/* Thay đổi: Gọi hàm handleCheckout khi nhấn nút */}
             <button className="checkout-btn" onClick={handleCheckout}>Thanh toán</button>
           </div>
         </div>

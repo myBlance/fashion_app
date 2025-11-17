@@ -4,15 +4,7 @@ import React, { useEffect, useState } from 'react';
 import EditAddressModal from './EditAddressModal';
 import AddAddressModal from './AddAddressModal';
 import AddressList from './AddressList';
-
-interface Address {
-    _id: string;
-    name: string;
-    phone: string;
-    address: string;
-    isDefault: boolean;
-    type?: "home" | "work";
-}
+import { Address } from '../../../../types/Address';
 
 const AddressSettings: React.FC = () => {
     const [addresses, setAddresses] = useState<Address[]>([]);

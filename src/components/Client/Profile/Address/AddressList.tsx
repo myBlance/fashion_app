@@ -8,14 +8,7 @@ import {
     Stack,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-
-interface Address {
-    _id: string;
-    name: string;
-    phone: string;
-    address: string;
-    isDefault: boolean;
-}
+import { Address } from '../../../../types/Address';
 
 interface AddressListProps {
     addresses: Address[];

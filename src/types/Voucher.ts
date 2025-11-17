@@ -1,5 +1,6 @@
 export interface Voucher {
   _id: string;
+  id: string;
   code: string;
   name?: string;
   description?: string;

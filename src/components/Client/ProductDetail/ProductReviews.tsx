@@ -16,23 +16,7 @@ import {
   Alert,
 } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-
-// Định nghĩa kiểu dữ liệu đánh giá
-interface Review {
-  _id: string;
-  orderId: string;
-  productId: string;
-  userId: {
-    _id: string;
-    username: string;
-    avatar?: string;
-  };
-  rating: number;
-  comment: string;
-  images: string[];
-  createdAt: string;
-  likes: number;
-}
+import { Review } from '../../../types/Review';
 
 // Component hiển thị hình ảnh/video
 const ReviewMedia = ({ media }: { media: string[] }) => {

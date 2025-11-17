@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import '../../../styles/CODPayment.css';
+import { CartItem } from '../../../types/CartItem';
 
 interface OrderResponse {
   _id: string;
@@ -22,16 +23,6 @@ interface OrderResponse {
     addressLine: string;
   };
   createdAt: string;
-}
-
-interface CartItem {
-  productId: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-  color: string;
-  size: string;
 }
 
 

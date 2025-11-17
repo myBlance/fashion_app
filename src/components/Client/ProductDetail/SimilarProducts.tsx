@@ -3,7 +3,8 @@ import { Box, Typography, IconButton, CircularProgress } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from '../ProductCard';
-import { Product, getProducts } from '../../../services/productService';
+import { getProducts } from '../../../services/productService';
+import { Product } from '../../../types/Product';
 
 interface SimilarProductsProps {
   currentProductId: string;

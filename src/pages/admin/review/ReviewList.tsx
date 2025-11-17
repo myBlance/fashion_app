@@ -24,25 +24,7 @@ import { Edit, Visibility, Delete as DeleteIcon } from '@mui/icons-material';
 import { useSidebarState } from 'react-admin';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
-
-// Định nghĩa kiểu dữ liệu đánh giá
-interface Review {
-  _id: string;
-  orderId: string;
-  productId: string; // ✅ DOLA3901
-  productName?: string; // Tên sản phẩm
-  productCode?: string; // Mã sản phẩm
-  userId: {
-    _id: string;
-    username: string;
-    avatar?: string;
-  };
-  rating: number;
-  comment: string;
-  images: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { Review } from '../../../types/Review';
 
 const ListActions = () => (
   <TopToolbar>

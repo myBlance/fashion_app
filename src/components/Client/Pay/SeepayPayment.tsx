@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 import '../../../styles/SeepayPayment.css';
+import { CartItem } from '../../../types/CartItem';
 
 interface OrderResponse {
   orderId: string;
@@ -12,15 +13,6 @@ interface OrderResponse {
   amount: number;
 }
 
-interface CartItem {
-  productId: string;
-  name: string;
-  image: string;
-  price: number;
-  quantity: number;
-  color: string;
-  size: string;
-}
 
 const SeepayPaymentPage: React.FC = () => {
   const [order, setOrder] = useState<OrderResponse | null>(null);

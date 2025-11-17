@@ -31,11 +31,11 @@ export interface Order {
     paymentMethod: string;
     paymentStatus: 'paid' | 'unpaid';
     shippingAddress: {
-        fullName: string;
-        phone: string;
-        addressLine: string;
-    };
-    createdAt: string;
+    fullName: string;
+    phone: string;
+    addressLine: string;
+  };
+  createdAt: string;
 }
 
 const getStatusLabel = (status: string) => {

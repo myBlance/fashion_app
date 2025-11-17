@@ -9,7 +9,8 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import { VoucherService, Voucher } from '../../../services/voucherService';
+import { Voucher } from '../../../types/Voucher';
+import { VoucherService } from '../../../services/voucherService';
 import VoucherCard from './VoucherCard'; // ✅ Import VoucherCard
 
 interface VoucherModalProps {

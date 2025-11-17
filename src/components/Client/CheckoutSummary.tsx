@@ -5,14 +5,7 @@ import '../../styles/CheckoutSummary.css';
 
 import VoucherModal from '../../components/Client/Voucher/VoucherModal';
 import { Voucher } from '../../types/Voucher';
-
-interface Address {
-  _id: string;
-  name: string;
-  phone: string;
-  address: string;
-  isDefault: boolean;
-}
+import { Address } from '../../types/Address';
 
 interface CheckoutSummaryProps {
   cartItems: Array<{

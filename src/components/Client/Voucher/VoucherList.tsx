@@ -6,6 +6,7 @@ import { VoucherService, Voucher } from '../../../services/voucherService';
 
 interface VoucherListProps {
   totalAmount?: number;
+  // token?: string; // ❌ Xóa token khỏi props
 }
 
 const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
@@ -19,13 +20,10 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
         const res = await VoucherService.getVouchers();
 
         if (res && res.success && Array.isArray(res.data)) {
-          // ✅ Ánh xạ dữ liệu từ backend sang interface Voucher
           const mappedVouchers: Voucher[] = res.data.map(v => ({
             ...v,
-            // ✅ Đảm bảo type và value luôn có giá trị
             type: v.type || 'fixed',
             value: v.value || 0,
-            // ✅ Tính toán discountText nếu chưa có
             discountText: v.discountText || (
               v.type && v.value !== undefined
                 ? v.type === 'percentage'
@@ -33,7 +31,6 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
                   : `Giảm ${v.value.toLocaleString()}đ`
                 : 'Giảm giá'
             ),
-            // ✅ Tính toán conditionText nếu chưa có
             conditionText: v.conditionText || (
               v.minOrderAmount !== undefined
                 ? `Đơn tối thiểu ${v.minOrderAmount.toLocaleString()}đ`
@@ -58,6 +55,26 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
 
     fetchVouchers();
   }, []);
+
+  const handleClaim = async (code: string) => {
+    // ✅ Lấy token từ đúng nơi
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Bạn cần đăng nhập để lưu voucher.');
+      return;
+    }
+    try {
+      const res = await VoucherService.claimVoucher(code, token);
+      if (res.success) {
+        alert(res.message);
+      } else {
+        alert(`Lỗi: ${res.message}`);
+      }
+    } catch (err) {
+      console.error('Lỗi khi claim voucher:', err);
+      alert('Không thể lưu voucher. Vui lòng thử lại.');
+    }
+  };
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -112,6 +129,7 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
           isFreeShip={voucher.isFreeShip}
           currentTotalAmount={totalAmount}
           onCopy={() => handleCopy(voucher.code)}
+          onClaim={handleClaim}
         />
       ))}
     </Box>

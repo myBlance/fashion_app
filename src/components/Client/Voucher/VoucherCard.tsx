@@ -1,6 +1,6 @@
 // src/components/Client/Voucher/VoucherCard.tsx
 import React from 'react';
-import { Box, Typography, Button, Chip } from '@mui/material';
+import { Box, Typography, Button, Chip, Alert } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 export interface VoucherCardProps {
@@ -24,9 +24,11 @@ export interface VoucherCardProps {
 
   currentTotalAmount?: number;
   onCopy: () => void;
+  onClaim?: (code: string) => void; // Không còn token
 }
 
 const VoucherCard: React.FC<VoucherCardProps> = ({
+  _id,
   code,
   name,
   type,
@@ -41,9 +43,16 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
   isFreeShip = false,
   currentTotalAmount,
   onCopy,
+  onClaim,
 }) => {
   const isEligible =
     currentTotalAmount !== undefined ? currentTotalAmount >= minOrderAmount && isActive : isActive;
+
+  const handleClaim = () => {
+    if (onClaim) {
+      onClaim(code);
+    }
+  };
 
   // ✅ Tính toán discountText nếu không có
   const displayDiscountText = discountText || (type && value !== undefined
@@ -104,8 +113,6 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
           {displayDiscountText}
         </Typography>
 
-        
-
         {minOrderAmount !== undefined && (
           <Typography variant="caption" color="text.secondary">
             Đơn tối thiểu: {minOrderAmount.toLocaleString()}đ
@@ -153,29 +160,47 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
             mb: 0.5,
           }}
         />
-        <Button
-          variant="contained"
-          size="small"
-          onClick={onCopy}
-          disabled={currentTotalAmount !== undefined && !isEligible}
-          sx={{
-            background: isEligible
-              ? 'linear-gradient(90deg, #ff9800, #f57c00)'
-              : '#bdbdbd',
-            color: '#fff',
-            textTransform: 'none',
-            fontWeight: 'bold',
-            px: 2.5,
-            borderRadius: 2,
-            '&:hover': {
+        <Box display="flex" gap={1}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={onCopy}
+            disabled={currentTotalAmount !== undefined && !isEligible}
+            sx={{
+              borderColor: isEligible ? '#ff9800' : '#bdbdbd',
+              color: isEligible ? '#ff9800' : '#bdbdbd',
+              textTransform: 'none',
+              fontWeight: 'bold',
+              px: 1.5,
+              borderRadius: 2,
+            }}
+          >
+            Sao chép
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleClaim}
+            disabled={currentTotalAmount !== undefined && !isEligible}
+            sx={{
               background: isEligible
-                ? 'linear-gradient(90deg, #f57c00, #ef6c00)'
+                ? 'linear-gradient(90deg, #4caf50, #2e7d32)'
                 : '#bdbdbd',
-            },
-          }}
-        >
-          {isEligible ? 'Sao chép' : 'Không thể dùng'}
-        </Button>
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 'bold',
+              px: 1.5,
+              borderRadius: 2,
+              '&:hover': {
+                background: isEligible
+                  ? 'linear-gradient(90deg, #2e7d32, #1b5e20)'
+                  : '#bdbdbd',
+              },
+            }}
+          >
+            Lưu
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Tabs, Tab, Box, Divider } from '@mui/material';
 import '../../styles/OrderHistory.css';
-import { ProductRating } from '../../components/Client/Review/ProductRating'; // ✅ Import component mới
+import { ProductRating } from '../../components/Client/Review/ProductRating';
 
 // --- Interfaces ---
 interface Product {
-  _id: string; // ✅ ID MongoDB
-  code: string; // ✅ mã sản phẩm duy nhất, ví dụ "DOLA3901"
+  _id: string;
+  code: string;
   name: string;
   image?: string;
   price: number;
@@ -16,7 +16,7 @@ interface Product {
 
 interface ProductInOrder {
   product: Product | null;
-  productId: string; // ✅ thêm productId để đồng nhất với backend (được dùng khi gửi review)
+  productId: string;
   quantity: number;
   selectedColor?: string;
   selectedSize?: string;
@@ -38,7 +38,6 @@ export interface Order {
   createdAt: string;
 }
 
-// ✅ Hàm chuyển đổi trạng thái
 const getStatusLabel = (status: string) => {
   switch (status) {
     case 'pending': return 'Chờ xác nhận';
@@ -51,7 +50,6 @@ const getStatusLabel = (status: string) => {
   }
 };
 
-// --- Error Boundary ---
 class OrderHistoryErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
@@ -78,8 +76,6 @@ class OrderHistoryErrorBoundary extends Component<{ children: React.ReactNode },
   }
 }
 
-// --- Product Item ---
-// Trước: { item, orderId }
 const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus: string }> = ({ item, orderId, orderStatus }) => {
   const product = item.product;
 
@@ -115,22 +111,19 @@ const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus
         {item.selectedSize && <p>Kích cỡ: {item.selectedSize}</p>}
       </div>
 
-      {/* Sửa: sử dụng orderStatus và orderId từ props */}
       {orderStatus === 'delivered' && (
         <div className="product-rating-section">
           <ProductRating 
-  item={item} 
-  orderId={orderId} 
-    productId={item.product?.code || item.product?._id || ''} // ✅ Truyền mã sản phẩm
-/>
+            item={item} 
+            orderId={orderId} 
+            productId={item.product?.code || item.product?._id || ''}
+          />
         </div>
       )}
     </div>
   );
 };
 
-
-// --- Order Item ---
 const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onClick }) => (
   <div key={order.id} className="order-item">
     <div className="order-header">
@@ -147,7 +140,7 @@ const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onC
   </div>
 );
 
-// --- Modal Content ---
+// --- ModalContent với navigate truyền từ props ---
 const ModalContent: React.FC<{
   order: Order;
   onClose: () => void;
@@ -157,13 +150,26 @@ const ModalContent: React.FC<{
   cancelError: string | null;
   markDeliveredLoading: boolean;
   markDeliveredError: string | null;
-}> = ({ order, onClose, onCancel, onMarkDelivered, cancelLoading, cancelError, markDeliveredLoading, markDeliveredError }) => {
+  navigate: ReturnType<typeof useNavigate>;
+}> = ({ 
+  order, 
+  onClose, 
+  onCancel, 
+  onMarkDelivered, 
+  cancelLoading, 
+  cancelError, 
+  markDeliveredLoading, 
+  markDeliveredError,
+  navigate
+}) => {
   const canCancel = order.paymentMethod === 'cod'
     ? ['pending', 'paid'].includes(order.status)
     : order.status === 'pending' && order.paymentStatus === 'unpaid';
 
   const canMarkDelivered = order.status === 'shipped';
   const canRate = order.status === 'delivered';
+
+  const canRetryPayment = order.paymentStatus === 'unpaid' && order.paymentMethod === 'seepay' && order.status === 'pending';
 
   return (
     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -174,8 +180,7 @@ const ModalContent: React.FC<{
           {order.products.map((item, idx) => (
             <div key={idx}>
               <ProductItem item={item} orderId={order.id} orderStatus={order.status} />
-      {canRate && <Divider sx={{ my: 1 }} />}
-              {canRate && <Divider sx={{ my: 1 }} />} {/* Thêm line giữa các sản phẩm nếu có đánh giá */}
+              {canRate && <Divider sx={{ my: 1 }} />}
             </div>
           ))}
         </div>
@@ -196,7 +201,21 @@ const ModalContent: React.FC<{
       </div>
 
       <div className="modal-actions">
-        {/* Nút đánh dấu đã nhận hàng */}
+        {/* ✅ Nút "Thanh toán lại" */}
+        {canRetryPayment && (
+          <div className="retry-payment-section">
+            <button
+              className="retry-payment-btn"
+              onClick={() => {
+                onClose();
+                navigate('/payment/seepay', { state: { orderId: order.id } });
+              }}
+            >
+              Thanh toán lại
+            </button>
+          </div>
+        )}
+
         {canMarkDelivered && (
           <div className="mark-delivered-section">
             {markDeliveredError && <p className="error-message">{markDeliveredError}</p>}
@@ -210,7 +229,6 @@ const ModalContent: React.FC<{
           </div>
         )}
 
-        {/* Nút hủy đơn */}
         {canCancel && (
           <div className="cancel-section">
             {cancelError && <p className="error-message">{cancelError}</p>}
@@ -224,8 +242,7 @@ const ModalContent: React.FC<{
           </div>
         )}
 
-        {/* Thông báo nếu không thể thực hiện hành động */}
-        {!canCancel && !canMarkDelivered && (
+        {!canCancel && !canMarkDelivered && !canRetryPayment && (
           <div className="no-action-section">
             <p>Không thể thực hiện hành động ở trạng thái này.</p>
           </div>
@@ -239,7 +256,6 @@ const ModalContent: React.FC<{
   );
 };
 
-// --- Main Component ---
 const OrderHistoryPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -458,6 +474,7 @@ const OrderHistoryPage: React.FC = () => {
               cancelError={cancelError}
               markDeliveredLoading={markDeliveredLoading}
               markDeliveredError={markDeliveredError}
+              navigate={navigate}
             />
           </div>
         )}

@@ -7,16 +7,18 @@ import '../../styles/CartPage.css';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+// ✅ Bỏ import fetchCart nếu bạn không dùng
 
 const CartPage: React.FC = () => {
   const dispatch = useDispatch();
   const { userId } = useAuth();
+  // ✅ Lấy giỏ hàng từ Redux store
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
 
-  // Lấy giỏ hàng
+  // ✅ Fetch lại giỏ hàng khi vào trang
   useEffect(() => {
     const fetchCart = async () => {
       if (!userId) return;
@@ -31,7 +33,7 @@ const CartPage: React.FC = () => {
       }
     };
     fetchCart();
-  }, [userId, dispatch]);
+  }, [userId, dispatch]); // ✅ Thêm dispatch vào deps
 
   // Tăng số lượng
   const handleIncrease = async (item: CartItem) => {
@@ -71,6 +73,7 @@ const CartPage: React.FC = () => {
       await CartService.removeItem(item.productId, userId, item.color, item.size);
     } catch (err) {
       console.error('Lỗi khi xóa sản phẩm:', err);
+      // ✅ Cập nhật lại giỏ hàng từ server nếu lỗi
       const data = await CartService.getCart(userId);
       dispatch(setCartItems(data));
     }
@@ -130,7 +133,6 @@ const CartPage: React.FC = () => {
         <table className="cart-table">
           <thead>
             <tr>
-              {/* Thêm cột checkbox cho "Chọn tất cả" */}
               <th>
                 <input
                   type="checkbox"
@@ -160,7 +162,6 @@ const CartPage: React.FC = () => {
 
               return (
                 <tr key={itemId}>
-                  {/* CỘT CHECKBOX */}
                   <td className="select-checkbox">
                     <input
                       type="checkbox"
@@ -174,7 +175,6 @@ const CartPage: React.FC = () => {
                     />
                   </td>
 
-                  {/* CỘT THÔNG TIN SẢN PHẨM */}
                   <td className="product-info">
                     <img src={item.image} alt={item.name} />
                     <div>
@@ -207,7 +207,6 @@ const CartPage: React.FC = () => {
             <div className="total">
               Tổng tiền:{' '}
               <span className="total-amount">
-                {/* ✅ Hiển thị tổng tiền của các sản phẩm được chọn */}
                 {totalSelectedAmount.toLocaleString()}₫
               </span>
             </div>

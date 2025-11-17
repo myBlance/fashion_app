@@ -10,7 +10,6 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { fetchCart } from '../../../store/cartSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { fetchWishlist } from '../../../store/wishlistSlice';
-
 import '../../../styles/Navbar.css';
 
 const textList = [
@@ -40,10 +39,6 @@ const Navbar: React.FC = () => {
     }
   }, [userId, dispatch]);
 
-  // Navbar menu
-  const [menuActive, setMenuActive] = useState(false);
-  const toggleMenu = () => setMenuActive(!menuActive);
-
   // Banner text
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   useEffect(() => {
@@ -53,26 +48,42 @@ const Navbar: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Search placeholder typing effect
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [typedPlaceholder, setTypedPlaceholder] = useState('');
-  useEffect(() => {
-    const currentText = placeholders[placeholderIndex];
-    let charIndex = 0;
-    setTypedPlaceholder('');
-    const typingInterval = setInterval(() => {
-      setTypedPlaceholder((prev) => prev + currentText[charIndex]);
-      charIndex++;
-      if (charIndex >= currentText.length) {
-        clearInterval(typingInterval);
-        setTimeout(() => {
-          setTypedPlaceholder('');
-          setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-        }, 3000);
+  // ✅ Sửa hiệu ứng placeholder typing
+    const [placeholderIndex, setPlaceholderIndex] = useState(0);
+    const [typedPlaceholder, setTypedPlaceholder] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [typingSpeed, setTypingSpeed] = useState(150);
+
+useEffect(() => {
+  const currentText = placeholders[placeholderIndex];
+
+  const typingTimer = setTimeout(() => {
+    if (!isDeleting) {
+      // Gõ chữ
+      setTypedPlaceholder(currentText.substring(0, typedPlaceholder.length + 1));
+      setTypingSpeed(150);
+      if (typedPlaceholder === currentText) {
+        // Đợi 1.5s rồi xóa
+        setTypingSpeed(1500);
+        setIsDeleting(true);
       }
-    }, 150);
-    return () => clearInterval(typingInterval);
-  }, [placeholderIndex]);
+    } else {
+      // ✅ Tăng tốc độ xóa lên 50ms
+      setTypedPlaceholder(currentText.substring(0, typedPlaceholder.length - 1));
+      setTypingSpeed(50);
+      if (typedPlaceholder === '') {
+        setIsDeleting(false);
+        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+      }
+    }
+  }, typingSpeed);
+
+  return () => clearTimeout(typingTimer);
+}, [typedPlaceholder, isDeleting, placeholderIndex, placeholders]);
+
+  // Navbar menu
+  const [menuActive, setMenuActive] = useState(false);
+  const toggleMenu = () => setMenuActive(!menuActive);
 
   return (
     <div className="navbar">

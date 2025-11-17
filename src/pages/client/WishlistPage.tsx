@@ -1,21 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
+// ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
+import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch } from '../../store/hooks';
 import ProductCard from '../../components/Client/ProductCard';
 import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
 import { Product, getProducts } from '../../services/productService';
-import { WishlistService } from '../../services/wishlistService';
-import { useAuth } from '../../contexts/AuthContext'; 
+import { useAuth } from '../../contexts/AuthContext';
+import { fetchWishlist } from '../../store/wishlistSlice';
 
 const WishlistPage: React.FC = () => {
-    const { userId } = useAuth(); // User đã đăng nhập
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const { userId } = useAuth();
+    const dispatch = useAppDispatch(); // ✅ Dùng useAppDispatch
+    // ✅ Dùng useAppSelector
+    const { items: wishlistIds, loading: wishlistLoading, error: wishlistError } = useAppSelector(
+        (state) => state.wishlist
+    );
+    const [products, setProducts] = React.useState<Product[]>([]);
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [error, setError] = React.useState<string | null>(null);
 
     useEffect(() => {
-        const fetchWishlistProducts = async () => {
-            if (!userId) {
-                setProducts([]);
+        if (!userId) {
+            setProducts([]);
+            setLoading(false);
+            return;
+        }
+
+        // ✅ Fetch wishlist từ Redux store
+        dispatch(fetchWishlist(userId));
+
+    }, [userId, dispatch]);
+
+    // ✅ Khi wishlistIds thay đổi (sau khi fetch thành công), cập nhật products
+    useEffect(() => {
+        const loadProducts = async () => {
+            if (!userId || wishlistLoading) return;
+
+            if (wishlistError) {
+                setError('Không thể tải sản phẩm yêu thích.');
                 setLoading(false);
                 return;
             }
@@ -24,25 +47,22 @@ const WishlistPage: React.FC = () => {
                 setLoading(true);
                 setError(null);
 
-                // 1️⃣ Lấy danh sách productId yêu thích từ database
-                const wishlistIds = await WishlistService.getWishlist(userId);
-
-                // 2️⃣ Lấy tất cả sản phẩm từ backend
+                // 1️⃣ Lấy tất cả sản phẩm
                 const { data } = await getProducts(0, 1000);
 
-                // 3️⃣ Chỉ lấy các sản phẩm có trong wishlist
+                // 2️⃣ Lọc theo danh sách yêu thích từ Redux
                 const favoriteProducts = data.filter((p) => wishlistIds.includes(p.id));
                 setProducts(favoriteProducts);
             } catch (err) {
-                console.error('Lỗi khi lấy sản phẩm yêu thích:', err);
-                setError('Không thể tải sản phẩm yêu thích.');
+                console.error('Lỗi khi lấy sản phẩm:', err);
+                setError('Không thể tải danh sách sản phẩm.');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchWishlistProducts();
-    }, [userId]);
+        loadProducts();
+    }, [userId, wishlistIds, wishlistLoading, wishlistError]);
 
     if (!userId) {
         return (
@@ -56,17 +76,17 @@ const WishlistPage: React.FC = () => {
         <Box p={4}>
             <DynamicBreadcrumbs />
 
-            {loading && <Typography variant="body1">Đang tải sản phẩm...</Typography>}
+            {(loading || wishlistLoading) && <Typography variant="body1">Đang tải sản phẩm...</Typography>}
 
-            {!loading && error && (
+            {!loading && !wishlistLoading && error && (
                 <Typography variant="body1" color="error">{error}</Typography>
             )}
 
-            {!loading && !error && products.length === 0 && (
+            {!loading && !wishlistLoading && !error && products.length === 0 && (
                 <Typography variant="body1">Bạn chưa có sản phẩm yêu thích nào.</Typography>
             )}
 
-            {!loading && !error && products.length > 0 && (
+            {!loading && !wishlistLoading && !error && products.length > 0 && (
                 <Box
                     display="grid"
                     gridTemplateColumns={{

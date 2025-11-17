@@ -76,7 +76,7 @@ const CODPaymentPage: React.FC = () => {
           `${import.meta.env.VITE_API_BASE_URL}/api/orders`,
           {
             id: `ORDER${Date.now()}`,
-            // ✅ Bỏ 'user: userId' vì backend sẽ lấy từ token
+            user: userId,
             products: cartItems.map((item: CartItem) => ({
               product: item.productId,
               quantity: item.quantity,

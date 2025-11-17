@@ -173,7 +173,7 @@ export const ProductRating: React.FC<ProductRatingProps> = ({ item, orderId, pro
           </Box>
         ) : (
           <>
-            <Rating value={rating} onChange={(e, val) => setRating(val)} size="large" sx={{ mt: 1 }} />
+            <Rating value={rating} onChange={(_, val) => setRating(val)} size="large" sx={{ mt: 1 }} />
             <TextField
               label="Viết đánh giá (tùy chọn)"
               multiline

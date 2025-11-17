@@ -62,7 +62,6 @@ const CODPaymentPage: React.FC = () => {
 
     const createOrder = async () => {
       try {
-        const name = selectedAddress?.name || 'Khách hàng';
         const token = localStorage.getItem('token'); // ✅ Lấy token
 
         if (!token) {
@@ -76,7 +75,7 @@ const CODPaymentPage: React.FC = () => {
           `${import.meta.env.VITE_API_BASE_URL}/api/orders`,
           {
             id: `ORDER${Date.now()}`,
-            user: userId,
+            // user: userId,
             products: cartItems.map((item: CartItem) => ({
               product: item.productId,
               quantity: item.quantity,

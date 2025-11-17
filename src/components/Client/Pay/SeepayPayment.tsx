@@ -22,12 +22,6 @@ interface CartItem {
   size: string;
 }
 
-interface ShippingAddress {
-  name: string;
-  phone: string;
-  address: string;
-}
-
 const SeepayPaymentPage: React.FC = () => {
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);

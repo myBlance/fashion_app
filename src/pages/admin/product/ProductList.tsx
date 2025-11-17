@@ -40,8 +40,7 @@ interface CustomFieldProps {
     headerClassName?: string; // nếu cần style header riêng
 }
 
-// 🔹 ThumbnailField — ✅ đã thêm label, cellClassName
-const ThumbnailField = ({ source, label, cellClassName }: CustomFieldProps) => {
+const ThumbnailField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
 
     if (!record || !record[source]) {
@@ -85,7 +84,7 @@ const ThumbnailField = ({ source, label, cellClassName }: CustomFieldProps) => {
 };
 
 // 🔹 ColorField — ✅ đã thêm label, cellClassName
-const ColorField = ({ source, label, cellClassName }: CustomFieldProps) => {
+const ColorField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
     return record?.[source] ? (
         <Box
@@ -112,7 +111,7 @@ const ColorField = ({ source, label, cellClassName }: CustomFieldProps) => {
 };
 
 // 🔹 SizeField — ✅ đã thêm label, cellClassName
-const SizeField = ({ source, label, cellClassName }: CustomFieldProps) => {
+const SizeField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
     return record?.[source] ? (
         <Box
@@ -130,7 +129,7 @@ const SizeField = ({ source, label, cellClassName }: CustomFieldProps) => {
 };
 
 // 🔹 DescriptionField — ✅
-const DescriptionField = ({ source, label, cellClassName }: CustomFieldProps) => {
+const DescriptionField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
     const desc = record?.[source] || '';
 
@@ -157,7 +156,7 @@ const DescriptionField = ({ source, label, cellClassName }: CustomFieldProps) =>
 };
 
 // 🔹 DetailsField — ✅ Đã sửa: hỗ trợ cả string và array
-const DetailsField = ({ source, label, cellClassName }: CustomFieldProps) => {
+const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
     const rawDetails = record?.[source];
 

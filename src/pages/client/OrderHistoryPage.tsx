@@ -443,7 +443,7 @@ const OrderHistoryPage: React.FC = () => {
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={selectedStatus}
-            onChange={(e, newValue) => setSelectedStatus(newValue)}
+            onChange={(_, newValue) => setSelectedStatus(newValue)}
             variant="scrollable"
             scrollButtons="auto"
           >

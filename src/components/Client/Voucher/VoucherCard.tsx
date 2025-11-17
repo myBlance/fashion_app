@@ -29,7 +29,6 @@ export interface VoucherCardProps {
 }
 
 const VoucherCard: React.FC<VoucherCardProps> = ({
-  _id,
   code,
   name,
   type,

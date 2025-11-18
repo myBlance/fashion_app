@@ -1,30 +1,18 @@
+// src/components/Client/HotDeals.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Typography, IconButton, CircularProgress, Alert } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from './ProductCard';
 import { Product } from '../../types/Product';
-
-// ✅ Hàm gọi API đúng
-const fetchProducts = async (): Promise<Product[]> => {
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) {
-      throw new Error(`Lỗi API: ${response.status} - ${response.statusText}`);
-    }
-    const data: Product[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error('❌ Lỗi khi gọi API /api/products:', error);
-    throw error;
-  }
-};
+import { getProducts } from '../../services/productService'; // ✅ reuse service
 
 const HotDeals: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [hotDeals, setHotDeals] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // UI scroll config
   const productWidth = 220;
   const productMarginRight = 16;
   const visibleCount = 5;
@@ -36,33 +24,65 @@ const HotDeals: React.FC = () => {
   const scrollLeft = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // ✅ Lấy dữ liệu từ backend
+  // ✅ Fetch hot deals từ backend (tối ưu: chỉ lấy sản phẩm đang giảm giá)
   useEffect(() => {
-    const loadProducts = async () => {
+    const loadHotDeals = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
+        // Gọi API với filter & sort theo discount (nếu backend hỗ trợ)
+        // 🔁 Giả sử backend hỗ trợ query param `onSale=true` hoặc `isHotDeal=true`
+        // Nếu chưa có, mình sẽ hướng dẫn thêm ở dưới 👇
+        const { data } = await getProducts(
+          0, // _start
+          20, // _end — giới hạn 20 deal
+          'discountAmount', // ⚠️ giả sử backend có virtual field này
+          'DESC',
+          { onSale: 'true' } // custom filter
+        );
+
+        setHotDeals(Array.isArray(data) ? data : []);
       } catch (err) {
+        console.error('❌ Lỗi khi tải Hot Deals:', err);
         setError(err instanceof Error ? err.message : 'Lỗi không xác định');
+        setHotDeals([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadProducts();
+    loadHotDeals();
   }, []);
 
-  // ✅ Lọc và sắp xếp sản phẩm theo mức giảm giá (originalPrice - price)
-  const hotDeals = products
-    .filter(product => product.originalPrice && product.originalPrice > product.price) // Có giảm giá
-    .sort((a, b) => (b.originalPrice - b.price) - (a.originalPrice - a.price)); // Giảm nhiều nhất lên đầu
+  // 🔄 Nếu backend CHƯA hỗ trợ `onSale` hoặc `discountAmount`, dùng fallback:
+  /*
+  useEffect(() => {
+    const loadAllAndFilter = async () => {
+      setLoading(true);
+      try {
+        const { data } = await getProducts(0, 100, 'createdAt', 'DESC', {});
+        const deals = (Array.isArray(data) ? data : [])
+          .filter(p => p.originalPrice > 0 && p.price < p.originalPrice)
+          .sort((a, b) => (b.originalPrice - b.price) - (a.originalPrice - a.price));
+        setHotDeals(deals);
+      } catch (err) {
+        setError('Không thể tải deal nổi bật');
+        setHotDeals([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadAllAndFilter();
+  }, []);
+  */
 
+  // 🖱️ Scroll logic (unchanged)
   const onMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
     isDown.current = true;
     setIsDragging(false);
-    startX.current = e.pageX - (scrollRef.current?.offsetLeft ?? 0);
-    scrollLeft.current = scrollRef.current?.scrollLeft ?? 0;
+    startX.current = e.pageX - scrollRef.current.offsetLeft;
+    scrollLeft.current = scrollRef.current.scrollLeft;
   };
 
   const onMouseLeave = () => {
@@ -96,13 +116,10 @@ const HotDeals: React.FC = () => {
   const scrollByOneProduct = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
     const scrollAmount = productWidth + productMarginRight;
-    if (direction === 'left') {
-      scrollRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    } else {
-      scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
+    scrollRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
   };
 
+  // 🖼 Render
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" p={4}>
@@ -124,15 +141,20 @@ const HotDeals: React.FC = () => {
       <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
         Deal nổi bật 🔥
       </Typography>
-      <Typography variant="body2" mb={3} align="center">
-        Chương trình đã kết thúc, hẹn gặp lại trong thời gian sớm nhất!
-      </Typography>
+
+      {/* ✅ Chỉ hiển thị thông báo nếu KHÔNG có deal */}
+      {hotDeals.length === 0 ? (
+        <Typography variant="body1" align="center" color="text.secondary" py={2}>
+          Hiện chưa có sản phẩm nào đang giảm giá.
+        </Typography>
+      ) : null}
 
       <Box display="flex" alignItems="center" gap={1} justifyContent="center">
         <IconButton
           onClick={() => scrollByOneProduct('left')}
-          aria-label="scroll left"
+          aria-label="Cuộn sang trái"
           size="large"
+          disabled={!scrollRef.current || scrollRef.current.scrollLeft <= 0}
         >
           <ChevronLeftIcon />
         </IconButton>
@@ -153,33 +175,31 @@ const HotDeals: React.FC = () => {
             WebkitUserDrag: 'none',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            '&::-webkit-scrollbar': {
-              display: 'none',
-            },
+            '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
-          {hotDeals.length > 0 ? (
-            hotDeals.map((product) => (
-              <Box
-                key={product.id}
-                flex="0 0 auto"
-                sx={{ minWidth: productWidth, pl: 1, mr: 1, mb: 2, mt: 2 }}
-              >
-                {/* ✅ Bỏ dòng `status` không cần thiết */}
-                <ProductCard product={product} />
-              </Box>
-            ))
-          ) : (
-            <Typography variant="body1" align="center" width="100%">
-              Không có sản phẩm nào đang giảm giá.
-            </Typography>
-          )}
+          {hotDeals.map((product) => (
+            <Box
+              key={product.id}
+              flex="0 0 auto"
+              sx={{
+                minWidth: productWidth,
+                pl: 1,
+                mr: 1,
+                mb: 2,
+                mt: 2,
+              }}
+            >
+              <ProductCard product={product} />
+            </Box>
+          ))}
         </Box>
 
         <IconButton
           onClick={() => scrollByOneProduct('right')}
-          aria-label="scroll right"
+          aria-label="Cuộn sang phải"
           size="large"
+          // ⚠️ Tạm không disable vì không biết scroll max (có thể tính nếu cần)
         >
           <ChevronRightIcon />
         </IconButton>

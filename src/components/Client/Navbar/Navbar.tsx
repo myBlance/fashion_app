@@ -18,7 +18,7 @@ const textList = [
   'Nhanh tay chọn cho mình những sản phẩm ưng ý nhất!',
 ];
 
-const placeholders = ['Áo', 'Quần jeans', 'Giày sneaker', 'Váy'];
+const placeholders = ['Áo', 'Quần jeans', 'Đầm', 'Váy'];
 
 const Navbar: React.FC = () => {
   const { role, logout, userId } = useAuth();

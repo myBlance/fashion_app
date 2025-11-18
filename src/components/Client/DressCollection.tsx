@@ -1,3 +1,4 @@
+// src/components/Client/DressCollection.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
@@ -10,22 +11,8 @@ import {
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from './ProductCard';
-import { Product } from '../../types/Product'; // ✅ Import type
-
-// ✅ Hàm gọi API
-const fetchProducts = async (): Promise<Product[]> => {
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) {
-      throw new Error(`Lỗi API: ${response.status} - ${response.statusText}`);
-    }
-    const data: Product[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error('❌ Lỗi khi gọi API /api/products:', error);
-    throw error;
-  }
-};
+import { Product } from '../../types/Product';
+import { getProducts } from '../../services/productService'; // ✅ reuse service
 
 const DressCollection: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -39,25 +26,31 @@ const DressCollection: React.FC = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Lấy dữ liệu từ backend
   useEffect(() => {
-    const loadProducts = async () => {
+    const loadDressProducts = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
+        // ✅ Gọi API với filter type = 'váy' (giống ShopPage)
+        const { data } = await getProducts(
+          0,
+          20, // giới hạn 20 sản phẩm
+          'createdAt',
+          'DESC',
+          { type: 'váy' } // truyền filter vào backend
+        );
+        setProducts(Array.isArray(data) ? data : []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Lỗi không xác định');
+        console.error('❌ Lỗi khi tải bộ sưu tập Váy:', err);
+        setError(err instanceof Error ? err.message : 'Không thể tải sản phẩm');
+        setProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadProducts();
+    loadDressProducts();
   }, []);
-
-  // ✅ Lọc sản phẩm theo type = 'váy'
-  const dressProducts = products.filter((product) => product.type === 'váy');
 
   const scrollByOneProduct = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
@@ -66,6 +59,10 @@ const DressCollection: React.FC = () => {
       left: direction === 'left' ? -scrollAmount : scrollAmount,
       behavior: 'smooth',
     });
+  };
+
+  const handleViewAll = () => {
+    window.location.href = '/shop?type=váy'; // ✅ điều hướng tới trang lọc
   };
 
   if (loading) {
@@ -117,14 +114,15 @@ const DressCollection: React.FC = () => {
           <Typography
             variant="h3"
             fontWeight="bold"
-            color="red"
+            color="#e53935" // red MUI
             sx={{ textTransform: 'uppercase', mt: 1 }}
           >
             Váy
           </Typography>
           <Button
             variant="contained"
-            sx={{ mt: 3, backgroundColor: 'white', color: 'black' }}
+            onClick={handleViewAll}
+            sx={{ mt: 3, backgroundColor: 'white', color: 'black', '&:hover': { backgroundColor: '#f5f5f5' } }}
           >
             Xem ngay
           </Button>
@@ -135,7 +133,7 @@ const DressCollection: React.FC = () => {
       <Box display="flex" alignItems="center" gap={1}>
         <IconButton
           onClick={() => scrollByOneProduct('left')}
-          aria-label="scroll left"
+          aria-label="Cuộn trái"
           size="large"
         >
           <ChevronLeftIcon />
@@ -149,32 +147,35 @@ const DressCollection: React.FC = () => {
             width: containerWidth,
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            '&::-webkit-scrollbar': {
-              display: 'none',
-            },
+            '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
-          {dressProducts.length > 0 ? (
-            dressProducts.map((product) => (
+          {products.length > 0 ? (
+            products.map((product) => (
               <Box
                 key={product.id}
                 flex="0 0 auto"
                 sx={{ minWidth: productWidth, pl: 1, mr: 1, mb: 2, mt: 2 }}
               >
-                {/* ✅ Bỏ `status` sai kiểu */}
                 <ProductCard product={product} />
               </Box>
             ))
           ) : (
-            <Typography variant="body1" align="center" width="100%">
-              Không có sản phẩm váy nào.
+            <Typography
+              variant="body1"
+              align="center"
+              width="100%"
+              color="text.secondary"
+              sx={{ alignSelf: 'center', px: 2 }}
+            >
+              Chưa có sản phẩm nào trong bộ sưu tập này.
             </Typography>
           )}
         </Box>
 
         <IconButton
           onClick={() => scrollByOneProduct('right')}
-          aria-label="scroll right"
+          aria-label="Cuộn phải"
           size="large"
         >
           <ChevronRightIcon />

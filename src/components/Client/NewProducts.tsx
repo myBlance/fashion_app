@@ -1,25 +1,11 @@
+// src/components/Client/NewProducts.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Typography, IconButton, CircularProgress, Alert } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from './ProductCard';
 import { Product } from '../../types/Product'; // ✅ Import type
-
-// ✅ Hàm gọi API
-const fetchProducts = async (): Promise<Product[]> => {
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) {
-      throw new Error(`Lỗi API: ${response.status} - ${response.statusText}`);
-    }
-    // ✅ Sửa lỗi cú pháp: nhận đúng kiểu dữ liệu
-    const data: Product[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error('❌ Lỗi khi gọi API /api/products:', error);
-    throw error;
-  }
-};
+import { getProducts } from '../../services/productService'; // ✅ reuse service
 
 const NewProducts: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -38,8 +24,18 @@ const NewProducts: React.FC = () => {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
+        // Gọi API để lấy sản phẩm
+        // Sắp xếp theo createdAt DESC trực tiếp từ backend để lấy sản phẩm mới nhất
+        const { data } = await getProducts(
+          0, // _start
+          10, // _end — giới hạn 10 sản phẩm mới nhất ngay từ đầu
+          'createdAt', // Sắp xếp theo ngày tạo mới nhất trước
+          'DESC',
+          {} // Không có filter đặc biệt
+        );
+
+        const allProducts: Product[] = Array.isArray(data) ? data : [];
+        setProducts(allProducts);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Lỗi không xác định');
       } finally {
@@ -50,10 +46,8 @@ const NewProducts: React.FC = () => {
     loadProducts();
   }, []);
 
-  // ✅ Sắp xếp theo ngày tạo (mới nhất lên đầu) và lấy 10 sản phẩm đầu tiên
-  const newProducts = [...products]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 10);
+  // ✅ Không cần sắp xếp lại nữa vì đã sắp xếp từ backend, chỉ cần giới hạn 10 sản phẩm
+  const newProducts = products.slice(0, 10);
 
   const scrollByOneProduct = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;

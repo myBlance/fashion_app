@@ -1,25 +1,11 @@
+// src/components/Client/BestSellers.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Typography, IconButton, CircularProgress, Alert } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ProductCard from './ProductCard';
 import { Product } from '../../types/Product'; // ✅ Import type
-
-// ✅ Hàm gọi API
-const fetchProducts = async (): Promise<Product[]> => {
-  try {
-    const response = await fetch('/api/products');
-    if (!response.ok) {
-      throw new Error(`Lỗi API: ${response.status} - ${response.statusText}`);
-    }
-    // ✅ Sửa lỗi cú pháp: nhận đúng kiểu dữ liệu
-    const data: Product[] = await response.json();
-    return data;
-  } catch (error) {
-    console.error('❌ Lỗi khi gọi API /api/products:', error);
-    throw error;
-  }
-};
+import { getProducts } from '../../services/productService'; // ✅ reuse service
 
 const BestSellers: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -38,8 +24,18 @@ const BestSellers: React.FC = () => {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        const data = await fetchProducts();
-        setProducts(data);
+        // Gọi API để lấy sản phẩm (có thể cần điều chỉnh limit nếu có nhiều)
+        // Gọi với limit lớn để có đủ sản phẩm để lọc
+        const { data } = await getProducts(
+          0, // _start
+          100, // _end — giới hạn 100 sản phẩm để lọc
+          'createdAt', // Sắp xếp theo ngày tạo mới nhất trước
+          'DESC',
+          {} // Không có filter đặc biệt, lấy tất cả
+        );
+
+        const allProducts: Product[] = Array.isArray(data) ? data : [];
+        setProducts(allProducts);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Lỗi không xác định');
       } finally {

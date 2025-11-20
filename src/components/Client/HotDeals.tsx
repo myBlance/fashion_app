@@ -24,24 +24,32 @@ const HotDeals: React.FC = () => {
   const scrollLeft = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // ✅ Fetch hot deals từ backend (tối ưu: chỉ lấy sản phẩm đang giảm giá)
+  // ✅ Fetch hot deals từ backend (fallback: fetch all and filter on client)
   useEffect(() => {
     const loadHotDeals = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Gọi API với filter & sort theo discount (nếu backend hỗ trợ)
-        // 🔁 Giả sử backend hỗ trợ query param `onSale=true` hoặc `isHotDeal=true`
-        // Nếu chưa có, mình sẽ hướng dẫn thêm ở dưới 👇
+        // Gọi API để lấy sản phẩm (có thể cần điều chỉnh limit nếu có nhiều)
+        // Gọi với limit lớn để có đủ sản phẩm để lọc
         const { data } = await getProducts(
           0, // _start
-          20, // _end — giới hạn 20 deal
-          'discountAmount', // ⚠️ giả sử backend có virtual field này
+          100, // _end — giới hạn 100 sản phẩm để lọc
+          'createdAt', // Sắp xếp theo ngày tạo mới nhất trước
           'DESC',
-          { onSale: 'true' } // custom filter
+          {} // Không có filter đặc biệt, lấy tất cả
         );
 
-        setHotDeals(Array.isArray(data) ? data : []);
+        const allProducts: Product[] = Array.isArray(data) ? data : [];
+
+        // 🔁 Fallback: Lọc sản phẩm có giá gốc > giá hiện tại (tức là đang giảm giá)
+        // và sắp xếp theo mức giảm giá (originalPrice - price) giảm dần
+        const deals = allProducts
+          .filter(p => p.originalPrice > 0 && p.price < p.originalPrice) // Sản phẩm đang giảm giá
+          .sort((a, b) => (b.originalPrice - b.price) - (a.originalPrice - a.price)); // Sắp xếp theo mức giảm
+
+        // Giới hạn số lượng deal nổi bật (ví dụ: 20 sản phẩm đầu tiên)
+        setHotDeals(deals.slice(0, 20));
       } catch (err) {
         console.error('❌ Lỗi khi tải Hot Deals:', err);
         setError(err instanceof Error ? err.message : 'Lỗi không xác định');
@@ -53,28 +61,6 @@ const HotDeals: React.FC = () => {
 
     loadHotDeals();
   }, []);
-
-  // 🔄 Nếu backend CHƯA hỗ trợ `onSale` hoặc `discountAmount`, dùng fallback:
-  /*
-  useEffect(() => {
-    const loadAllAndFilter = async () => {
-      setLoading(true);
-      try {
-        const { data } = await getProducts(0, 100, 'createdAt', 'DESC', {});
-        const deals = (Array.isArray(data) ? data : [])
-          .filter(p => p.originalPrice > 0 && p.price < p.originalPrice)
-          .sort((a, b) => (b.originalPrice - b.price) - (a.originalPrice - a.price));
-        setHotDeals(deals);
-      } catch (err) {
-        setError('Không thể tải deal nổi bật');
-        setHotDeals([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadAllAndFilter();
-  }, []);
-  */
 
   // 🖱️ Scroll logic (unchanged)
   const onMouseDown = (e: React.MouseEvent) => {
@@ -139,7 +125,7 @@ const HotDeals: React.FC = () => {
   return (
     <Box p={4}>
       <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
-        Deal nổi bật 🔥
+        Deal nổi bật
       </Typography>
 
       {/* ✅ Chỉ hiển thị thông báo nếu KHÔNG có deal */}

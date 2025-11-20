@@ -1,4 +1,3 @@
-// src/components/Client/DressCollection.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
@@ -31,15 +30,21 @@ const DressCollection: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        // ✅ Gọi API với filter type = 'váy' (giống ShopPage)
+        // ✅ Gọi API để lấy TẤT CẢ sản phẩm
         const { data } = await getProducts(
           0,
-          20, // giới hạn 20 sản phẩm
+          100, // giới hạn 100 sản phẩm để lọc
           'createdAt',
           'DESC',
-          { type: 'Váy' } // truyền filter vào backend
+          {} // Không có filter đặc biệt, lấy tất cả
         );
-        setProducts(Array.isArray(data) ? data : []);
+
+        const allProducts: Product[] = Array.isArray(data) ? data : [];
+
+        // 🔁 Fallback: Lọc các sản phẩm có type là 'Váy' (giống ShopPage)
+        const dressProducts = allProducts.filter(p => p.type === 'Váy');
+
+        setProducts(dressProducts);
       } catch (err) {
         console.error('❌ Lỗi khi tải bộ sưu tập Váy:', err);
         setError(err instanceof Error ? err.message : 'Không thể tải sản phẩm');
@@ -62,7 +67,8 @@ const DressCollection: React.FC = () => {
   };
 
   const handleViewAll = () => {
-    window.location.href = '/shop?type=váy'; // ✅ điều hướng tới trang lọc
+    // Điều hướng tới trang shop với filter type là "Váy"
+    window.location.href = '/shop?type=Váy';
   };
 
   if (loading) {

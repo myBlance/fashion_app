@@ -1,4 +1,3 @@
-// src/components/Client/ShirtCollection.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import {
   Box,
@@ -36,9 +35,15 @@ const ShirtCollection: React.FC = () => {
           20,
           'createdAt',
           'DESC',
-          { type: 'áo' } // ✅ filter ở backend
+          { type: 'Áo' } // ✅ filter ở backend
         );
-        setProducts(Array.isArray(data) ? data : []);
+
+        const allProducts: Product[] = Array.isArray(data) ? data : [];
+        
+        // 🔁 Fallback: Lọc các sản phẩm có type là 'Váy' (giống ShopPage)
+        const ShirtProducts = allProducts.filter(p => p.type === 'Áo');
+
+        setProducts(ShirtProducts);
       } catch (err) {
         console.error('❌ Lỗi khi tải bộ sưu tập Áo:', err);
         setError(err instanceof Error ? err.message : 'Không thể tải sản phẩm');

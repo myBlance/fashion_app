@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../../styles/CheckoutSummary.css';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../../../styles/CheckoutSummary.css';
 
-import VoucherModal from '../../components/Client/Voucher/VoucherModal';
-import { Voucher } from '../../types/Voucher';
-import { Address } from '../../types/Address';
+import { Address } from '../../../types/Address';
+import { Voucher } from '../../../types/Voucher';
+import VoucherModal from '../Voucher/VoucherModal';
 
 interface CheckoutSummaryProps {
   cartItems: Array<{

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
-import { setCartItems, increaseQuantity, decreaseQuantity, removeFromCart } from '../../store/cartSlice';
-import { CartService } from '../../services/cartService';
-import { CartItem } from '../../types/CartItem';
-import '../../styles/CartPage.css';
-import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
-import { useAuth } from '../../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
+import { useAuth } from '../../contexts/AuthContext';
+import { CartService } from '../../services/cartService';
+import { RootState } from '../../store';
+import { decreaseQuantity, increaseQuantity, removeFromCart, setCartItems } from '../../store/cartSlice';
+import '../../styles/CartPage.css';
+import { CartItem } from '../../types/CartItem';
 // ✅ Bỏ import fetchCart nếu bạn không dùng
 
 const CartPage: React.FC = () => {

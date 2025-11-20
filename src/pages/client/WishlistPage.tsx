@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
 // ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
-import { useAppSelector } from '../../store/hooks';
-import { useAppDispatch } from '../../store/hooks';
-import ProductCard from '../../components/Client/ProductCard';
-import DynamicBreadcrumbs from '../../components/Client/DynamicBreadcrumbs';
-import { getProducts } from '../../services/productService';
+import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
+import ProductCard from '../../components/Client/Productcard/ProductCard';
 import { useAuth } from '../../contexts/AuthContext';
+import { getProducts } from '../../services/productService';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchWishlist } from '../../store/wishlistSlice';
 import { Product } from "../../types/Product";
 

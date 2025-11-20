@@ -1,6 +1,6 @@
 import React from 'react';
-import CheckoutSummary from '../../components/Client/CheckoutSummary';
 import { useLocation } from 'react-router-dom';
+import CheckoutSummary from '../../components/Client/Checkout/CheckoutSummary';
 
 // Định nghĩa kiểu cho item
 type CartItem = {

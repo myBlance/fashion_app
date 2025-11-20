@@ -1,6 +1,6 @@
+import { Box, Chip, Typography } from '@mui/material';
 import React from 'react';
-import { Box, Typography, Chip } from '@mui/material';
-import { getLabel, Filters } from '../../utils/filterUtils';
+import { Filters, getLabel } from '../../../utils/filterUtils';
 
 interface ActiveFiltersProps {
     filters: Filters;

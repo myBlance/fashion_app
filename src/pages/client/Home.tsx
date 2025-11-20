@@ -1,12 +1,12 @@
 import React from 'react';
-import BannerSlider from '../../components/Client/BannerSlider';
-import FeaturedCategories from '../../components/Client/FeaturedCategories';
-import HotDeals from '../../components/Client/HotDeals';
-import DressCollection from '../../components/Client/DressCollection';
-import ShirtCollection from '../../components/Client/ShirtCollection';
-import AboutIntro from '../../components/Client/AboutIntro';
-import NewProducts from '../../components/Client/NewProducts';
-import BestSellers from '../../components/Client/BestSellers';
+import AboutIntro from '../../components/Client/About/AboutIntro';
+import BannerSlider from '../../components/Client/Home/BannerSlider';
+import BestSellers from '../../components/Client/Home/BestSellers';
+import DressCollection from '../../components/Client/Home/DressCollection';
+import FeaturedCategories from '../../components/Client/Home/FeaturedCategories';
+import HotDeals from '../../components/Client/Home/HotDeals';
+import NewProducts from '../../components/Client/Home/NewProducts';
+import ShirtCollection from '../../components/Client/Home/ShirtCollection';
 import VoucherList from '../../components/Client/Voucher/VoucherList';
 
 const Home: React.FC = () => {

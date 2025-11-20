@@ -4,7 +4,7 @@ import { Box, CircularProgress, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { getProducts } from '../../../services/productService';
 import { Product } from '../../../types/Product';
-import ProductCard from '../ProductCard';
+import ProductCard from '../Productcard/ProductCard';
 
 interface SimilarProductsProps {
   currentProductId: string;

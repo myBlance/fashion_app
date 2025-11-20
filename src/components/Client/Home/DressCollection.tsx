@@ -1,19 +1,19 @@
-import React, { useRef, useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  CircularProgress,
-  Alert,
-} from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ProductCard from './ProductCard';
-import { Product } from '../../types/Product';
-import { getProducts } from '../../services/productService';
+import {
+    Alert,
+    Box,
+    Button,
+    CircularProgress,
+    IconButton,
+    Typography,
+} from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { getProducts } from '../../../services/productService'; // ✅ reuse service
+import { Product } from '../../../types/Product';
+import ProductCard from '../Productcard/ProductCard';
 
-const ShirtCollection: React.FC = () => {
+const DressCollection: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,26 +26,27 @@ const ShirtCollection: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadShirtProducts = async () => {
+    const loadDressProducts = async () => {
       setLoading(true);
       setError(null);
       try {
+        // ✅ Gọi API để lấy TẤT CẢ sản phẩm
         const { data } = await getProducts(
           0,
-          20,
+          100, // giới hạn 100 sản phẩm để lọc
           'createdAt',
           'DESC',
-          { type: 'Áo' } // ✅ filter ở backend
+          {} // Không có filter đặc biệt, lấy tất cả
         );
 
         const allProducts: Product[] = Array.isArray(data) ? data : [];
-        
-        // 🔁 Fallback: Lọc các sản phẩm có type là 'Váy' (giống ShopPage)
-        const ShirtProducts = allProducts.filter(p => p.type === 'Áo');
 
-        setProducts(ShirtProducts);
+        // 🔁 Fallback: Lọc các sản phẩm có type là 'Váy' (giống ShopPage)
+        const dressProducts = allProducts.filter(p => p.type === 'Váy');
+
+        setProducts(dressProducts);
       } catch (err) {
-        console.error('❌ Lỗi khi tải bộ sưu tập Áo:', err);
+        console.error('❌ Lỗi khi tải bộ sưu tập Váy:', err);
         setError(err instanceof Error ? err.message : 'Không thể tải sản phẩm');
         setProducts([]);
       } finally {
@@ -53,7 +54,7 @@ const ShirtCollection: React.FC = () => {
       }
     };
 
-    loadShirtProducts();
+    loadDressProducts();
   }, []);
 
   const scrollByOneProduct = (direction: 'left' | 'right') => {
@@ -66,7 +67,8 @@ const ShirtCollection: React.FC = () => {
   };
 
   const handleViewAll = () => {
-    window.location.href = '/shop?type=áo';
+    // Điều hướng tới trang shop với filter type là "Váy"
+    window.location.href = '/shop?type=Váy';
   };
 
   if (loading) {
@@ -86,7 +88,53 @@ const ShirtCollection: React.FC = () => {
   }
 
   return (
-    <Box display="flex" gap={2} p={2} justifyContent="center" mr={10}>
+    <Box display="flex" gap={2} p={2} justifyContent="center">
+      {/* Banner bên trái */}
+      <Box
+        sx={{
+          position: 'relative',
+          width: '380px',
+          height: '480px',
+          borderRadius: 2,
+          overflow: 'hidden',
+          backgroundImage: 'url(/assets/images/dressbaner_3.webp)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          marginLeft: 5,
+          flexShrink: 0,
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '40%',
+            left: '30%',
+            color: '#fff',
+            textShadow: '0 0 10px rgba(0,0,0,0.6)',
+            textAlign: 'center',
+          }}
+        >
+          <Typography variant="h5" fontWeight="bold">
+            Bộ sưu tập
+          </Typography>
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            color="#e53935" // red MUI
+            sx={{ textTransform: 'uppercase', mt: 1 }}
+          >
+            Váy
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleViewAll}
+            sx={{ mt: 3, backgroundColor: 'white', color: 'black', '&:hover': { backgroundColor: '#f5f5f5' } }}
+          >
+            Xem ngay
+          </Button>
+        </Box>
+      </Box>
+
       {/* Danh sách sản phẩm */}
       <Box display="flex" alignItems="center" gap={1}>
         <IconButton
@@ -139,53 +187,8 @@ const ShirtCollection: React.FC = () => {
           <ChevronRightIcon />
         </IconButton>
       </Box>
-
-      {/* Banner bên phải */}
-      <Box
-        sx={{
-          position: 'relative',
-          width: '380px',
-          height: '480px',
-          borderRadius: 2,
-          overflow: 'hidden',
-          backgroundImage: 'url(/assets/images/tshirtbaner_1.webp)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          flexShrink: 0,
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '40%',
-            left: '30%',
-            color: '#fff',
-            textShadow: '0 0 10px rgba(0,0,0,0.6)',
-            textAlign: 'center',
-          }}
-        >
-          <Typography variant="h5" fontWeight="bold">
-            Bộ sưu tập
-          </Typography>
-          <Typography
-            variant="h3"
-            fontWeight="bold"
-            color="#e53935"
-            sx={{ textTransform: 'uppercase', mt: 1 }}
-          >
-            Áo
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={handleViewAll}
-            sx={{ mt: 3, backgroundColor: 'white', color: 'black', '&:hover': { backgroundColor: '#f5f5f5' } }}
-          >
-            Xem ngay
-          </Button>
-        </Box>
-      </Box>
     </Box>
   );
 };
 
-export default ShirtCollection;
+export default DressCollection;

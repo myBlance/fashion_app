@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Box,
-  IconButton,
-  Chip,
-  LinearProgress,
-  Button,
-} from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardMedia,
+    Chip,
+    IconButton,
+    LinearProgress,
+    Typography,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { toggleWishlist } from '../../store/wishlistSlice';
-import QuickView from '../Client/QuickView';
-import { Product } from '../../types/Product';
-import { useAuth } from '../../contexts/AuthContext';
-import { WishlistService } from '../../services/wishlistService';
+import { useAuth } from '../../../contexts/AuthContext';
+import { WishlistService } from '../../../services/wishlistService';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { toggleWishlist } from '../../../store/wishlistSlice';
+import { Product } from '../../../types/Product';
+import QuickView from '../QuickView';
 
 interface ProductCardProps {
   product: Product;

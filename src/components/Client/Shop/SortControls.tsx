@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { sortOptions } from '../../constants/filterOptions';
+import { sortOptions } from '../../../constants/filterOptions';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 
 interface SortControlsProps {

@@ -3,7 +3,7 @@ import { Box, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import DynamicBreadcrumbs from "../../components/Client/DynamicBreadcrumbs";
+import DynamicBreadcrumbs from "../../components/Client/Breadcrumb/DynamicBreadcrumbs";
 import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs"; // Đảm bảo component này đã được cập nhật
 import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
 import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";

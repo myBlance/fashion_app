@@ -1,11 +1,11 @@
 // src/components/Client/HotDeals.tsx
-import React, { useRef, useState, useEffect } from 'react';
-import { Box, Typography, IconButton, CircularProgress, Alert } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ProductCard from './ProductCard';
-import { Product } from '../../types/Product';
-import { getProducts } from '../../services/productService'; // ✅ reuse service
+import { Alert, Box, CircularProgress, IconButton, Typography } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { getProducts } from '../../../services/productService'; // ✅ reuse service
+import { Product } from '../../../types/Product';
+import ProductCard from '../Productcard/ProductCard';
 
 const HotDeals: React.FC = () => {
   const [hotDeals, setHotDeals] = useState<Product[]>([]);

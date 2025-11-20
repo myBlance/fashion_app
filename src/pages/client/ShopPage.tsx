@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material';
-import ProductCard from '../../components/Client/ProductCard';
+import { Box, SelectChangeEvent, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import ProductCard from '../../components/Client/Productcard/ProductCard';
+import ActiveFilters from '../../components/Client/Shop/ActiveFilters';
+import FilterSelect from '../../components/Client/Shop/FilterSelect';
+import SortControls from '../../components/Client/Shop/SortControls';
+import {
+    colorOptions,
+    priceOptions,
+    sizeOptions,
+    styleOptions,
+    typeOptions,
+} from "../../constants/filterOptions";
 import { getProducts } from '../../services/productService';
 import { Product } from "../../types/Product";
-import {
-  priceOptions,
-  typeOptions,
-  styleOptions,
-  sizeOptions,
-  colorOptions,
-} from "../../constants/filterOptions";
-import FilterSelect from '../../components/Client/FilterSelect';
-import ActiveFilters from '../../components/Client/ActiveFilters';
-import SortControls from '../../components/Client/SortControls';
 
 interface Filters {
   price: string[];

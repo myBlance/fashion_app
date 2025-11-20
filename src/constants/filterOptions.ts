@@ -8,10 +8,10 @@ export const priceOptions = [
 ];
 
 export const typeOptions = [
-  { value: 'quần', label: 'Quần' },
-  { value: 'áo', label: 'Áo' },
-  { value: 'váy', label: 'Váy' },
-  { value: 'đầm', label: 'Đầm' },
+  { value: 'Quần', label: 'Quần' },
+  { value: 'Áo', label: 'Áo' },
+  { value: 'Váy', label: 'Váy' },
+  { value: 'Đầm', label: 'Đầm' },
 ];
 
 export const styleOptions = [
@@ -68,4 +68,59 @@ export const sortOptions = [
   { value: 'price-desc', label: 'Giá cao xuống thấp' },
   { value: 'best-selling', label: 'Bán chạy nhất' },
   { value: 'rating', label: 'Đánh giá cao nhất' },
+];
+
+
+//_________________________________
+export const typeChoices = [
+    { id: 'Áo', name: 'Áo' },
+    { id: 'Quần', name: 'Quần' },
+    { id: 'Váy', name: 'Váy' },
+    { id: 'Đầm', name: 'Đầm' },
+];
+
+export const styleChoices = [
+    { id: 'trẻ trung', name: 'Trẻ trung' },
+    { id: 'cá tính', name: 'Cá tính' },
+    { id: 'thể thao', name: 'Thể thao' },
+    { id: 'công sở', name: 'Công sở' },
+    { id: 'dạo phố', name: 'Dạo phố' },
+    { id: 'tối giản', name: 'Tối giản' },
+    { id: 'hiện đại', name: 'Hiện đại' },
+    { id: 'cổ điển', name: 'Cổ điển' },
+    { id: 'sang trọng', name: 'Sang trọng' },
+    { id: 'dễ thương', name: 'Dễ thương' },
+    { id: 'năng động', name: 'Năng động' },
+    { id: 'mát mẻ', name: 'Mát mẻ' },
+    { id: 'nữ tính', name: 'Nữ tính' },
+    { id: 'nam tính', name: 'Nam tính' },
+];
+
+export const sizeChoices = [
+    { id: 'XS', name: 'XS' },
+    { id: 'S', name: 'S' },
+    { id: 'M', name: 'M' },
+    { id: 'L', name: 'L' },
+    { id: 'XL', name: 'XL' },
+    { id: 'XXL', name: 'XXL' },
+    { id: '3XL', name: '3XL' },
+    { id: '4XL', name: '4XL' },
+];
+
+export const colorChoices = [
+    { id: 'black', name: 'Đen' },
+    { id: 'white', name: 'Trắng' },
+    { id: 'gray', name: 'Xám' },
+    { id: 'navy', name: 'Xanh navy' },
+    { id: 'beige', name: 'Be' },
+    { id: 'brown', name: 'Nâu' },
+    { id: 'red', name: 'Đỏ' },
+    { id: 'orange', name: 'Cam' },
+    { id: 'yellow', name: 'Vàng' },
+    { id: 'green', name: 'Xanh lá' },
+    { id: 'blue', name: 'Xanh dương' },
+    { id: 'purple', name: 'Tím' },
+    { id: 'pink', name: 'Hồng' },
+    { id: 'gold', name: 'Vàng kim' },
+    { id: 'silver', name: 'Bạc' },
 ];

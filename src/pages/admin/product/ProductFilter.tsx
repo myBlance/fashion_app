@@ -1,6 +1,7 @@
+import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment } from '@mui/material';
-import { TextInput, SelectInput, SearchInput } from 'react-admin';
-import  SearchIcon  from '@mui/icons-material/Search';
+import { SearchInput, SelectInput, TextInput } from 'react-admin';
+import { typeChoices } from '../../../constants/filterOptions';
 
 export const productFilters = [
     <SearchInput 
@@ -18,17 +19,12 @@ export const productFilters = [
         }}
     />,
     <TextInput source='name' label='Tên sản phẩm' key='name' variant='outlined' />,
-    <TextInput source='brand' label='Thương hiệu' key='brand' variant='outlined' />,
     <SelectInput
-        source='category'
+        source='type'
         label='Danh mục'
         variant='outlined'
-        choices={[
-            { id: 'Quần', name: 'Quần' },
-            { id: 'Áo', name: 'Áo' },
-            { id: 'Váy', name: 'Váy' },
-        ]}
-        key='category'
+        choices={typeChoices}
+        key='type'
     />,
     <SelectInput
         variant='outlined'

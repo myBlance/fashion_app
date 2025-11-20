@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../store/cartSlice";
-import { CartItem } from "../../types/CartItem";
-import { toggleWishlist } from "../../store/wishlistSlice";
-import { useAppSelector } from "../../store/hooks";
-import "../../styles/ProductDetail.css";
-import DynamicBreadcrumbs from "../../components/Client/DynamicBreadcrumbs";
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import { getProductById } from "../../services/productService"; 
-import { CartService } from "../../services/cartService";
-import { Product } from "../../types/Product";
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import DynamicBreadcrumbs from "../../components/Client/DynamicBreadcrumbs";
 import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs"; // Đảm bảo component này đã được cập nhật
-import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";
 import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
+import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";
+import { useAuth } from '../../contexts/AuthContext';
+import { CartService } from "../../services/cartService";
+import { getProductById } from "../../services/productService";
+import { addToCart } from "../../store/cartSlice";
+import { useAppSelector } from "../../store/hooks";
+import { toggleWishlist } from "../../store/wishlistSlice";
+import "../../styles/ProductDetail.css";
+import { CartItem } from "../../types/CartItem";
+import { Product } from "../../types/Product";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // id là productId
@@ -151,7 +151,7 @@ const ProductDetail: React.FC = () => {
           <h2>{product.name}</h2>
           <div className="info-row">
             <div>
-              Loại: <span className="highlight">{product.category}</span><br />
+              Loại: <span className="highlight">{product.type}</span><br />
               Tình trạng: <span className={`highlight status ${product.status ? "available" : "unavailable"}`}>{product.status ? "Còn hàng" : "Hết hàng"}</span>
             </div>
             <div>
@@ -220,7 +220,7 @@ const ProductDetail: React.FC = () => {
         />
         <SimilarProducts
           currentProductId={product.id}
-          currentCategory={product.category} // Truyền category
+          currenttype={product.type} // Truyền type
         />
       </Box>
     </div>

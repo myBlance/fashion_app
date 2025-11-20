@@ -1,4 +1,4 @@
-import { Box, Typography, Paper } from '@mui/material'; 
+import { Box, Paper, Typography } from '@mui/material';
 
 const categories = [
   { name: 'Áo', image: '/assets/icons/icon1.webp' },
@@ -24,7 +24,7 @@ const FeaturedCategories = () => {
           gap: 2,
         }}
       >
-        {categories.map((category, index) => (
+        {categories.map((type, index) => (
           <Box
             key={index}
             sx={{
@@ -48,8 +48,8 @@ const FeaturedCategories = () => {
             >
                 <Box
                     component="img"
-                    src={category.image}
-                    alt={category.name}
+                    src={type.image}
+                    alt={type.name}
                     sx={{
                         textAlign: 'center',
                         cursor: 'pointer',
@@ -65,7 +65,7 @@ const FeaturedCategories = () => {
                     }}
                 />
                 <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                    {category.name}
+                    {type.name}
                 </Typography>
             </Paper>
           </Box>

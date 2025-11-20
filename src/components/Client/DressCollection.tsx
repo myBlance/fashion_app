@@ -37,7 +37,7 @@ const DressCollection: React.FC = () => {
           20, // giới hạn 20 sản phẩm
           'createdAt',
           'DESC',
-          { type: 'váy' } // truyền filter vào backend
+          { type: 'Váy' } // truyền filter vào backend
         );
         setProducts(Array.isArray(data) ? data : []);
       } catch (err) {

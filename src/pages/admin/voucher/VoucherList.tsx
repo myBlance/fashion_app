@@ -27,24 +27,7 @@ import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs'; // Điề
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar'; // Điều chỉnh đường dẫn nếu cần
 import { useSidebarState } from 'react-admin';
 import { voucherFilter } from './VoucherFilter';
-
-// Interface cho dữ liệu voucher
-interface Voucher {
-  id: string;
-  code: string;
-  name: string;
-  description?: string;
-  type: 'percentage' | 'fixed';
-  value: number;
-  minOrderAmount: number;
-  validFrom: string;
-  validUntil: string;
-  maxUses: number;
-  maxUsesPerUser: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Voucher } from '../../../types/Voucher';
 
 // Action toolbar
 const ListActions = () => (
@@ -118,7 +101,7 @@ export const VoucherList = () => {
         <Box sx={{ overflow: 'auto', maxHeight: 'calc(100vh - 100px)', width: open ? '1228px' : '1419px' }}>
           <DatagridConfigurable
             bulkActionButtons={false}
-            rowClick={false} // Disable edit on click, dùng nút riêng
+            rowClick="edit" 
             sx={(theme) => ({
               '& .RaDatagrid-headerCell': {
                 backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : '#1e1e1e',
@@ -182,7 +165,7 @@ export const VoucherList = () => {
               label="Loại giảm"
               render={(record: Voucher) => (
                 <Typography variant="body2">
-                  {record.type === 'percentage' ? `${record.value}%` : `${record.value.toLocaleString()}đ`}
+                  {record.type === 'percentage' ? `${record.value ?? 0}%` : `${record.value?.toLocaleString() ?? 0}đ`}
                 </Typography>
               )}
             />

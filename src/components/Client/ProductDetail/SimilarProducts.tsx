@@ -1,23 +1,23 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Box, Typography, IconButton, CircularProgress } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ProductCard from '../ProductCard';
+import { Box, CircularProgress, IconButton, Typography } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
 import { getProducts } from '../../../services/productService';
 import { Product } from '../../../types/Product';
+import ProductCard from '../ProductCard';
 
 interface SimilarProductsProps {
   currentProductId: string;
-  currentCategory: string; // Truyền category của sản phẩm hiện tại
+  currenttype: string; // Truyền type của sản phẩm hiện tại
 }
 
-const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProductId, currentCategory }) => {
+const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProductId, currenttype }) => {
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   // ✅ Gọi API để lấy sản phẩm cùng loại
   useEffect(() => {
-    if (!currentCategory) {
+    if (!currenttype) {
       setLoading(false); // ✅ Luôn phải set loading để đảm bảo hook được gọi
       return;
     }
@@ -30,7 +30,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProductId, cur
           20, // limit
           'createdAt', // sort field
           'DESC', // sort order
-          { category: currentCategory } // filter params
+          { type: currenttype } // filter params
         );
 
         const filtered = Array.isArray(data)
@@ -47,7 +47,7 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProductId, cur
     };
 
     fetchSimilarProducts();
-  }, [currentProductId, currentCategory]); // ✅ Đảm bảo useEffect luôn chạy
+  }, [currentProductId, currenttype]); // ✅ Đảm bảo useEffect luôn chạy
 
   // ✅ Các hooks khác luôn được gọi
   const productWidth = 220;

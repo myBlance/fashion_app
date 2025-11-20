@@ -1,41 +1,27 @@
 import {
-    Create,
-    SimpleForm,
-    NumberInput,
-    SelectInput,
-    required,
-    TextInput,
+    Avatar,
+    Box,
+    Button,
+    Card,
+    Divider,
+    Typography,
+} from '@mui/material';
+import axios from 'axios';
+import React, { useRef, useState } from 'react';
+import {
     CheckboxGroupInput,
+    Create,
+    NumberInput,
+    required,
+    SelectInput,
+    SimpleForm,
+    TextInput,
     useNotify,
     useRedirect,
 } from 'react-admin';
-import {
-    Box,
-    Typography,
-    Divider,
-    Card,
-    Button,
-    Avatar,
-} from '@mui/material';
-import React, { useRef, useState } from 'react';
-import axios from 'axios';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
-
-const categoryChoices = [
-    { id: 'ao', name: 'Áo' },
-    { id: 'quan', name: 'Quần' },
-    { id: 'giay', name: 'Giày' },
-];
-
-const colorChoices = [
-    { id: 'red', name: 'Đỏ' },
-    { id: 'blue', name: 'Xanh dương' },
-    { id: 'green', name: 'Xanh lá' },
-    { id: 'black', name: 'Đen' },
-    { id: 'white', name: 'Trắng' },
-    { id: '#ff69b4', name: 'Hồng' },
-];
+import { colorChoices, sizeChoices, styleChoices, typeChoices } from '../../../constants/filterOptions';
 
 const fieldStyle = {
     flex: '1 1 150px',
@@ -90,18 +76,15 @@ export const ProductCreate = () => {
             const formData = new FormData();
             formData.append('name', data.name);
             formData.append('brand', data.brand || '');
-            formData.append('category', data.category || '');
+            formData.append('type', data.type || '');
             formData.append('price', data.price || 0);
             formData.append('originalPrice', data.originalPrice || 0);
             formData.append('sold', data.sold || 0);
             formData.append('total', data.total || 0);
             formData.append('status', data.status || 'selling');
             formData.append('style', data.style || '');
-            formData.append('type', data.type || '');
             formData.append('description', data.description || '');
             formData.append('details', data.details || '');
-
-            // Chuyển mảng sang JSON string
             formData.append('colors', JSON.stringify(data.colors || []));
             formData.append('sizes', JSON.stringify(data.sizes || []));
 
@@ -150,8 +133,11 @@ export const ProductCreate = () => {
                         <Box sx={fieldStyle}>
                             <TextInput source="brand" label="Thương hiệu" fullWidth variant="outlined" />
                         </Box>
+                        <Box sx={fieldStyle}>
+                            <SelectInput source="style" label="Phong cách" choices={styleChoices} fullWidth variant="outlined" />
+                        </Box>
                         <Box sx={{ ...fieldStyle, marginRight: 0 }}>
-                            <SelectInput source="category" label="Danh mục" choices={categoryChoices} fullWidth variant="outlined" />
+                            <SelectInput source="type" label="Danh mục" choices={typeChoices} fullWidth variant="outlined" />
                         </Box>
                     </Box>
 
@@ -198,7 +184,7 @@ export const ProductCreate = () => {
                         <Divider />
                     </Box>
 
-                    <Box display="flex" gap={4} mb={2}>
+                    <Box display="flex" gap={20} mb={2}>
                         <CheckboxGroupInput
                             source="colors"
                             label="Màu sắc"
@@ -225,13 +211,7 @@ export const ProductCreate = () => {
                         <CheckboxGroupInput
                             source="sizes"
                             label="Kích cỡ"
-                            choices={[
-                                { id: 'S', name: 'S' },
-                                { id: 'M', name: 'M' },
-                                { id: 'L', name: 'L' },
-                                { id: 'XL', name: 'XL' },
-                                { id: 'XXL', name: 'XXL' },
-                            ]}
+                            choices={sizeChoices}
                             sx={{ '& .MuiFormGroup-root': { flexDirection: 'column' } }}
                         />
                     </Box>

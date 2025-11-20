@@ -5,10 +5,9 @@ export interface Product {
     brand: string;
     price: number;
     originalPrice: number;
-    category: string;
+    type: string;
     status: 'selling' | 'stopped' | 'sold_out'
     colors: string[];
-    type: string;
     style: string;
     sizes: string[];
     sold: number;

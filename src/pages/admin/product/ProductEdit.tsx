@@ -1,38 +1,24 @@
 import { useState } from 'react';
 import {
+    CheckboxGroupInput,
     Edit,
+    ImageField,
+    ImageInput,
+    NumberInput,
+    required,
+    SelectInput,
     SimpleForm,
     TextInput,
-    NumberInput,
-    SelectInput,
-    CheckboxGroupInput,
-    ImageInput,
-    ImageField,
-    required,
     useRecordContext,
 } from 'react-admin';
 
-import { Box, Card, Divider, Typography, Button, Stack } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, Card, Divider, Stack, Typography } from '@mui/material';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
+import { colorChoices, sizeChoices, styleChoices, typeChoices } from '../../../constants/filterOptions';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
-const categoryChoices = [
-    { id: 'ao', name: 'Áo' },
-    { id: 'quan', name: 'Quần' },
-    { id: 'giay', name: 'Giày' },
-];
-
-const colorChoices = [
-    { id: 'red', name: 'Đỏ' },
-    { id: 'blue', name: 'Xanh dương' },
-    { id: 'green', name: 'Xanh lá' },
-    { id: 'black', name: 'Đen' },
-    { id: 'white', name: 'Trắng' },
-    { id: '#ff69b4', name: 'Hồng' },
-];
 
 const fieldStyle = {
     flex: '1 1 150px',
@@ -228,11 +214,20 @@ export const ProductEdit = () => {
                                 variant="outlined"
                             />
                         </Box>
+                        <Box sx={fieldStyle}>
+                            <SelectInput
+                                source="style"
+                                label="Phong cách"
+                                choices={styleChoices}
+                                fullWidth
+                                variant="outlined"
+                            />
+                        </Box>
                         <Box sx={{ ...fieldStyle, marginRight: 0 }}>
                             <SelectInput
-                                source="category"
+                                source="type"
                                 label="Danh mục"
-                                choices={categoryChoices}
+                                choices={typeChoices}
                                 fullWidth
                                 variant="outlined"
                             />
@@ -316,13 +311,7 @@ export const ProductEdit = () => {
                             <CheckboxGroupInput
                                 source="sizes"
                                 label="Kích cỡ"
-                                choices={[
-                                    { id: 'S', name: 'S' },
-                                    { id: 'M', name: 'M' },
-                                    { id: 'L', name: 'L' },
-                                    { id: 'XL', name: 'XL' },
-                                    { id: 'XXL', name: 'XXL' },
-                                ]}
+                                choices={sizeChoices}
                                 sx={{
                                     '& .MuiFormGroup-root': {
                                         flexDirection: 'column',

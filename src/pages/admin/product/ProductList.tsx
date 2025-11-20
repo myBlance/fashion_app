@@ -9,6 +9,8 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
+import { saveAs } from 'file-saver';
+import Papa from 'papaparse';
 import {
     DatagridConfigurable,
     DateField,
@@ -23,14 +25,13 @@ import {
     useNotify,
     useRecordContext,
     useRefresh,
+    useSidebarState,
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { productFilters } from './ProductFilter';
-import { useSidebarState } from 'react-admin';
-import { saveAs } from 'file-saver';
-import Papa from 'papaparse';
+import { typeOptions } from '../../../constants/filterOptions';
 
 // 🔹 Base type cho custom field — dùng chung
 interface CustomFieldProps {
@@ -227,13 +228,6 @@ const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
     );
 };
 
-// 🔹 categoryChoices
-const categoryChoices = [
-    { id: 'ao', name: 'Áo' },
-    { id: 'quan', name: 'Quần' },
-    { id: 'giay', name: 'Giày' },
-];
-
 // 🔹 ListActions
 const ListActions = () => (
     <TopToolbar>
@@ -391,13 +385,14 @@ export const ProductList = () => {
                         <ThumbnailField source="thumbnail" label="Ảnh" cellClassName="text-left-cell" />
                         <TextField source="name" label="Tên sản phẩm" sx={{ whiteSpace: 'nowrap' }} />
                         <TextField source="brand" label="Thương hiệu" sx={{ whiteSpace: 'nowrap' }} />
+                        <TextField source="style" label="Phong cách" sx={{ whiteSpace: 'nowrap' }} />
                         <DescriptionField source="description" label="Mô tả" cellClassName="text-left-cell" />
                         <DetailsField source="details" label="Chi tiết" cellClassName="text-left-cell" />
                         <FunctionField
                             label="Danh mục"
                             render={(record: any) => {
-                                const found = categoryChoices.find((choice) => choice.id === record.category);
-                                return found ? found.name : record.category;
+                                const found = typeOptions.find((choice) => choice.value === record.type);
+                                return found ? found.label : record.type;
                             }}
                         />
                         <ColorField source="colors" label="Màu" cellClassName="text-left-cell" />

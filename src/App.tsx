@@ -1,10 +1,10 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { clientRoutes, adminRoutes } from './routes';
-import ClientLayout from './layouts/ClientLayout';
-import PrivateRoute from './components/Client/PrivateRoute';
-import LoginPage from './pages/auth/LoginPage';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import ClientLayout from './layouts/ClientLayout';
+import LoginPage from './pages/auth/LoginPage';
+import { adminRoutes, clientRoutes } from './routes';
+import PrivateRoute from './routes/PrivateRoute';
 
 const App: React.FC = () => {
     return (

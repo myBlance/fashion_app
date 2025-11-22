@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addToCart } from "../../store/cartSlice";
-import { useAuth } from '../../contexts/AuthContext';
-import { CartService } from "../../services/cartService";
-import { Product } from '../../types/Product';
-import { CartItem } from '../../types/CartItem';
+import { useAuth } from '../../../contexts/AuthContext';
+import { CartService } from "../../../services/cartService";
+import { addToCart } from "../../../store/cartSlice";
+import { CartItem } from '../../../types/CartItem';
+import { Product } from '../../../types/Product';
 
 interface QuickViewProps {
   open: boolean;

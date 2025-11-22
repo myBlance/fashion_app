@@ -1,11 +1,14 @@
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SearchIcon from '@mui/icons-material/Search';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
+
 import { Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { fetchCart } from '../../../store/cartSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -21,6 +24,7 @@ const textList = [
 const placeholders = ['Áo', 'Quần', 'Đầm', 'Váy'];
 
 const Navbar: React.FC = () => {
+  const location = useLocation(); // Lấy đường dẫn hiện tại
   const { role, logout, userId } = useAuth();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -49,41 +53,54 @@ const Navbar: React.FC = () => {
   }, []);
 
   // ✅ Sửa hiệu ứng placeholder typing
-    const [placeholderIndex, setPlaceholderIndex] = useState(0);
-    const [typedPlaceholder, setTypedPlaceholder] = useState('');
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [typingSpeed, setTypingSpeed] = useState(150);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [typedPlaceholder, setTypedPlaceholder] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(150);
 
-useEffect(() => {
-  const currentText = placeholders[placeholderIndex];
+  useEffect(() => {
+    const currentText = placeholders[placeholderIndex];
 
-  const typingTimer = setTimeout(() => {
-    if (!isDeleting) {
-      // Gõ chữ
-      setTypedPlaceholder(currentText.substring(0, typedPlaceholder.length + 1));
-      setTypingSpeed(150);
-      if (typedPlaceholder === currentText) {
-        // Đợi 1.5s rồi xóa
-        setTypingSpeed(1500);
-        setIsDeleting(true);
+    const typingTimer = setTimeout(() => {
+      if (!isDeleting) {
+        // Gõ chữ
+        setTypedPlaceholder(currentText.substring(0, typedPlaceholder.length + 1));
+        setTypingSpeed(150);
+        if (typedPlaceholder === currentText) {
+          // Đợi 1.5s rồi xóa
+          setTypingSpeed(1500);
+          setIsDeleting(true);
+        }
+      } else {
+        // ✅ Tăng tốc độ xóa lên 50ms
+        setTypedPlaceholder(currentText.substring(0, typedPlaceholder.length - 1));
+        setTypingSpeed(50);
+        if (typedPlaceholder === '') {
+          setIsDeleting(false);
+          setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+        }
       }
-    } else {
-      // ✅ Tăng tốc độ xóa lên 50ms
-      setTypedPlaceholder(currentText.substring(0, typedPlaceholder.length - 1));
-      setTypingSpeed(50);
-      if (typedPlaceholder === '') {
-        setIsDeleting(false);
-        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-      }
-    }
-  }, typingSpeed);
+    }, typingSpeed);
 
-  return () => clearTimeout(typingTimer);
-}, [typedPlaceholder, isDeleting, placeholderIndex, placeholders]);
+    return () => clearTimeout(typingTimer);
+  }, [typedPlaceholder, isDeleting, placeholderIndex, placeholders]);
 
   // Navbar menu
   const [menuActive, setMenuActive] = useState(false);
   const toggleMenu = () => setMenuActive(!menuActive);
+
+  // Xác định tab active dựa trên đường dẫn
+  const getActiveTab = () => {
+    const currentPath = location.pathname;
+    if (currentPath.startsWith('/cart')) return 'cart';
+    if (currentPath.startsWith('/wishlist')) return 'wishlist';
+    if (currentPath === '/') return 'home';
+    if (currentPath.startsWith('/orders')) return 'orders';
+    if (currentPath.startsWith('/profile')) return 'profile';
+    return '';
+  };
+
+  const activeTab = getActiveTab(); // Tab hiện tại
 
   return (
     <div className="navbar">
@@ -127,45 +144,46 @@ useEffect(() => {
             <SearchIcon />
           </span>
         </div>
+          <div className='navbar-logo-icons'>
+            {/* Logo */}
+            <Link to="/" className="navbar-logo">
+            <img src="/assets/images/logo.webp" alt="" />
+            </Link>
 
-        {/* Logo */}
-        <Link to="/" className="navbar-logo">
-          <img src="/assets/images/logo.webp" alt="" />
-        </Link>
+            {/* Icons */}
+            <div className="navbar-icons">
+                <div className="navbar-icon" onClick={() => navigate('/orders')}>
+                    <AssignmentTurnedInOutlinedIcon />
+                    <span>Kiểm tra</span>
+                </div>
 
-        {/* Icons */}
-        <div className="navbar-icons">
-          <div className="navbar-icon" onClick={() => navigate('/orders')}>
-            <AssignmentTurnedInOutlinedIcon />
-            <span>Kiểm tra</span>
+                <div className="navbar-icon" onClick={() => navigate('/wishlist')}>
+                    <FavoriteBorderOutlinedIcon 
+                    className={wishlistItems.length > 0 ? 'wishlist-filled' : ''}
+                    sx={{ color: wishlistItems.length > 0 ? '#e91e63' : 'inherit' }}
+                    />
+                    <span>Yêu thích</span>
+                    {wishlistItems.length > 0 && (
+                    <span className="navbar-icon-badge">{wishlistItems.length}</span>
+                    )}
+                </div>
+
+                <div className="navbar-icon" onClick={() => navigate('/cart')}>
+                    <ShoppingCartOutlinedIcon />
+                    <span>Giỏ hàng</span>
+                    {totalQuantity > 0 && (
+                    <span className="navbar-icon-badge">{totalQuantity}</span>
+                    )}
+                </div>
+
+                <div className="hamburger-menu" onClick={toggleMenu}>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
           </div>
-
-          <div className="navbar-icon" onClick={() => navigate('/wishlist')}>
-            {wishlistItems.length > 0 ? (
-              <FavoriteIcon sx={{ color: '#e91e63' }} />
-            ) : (
-              <FavoriteBorderIcon />
-            )}
-            <span>Yêu thích</span>
-            {wishlistItems.length > 0 && (
-              <span className="navbar-icon-badge">{wishlistItems.length}</span>
-            )}
-          </div>
-
-          <div className="navbar-icon" onClick={() => navigate('/cart')}>
-            <ShoppingCartOutlinedIcon />
-            <span>Giỏ hàng</span>
-            {totalQuantity > 0 && (
-              <span className="navbar-icon-badge">{totalQuantity}</span>
-            )}
-          </div>
-
-          <div className="hamburger-menu" onClick={toggleMenu}>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        </div>
       </div>
 
       {/* Menu Links */}
@@ -198,6 +216,70 @@ useEffect(() => {
           </li>
         </ul>
       </nav>
+
+      {/* --- MOBILE BOTTOM NAVIGATION BAR --- */}
+<div className="navbar-bottom-mobile">
+  <div 
+    className={`bottom-nav-item ${activeTab === 'cart' ? 'active' : ''}`} 
+    onClick={() => navigate('/cart')}
+  >
+    <div className="nav-icon-wrapper">
+      <ShoppingCartOutlinedIcon 
+        className={activeTab === 'cart' ? 'active-icon' : ''}
+      />
+      {totalQuantity > 0 && (
+        <span className="nav-badge">{totalQuantity}</span>
+      )}
+    </div>
+  </div>
+  
+  <div 
+    className={`bottom-nav-item ${activeTab === 'wishlist' ? 'active' : ''}`} 
+    onClick={() => navigate('/wishlist')}
+  >
+    <div className="nav-icon-wrapper">
+      <FavoriteBorderOutlinedIcon 
+        className={activeTab === 'wishlist' ? 'active-icon' : ''}
+      />
+      {wishlistItems.length > 0 && (
+        <span className="nav-badge">{wishlistItems.length}</span>
+      )}
+    </div>
+  </div>
+  
+  <div 
+    className={`bottom-nav-item ${activeTab === 'home' ? 'active' : ''}`} 
+    onClick={() => navigate('/')}
+  >
+    <div className="nav-icon-wrapper">
+      <HomeOutlinedIcon 
+        className={activeTab === 'home' ? 'active-icon' : ''}
+      />
+    </div>
+  </div>
+  
+  <div 
+    className={`bottom-nav-item ${activeTab === 'orders' ? 'active' : ''}`} 
+    onClick={() => navigate('/orders')}
+  >
+    <div className="nav-icon-wrapper">
+      <AccountBalanceWalletOutlinedIcon 
+        className={activeTab === 'orders' ? 'active-icon' : ''}
+      />
+    </div>
+  </div>
+  
+  <div 
+    className={`bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`} 
+    onClick={() => navigate('/profile')}
+  >
+    <div className="nav-icon-wrapper">
+      <PermIdentityOutlinedIcon 
+        className={activeTab === 'profile' ? 'active-icon' : ''}
+      />
+    </div>
+  </div>
+</div>
     </div>
   );
 };

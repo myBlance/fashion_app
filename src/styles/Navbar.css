@@ -105,6 +105,13 @@
   border-bottom: 1px solid #eee;
 }
 
+.navbar-logo-icons {
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .navbar-logo img {
     margin-top: 5px;
     width: 300px;
@@ -174,6 +181,88 @@
     color: rgb(225, 162, 3);
 }
 
+/* --- Mobile Bottom Navigation Bar --- */
+.navbar-bottom-mobile {
+  display: none;
+  position: fixed !important;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #fefefe;
+  padding: 3px 0;
+  z-index: 9999;
+  border-top: 1px solid #626262;
+  border-radius: 20px 20px 0 0;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.navbar-bottom-mobile .bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+
+  /* Thu nhỏ item */
+  width: 48px;
+  height: 48px;
+
+  border-radius: 50%;
+  color: #000;
+  background-color: #fefefe;
+}
+
+/* Thu nhỏ icon bên trong */
+.navbar-bottom-mobile .bottom-nav-item svg {
+  font-size: 24px; /* icon nhỏ hơn */
+}
+
+.navbar-bottom-mobile .bottom-nav-item.active {
+  background-color: #df3838;
+  color: #fff;
+}
+
+/* Đảm bảo badge hiển thị đúng trong mobile nav */
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.navbar-bottom-mobile .nav-badge {
+  position: absolute !important;
+  top: -8px !important;
+  right: -8px !important;
+  background-color: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  z-index: 2;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Hiệu ứng active cho wishlist icon */
+.wishlist-filled {
+  color: #e91e63 !important;
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
 /* --- Responsive cho tablet và mobile --- */
 @media screen and (max-width: 1024px) {
   .navbar-logo img {
@@ -204,59 +293,104 @@
   }
 }
 
-/* @media screen and (max-width: 768px) {
-  .navbar-top,
-  .navbar-search,
-  .navbar-main {
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 16px;
-  }
+/* MOBILE (≤768px) */
+@media screen and (max-width: 768px) {
 
-  .navbar-logo img {
-    width: 180px;
-    margin: 0 auto;
-  }
-
-  .navbar-search {
+  /* Ẩn banner */
+  .navbar-top-right,
+  .navbar-banner img {
     display: none;
   }
 
+  /* TOP NAV */
+  .navbar-top {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0px 0;
+  }
+
+  .text-list {
+    text-align: left;
+    margin-left: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    transition: opacity 1s ease-in-out;
+}
+
+  /* SEARCH nằm hàng đầu */
+  .navbar-search {
+    order: 1;
+    width: 95%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+
   .navbar-search-input {
-    width: 80%;
+    width: 100%;
+    max-width: 350px;
+    border: none;
+    padding: 10px 5px;
+    border-bottom: 2px solid rgb(35, 34, 34) ;
+    border-radius: 0px;
+  }
+
+  .navbar-search-icon {
+    right: 8px;
+    top: 8px;
+  }
+
+  .navbar-main {
+    flex-direction: column;
+    align-items: flex-start;
+    width: auto;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #eee;
+  }
+
+  .navbar-logo-icons {
+    padding: 10px 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-logo img {
+    width: 150px;
+    height: auto;
+    margin: 0 !important;
   }
 
   .navbar-icons {
+    display: flex;
+    align-items: center;
     gap: 16px;
-    margin-top: 8px;
   }
 
+  .navbar-icon span {
+    display: none;
+  }
+
+  .navbar-icon svg {
+    font-size: 22px;
+  }
+
+  .navbar-icon-badge {
+    top: -4px;
+    right: -4px;
+  }
+
+  /* Ẩn menu link */
   .navbar-menu ul {
     display: none;
   }
 
-  .navbar-menu li {
-    margin: 8px 0;
+  .navbar-bottom-mobile {
+    display: flex ;
+    will-change: bottom;
   }
-
-  .navbar-top-right {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-} */
-
-/* @media screen and (max-width: 480px) {
-  .navbar-search-input {
-    width: 90%;
-    font-size: 12px;
-  }
-
-  .navbar-menu .nav-link {
-    font-size: 14px;
-  }
-
-  .navbar-icon svg {
-    font-size: 18px;
-  }
-} */
+}

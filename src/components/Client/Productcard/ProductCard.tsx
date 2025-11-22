@@ -17,7 +17,7 @@ import { WishlistService } from '../../../services/wishlistService';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { toggleWishlist } from '../../../store/wishlistSlice';
 import { Product } from '../../../types/Product';
-import QuickView from '../QuickView';
+import QuickView from '../ProductDetail/QuickView';
 
 interface ProductCardProps {
   product: Product;

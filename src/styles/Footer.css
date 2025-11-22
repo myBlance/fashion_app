@@ -131,3 +131,67 @@
     width: 250px;
     height: 60px;
 }
+
+/* --- PHẦN THÊM VÀO ĐỂ RESPONSIVE --- */
+
+/* Màn hình Tablet (Máy tính bảng và màn hình laptop nhỏ) */
+@media (max-width: 1024px) {
+  .footer {
+    padding: 30px 40px; /* Giảm padding 2 bên */
+  }
+
+  .footer-top {
+    justify-content: flex-start; /* Không dùng space-between nữa để căn hàng đều hơn */
+    gap: 30px; /* Khoảng cách giữa các cột */
+  }
+
+  .footer-column {
+    /* Chia thành 2 cột trên 1 hàng (50% - khoảng cách gap) */
+    flex: 0 0 calc(50% - 15px); 
+    min-width: unset; /* Bỏ min-width cũ */
+  }
+}
+
+/* Màn hình Mobile (Điện thoại) */
+@media (max-width: 600px) {
+  .footer {
+    padding: 30px 15px; /* Padding nhỏ lại cho vừa màn hình điện thoại */
+  }
+
+  .footer-top {
+    flex-direction: column; /* Xếp dọc các cột */
+    gap: 30px;
+  }
+
+  .footer-column {
+    flex: 0 0 100%; /* Chiếm hết chiều ngang */
+    width: 100%;
+  }
+
+  /* Căn chỉnh lại input đăng ký tin để không bị tràn */
+  .footer-subscribe {
+    max-width: 100%;
+    flex-direction: row; /* Vẫn giữ ngang nút và input */
+  }
+
+  .footer-subscribe input {
+    width: 0; /* Mẹo để flex-grow hoạt động tốt trên mobile */
+    min-width: 0;
+  }
+
+  /* Logo nhỏ lại chút cho cân đối */
+  .footer-logo {
+    width: 180px;
+    height: auto;
+  }
+  
+  /* Căn giữa nội dung footer bottom trên mobile */
+  .footer-bottom {
+    text-align: center;
+  }
+  
+  .footer-bottom p {
+    text-align: justify; /* Hoặc center tùy sở thích */
+    font-size: 14px;
+  }
+}

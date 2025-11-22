@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box } from '@mui/material';
+import { Tabs, Tab, Box, Paper, Container } from '@mui/material';
 import ProductDescription from './ProductDescription';
 import ProductReviews from './ProductReviews';
 import BuyingGuide from './BuyingGuide';
 
 interface ProductDetailTabsProps {
   productId: string;
-  description: string;   // ✅ Thêm prop description
-  details: string;       // ✅ Thêm prop details
+  description: string;
+  details: string;
 }
 
 function TabPanel({ children, value, index }: { children: React.ReactNode; value: number; index: number }) {
-  return value === index ? <Box p={3} sx={{ pt: 1 }}>{children}</Box> : null;
+  return value === index ? <Box sx={{ py: 3, px: { xs: 0, md: 2 } }}>{children}</Box> : null;
 }
 
 export default function ProductDetailTabs({
@@ -26,79 +26,51 @@ export default function ProductDetailTabs({
   };
 
   return (
-    <Box sx={{ width: '100%', mt: 5 }}>
-      <Tabs
-        value={tabIndex}
-        onChange={handleChange}
-        centered
-        sx={{
-          '& .MuiTabs-indicator': {
-            backgroundColor: '#b11116',
-            height: '3px',
-          },
-        }}
-      >
-        <Tab
-          label="MÔ TẢ SẢN PHẨM"
-          disableRipple
-          sx={{
-            fontWeight: 'bold',
-            fontSize: '14px',
-            color: '#333',
-            outline: 'none',
-            '&.Mui-selected': {
-              color: '#b11116',
-            },
-            '&:focus': { outline: 'none' },
-            '&:hover': { backgroundColor: 'transparent' },
-          }}
-        />
-        <Tab
-          label="ĐÁNH GIÁ SẢN PHẨM"
-          disableRipple
-          sx={{
-            ml: '10px',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            color: '#333',
-            outline: 'none',
-            '&.Mui-selected': {
-              color: '#b11116',
-            },
-            '&:focus': { outline: 'none' },
-            '&:hover': { backgroundColor: 'transparent' },
-          }}
-        />
-        <Tab
-          label="HƯỚNG DẪN MUA HÀNG"
-          disableRipple
-          sx={{
-            ml: '10px',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            color: '#333',
-            outline: 'none',
-            '&.Mui-selected': {
-              color: '#b11116',
-            },
-            '&:focus': { outline: 'none' },
-            '&:hover': { backgroundColor: 'transparent' },
-          }}
-        />
-      </Tabs>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4, px: { xs: 0, md: 2 } }}>
+      <Paper elevation={0} sx={{ bgcolor: 'transparent' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#fff', borderRadius: 1 }}>
+          <Tabs
+            value={tabIndex}
+            onChange={handleChange}
+            variant="scrollable" // Cho phép cuộn ngang trên mobile
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{
+              '& .MuiTabs-indicator': {
+                backgroundColor: '#b11116',
+                height: '3px',
+              },
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: { xs: '13px', md: '15px' }, // Font nhỏ hơn trên mobile
+                color: '#555',
+                minHeight: '48px',
+                '&.Mui-selected': {
+                  color: '#b11116',
+                },
+                '&:hover': { color: '#b11116', opacity: 0.8 },
+              }
+            }}
+          >
+            <Tab label="Mô Tả Sản Phẩm" disableRipple />
+            <Tab label="Đánh Giá" disableRipple />
+            <Tab label="Hướng Dẫn Mua Hàng" disableRipple />
+          </Tabs>
+        </Box>
 
-      <TabPanel value={tabIndex} index={0}>
-        <ProductDescription
-          description={description}
-          details={details}
-        />
-      </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        <ProductReviews productId={productId} />
-      </TabPanel>
-      <TabPanel value={tabIndex} index={2}>
-        <BuyingGuide />
-      </TabPanel>
-    </Box>
+        <Box sx={{ bgcolor: '#fff', minHeight: '200px', borderRadius: '0 0 4px 4px' }}>
+          <TabPanel value={tabIndex} index={0}>
+            <ProductDescription description={description} details={details} />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            <ProductReviews productId={productId} />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2}>
+            <BuyingGuide />
+          </TabPanel>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

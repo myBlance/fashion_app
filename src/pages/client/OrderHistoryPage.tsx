@@ -1,8 +1,17 @@
 import React, { useState, useEffect, Component } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Tabs, Tab, Box, Divider } from '@mui/material';
-import '../../styles/OrderHistory.css';
+import {
+  Tabs, Tab, Box, Card, CardContent, Typography,
+  Chip, Button, Pagination, Stack, Dialog, DialogTitle,
+  DialogContent, DialogActions, Avatar, Container, CircularProgress, Alert,
+  Paper, Divider
+} from '@mui/material';
+import {
+  LocalShipping, CheckCircle, Cancel, AccessTime,
+  Payment, Info, ReceiptLong, CalendarToday,
+  ShoppingBag, Visibility, Phone, LocationOn
+} from '@mui/icons-material';
 import { ProductRating } from '../../components/Client/Review/ProductRating';
 
 // --- Interfaces ---
@@ -23,14 +32,14 @@ interface ProductInOrder {
 }
 
 export interface Order {
-    id: string;
-    user: string;
-    products: ProductInOrder[];
-    totalPrice: number;
-    status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-    paymentMethod: string;
-    paymentStatus: 'paid' | 'unpaid';
-    shippingAddress: {
+  id: string;
+  user: string;
+  products: ProductInOrder[];
+  totalPrice: number;
+  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  paymentMethod: string;
+  paymentStatus: 'paid' | 'unpaid';
+  shippingAddress: {
     fullName: string;
     phone: string;
     addressLine: string;
@@ -38,370 +47,300 @@ export interface Order {
   createdAt: string;
 }
 
-const getStatusLabel = (status: string) => {
+// --- Helpers ---
+const getStatusConfig = (status: string) => {
   switch (status) {
-    case 'pending': return 'Chờ xác nhận';
-    case 'paid': return 'Đã thanh toán';
-    case 'processing': return 'Đang xử lý';
-    case 'shipped': return 'Đang giao';
-    case 'delivered': return 'Đã giao';
-    case 'cancelled': return 'Đã hủy';
-    default: return status;
-  }
+    case 'pending': return { label: 'Chờ xác nhận', color: 'warning', icon: <AccessTime />, hex: '#ed6c02', bg: '#fff7ed' };
+    case 'paid': return { label: 'Đã thanh toán', color: 'info', icon: <Payment />, hex: '#0288d1', bg: '#e1f5fe' };
+    case 'processing': return { label: 'Đang xử lý', color: 'info', icon: <Info />, hex: '#0288d1', bg: '#e1f5fe' };
+    case 'shipped': return { label: 'Đang giao', color: 'primary', icon: <LocalShipping />, hex: '#1976d2', bg: '#e3f2fd' };
+    case 'delivered': return { label: 'Đã giao', color: 'success', icon: <CheckCircle />, hex: '#2e7d32', bg: '#e8f5e9' };
+    case 'cancelled': return { label: 'Đã hủy', color: 'error', icon: <Cancel />, hex: '#d32f2f', bg: '#ffebee' };
+    default: return { label: status, color: 'default', icon: undefined, hex: '#757575', bg: '#f5f5f5' };
+  };
 };
 
+const formatCurrency = (amount: number) => {
+  return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('vi-VN', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  });
+};
+
+// --- Error Boundary ---
 class OrderHistoryErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
   }
-
-  static getDerivedStateFromError(): { hasError: boolean } {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('OrderHistoryPage caught an error:', error, info);
-  }
-
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error: Error, info: React.ErrorInfo) { console.error('OrderHistoryPage Error:', error, info); }
   render() {
-    if (this.state.hasError) {
-      return (
-        <div className="error-boundary">
-          Đã xảy ra lỗi khi hiển thị trang lịch sử đơn hàng.
-        </div>
-      );
-    }
+    if (this.state.hasError) return <Alert severity="error">Đã xảy ra lỗi khi hiển thị lịch sử đơn hàng.</Alert>;
     return this.props.children;
   }
 }
 
+// --- Components ---
+
+// 1. Product Item (Inside Dialog)
 const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus: string }> = ({ item, orderId, orderStatus }) => {
   const product = item.product;
 
   if (!product) {
     return (
-      <div className="product-item">
-        <div className="product-info">
-          <p><strong>Sản phẩm không tồn tại hoặc đã bị xóa</strong></p>
-          <p>Giá: N/A</p>
-          <p>Số lượng: {item.quantity}</p>
-          {item.selectedColor && <p>Màu: {item.selectedColor}</p>}
-          {item.selectedSize && <p>Kích cỡ: {item.selectedSize}</p>}
-        </div>
-      </div>
+      <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 1, mb: 1 }}>
+        <Typography variant="body2" color="error">Sản phẩm không tồn tại hoặc đã bị xóa</Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="product-item">
-      {product.image && (
-        <img
-          src={product.image}
-          alt={product.name}
-          className="product-image"
-          onError={(e) => (e.currentTarget.style.display = 'none')}
-        />
-      )}
-      <div className="product-info">
-        <p><strong>{product.name}</strong></p>
-        <p>Giá: {product.price?.toLocaleString()}₫</p>
-        <p>Số lượng: {item.quantity}</p>
-        {item.selectedColor && <p>Màu: {item.selectedColor}</p>}
-        {item.selectedSize && <p>Kích cỡ: {item.selectedSize}</p>}
-      </div>
-
+    <Card variant="outlined" sx={{ mb: 2, display: 'flex', p: 1.5, alignItems: 'center', border: 'none', bgcolor: '#fafafa' }}>
+      <Avatar
+        src={product.image}
+        variant="rounded"
+        sx={{ width: 60, height: 60, mr: 2, bgcolor: '#fff', border: '1px solid #eee' }}
+      >
+        Img
+      </Avatar>
+      <Box sx={{ flexGrow: 1 }}>
+        <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: '0.9rem' }}>{product.name}</Typography>
+        <Stack direction="row" spacing={1} sx={{ mt: 0.5, alignItems: 'center' }}>
+          <Typography variant="caption" color="text.secondary">x{item.quantity}</Typography>
+          {item.selectedColor && <Chip label={item.selectedColor} size="small" sx={{ height: 20, fontSize: '0.7rem' }} />}
+          {item.selectedSize && <Chip label={item.selectedSize} size="small" sx={{ height: 20, fontSize: '0.7rem' }} />}
+        </Stack>
+        <Typography variant="body2" fontWeight="bold" color="primary" sx={{ mt: 0.5 }}>
+          {formatCurrency(product.price)}
+        </Typography>
+      </Box>
+      
       {orderStatus === 'delivered' && (
-        <div className="product-rating-section">
-          <ProductRating 
-            item={item} 
-            orderId={orderId} 
-            productId={item.product?.code || item.product?._id || ''}
-          />
-        </div>
+         <Box sx={{ minWidth: 120 }}>
+            <ProductRating
+              item={item}
+              orderId={orderId}
+              productId={item.product?.code || item.product?._id || ''}
+            />
+         </Box>
       )}
-    </div>
+    </Card>
   );
 };
 
-const OrderItem: React.FC<{ order: Order; onClick: () => void }> = ({ order, onClick }) => (
-  <div key={order.id} className="order-item">
-    <div className="order-header">
-      <div className="order-info">
-        <p><strong>Mã đơn:</strong> {order.id}</p>
-        <p><strong>Ngày đặt:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
-        <p><strong>Trạng thái:</strong> <span className={`status-${order.status}`}>{getStatusLabel(order.status)}</span></p>
-        <p><strong>Tổng tiền:</strong> {order.totalPrice.toLocaleString()}₫</p>
-      </div>
-      <button className="view-details-btn" onClick={onClick}>
-        Xem chi tiết
-      </button>
-    </div>
-  </div>
-);
-
-// --- ModalContent với navigate truyền từ props ---
-const ModalContent: React.FC<{
-  order: Order;
+// 2. Order Details Dialog (ĐÃ BỎ GRID)
+const OrderDetailsDialog: React.FC<{
+  order: Order | null;
+  open: boolean;
   onClose: () => void;
   onCancel: (order: Order) => void;
   onMarkDelivered: (order: Order) => void;
   cancelLoading: boolean;
-  cancelError: string | null;
   markDeliveredLoading: boolean;
-  markDeliveredError: string | null;
   navigate: ReturnType<typeof useNavigate>;
-}> = ({ 
-  order, 
-  onClose, 
-  onCancel, 
-  onMarkDelivered, 
-  cancelLoading, 
-  cancelError, 
-  markDeliveredLoading, 
-  markDeliveredError,
-  navigate
-}) => {
+}> = ({ order, open, onClose, onCancel, onMarkDelivered, cancelLoading, markDeliveredLoading, navigate }) => {
+  if (!order) return null;
+
+  const statusConfig = getStatusConfig(order.status);
+  
   const canCancel = order.paymentMethod === 'cod'
     ? ['pending', 'paid'].includes(order.status)
     : order.status === 'pending' && order.paymentStatus === 'unpaid';
-
   const canMarkDelivered = order.status === 'shipped';
-  const canRate = order.status === 'delivered';
-
   const canRetryPayment = order.paymentStatus === 'unpaid' && order.paymentMethod === 'seepay' && order.status === 'pending';
 
   return (
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <h3>Chi tiết đơn hàng: {order.id}</h3>
-      <div className="order-details">
-        <div className="products-list">
-          <h4>Sản phẩm trong đơn:</h4>
-          {order.products.map((item, idx) => (
-            <div key={idx}>
-              <ProductItem item={item} orderId={order.id} orderStatus={order.status} />
-              {canRate && <Divider sx={{ my: 1 }} />}
-            </div>
-          ))}
-        </div>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', pb: 2 }}>
+        <Stack>
+            <Typography variant="h6" fontWeight="bold">Đơn hàng #{order.id}</Typography>
+            <Stack direction="row" alignItems="center" spacing={1}>
+                <CalendarToday sx={{ fontSize: 14, color: 'text.secondary' }} />
+                <Typography variant="caption" color="text.secondary">{formatDate(order.createdAt)}</Typography>
+            </Stack>
+        </Stack>
+        <Chip label={statusConfig.label} sx={{ bgcolor: statusConfig.bg, color: statusConfig.hex, fontWeight: 600 }} icon={statusConfig.icon} />
+      </DialogTitle>
+      
+      <DialogContent dividers sx={{ p: 3 }}>
+        {/* LAYOUT FLEX THAY CHO GRID */}
+        <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={4}>
+          
+          {/* Cột Trái: Thông tin (Chiếm 60% trên desktop) */}
+          <Box flex={{ xs: 1, md: 1.5 }}>
+             {/* Vận chuyển */}
+             <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
+                Thông tin vận chuyển
+             </Typography>
+             <Paper elevation={0} variant="outlined" sx={{ p: 2, mb: 3, bgcolor: '#fff', borderRadius: 2 }}>
+                <Stack spacing={1}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography variant="body2" fontWeight="bold">{order.shippingAddress.fullName}</Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Phone fontSize="small" color="action" sx={{ fontSize: 16 }}/>
+                    <Typography variant="body2">{order.shippingAddress.phone}</Typography>
+                  </Stack>
+                  <Stack direction="row" spacing={1} alignItems="flex-start">
+                    <LocationOn fontSize="small" color="action" sx={{ fontSize: 16, mt: 0.3 }}/>
+                    <Typography variant="body2" color="text.secondary">{order.shippingAddress.addressLine}</Typography>
+                  </Stack>
+                </Stack>
+             </Paper>
 
-        <div className="shipping-info">
-          <h4>Thông tin giao hàng:</h4>
-          <p><strong>Người nhận:</strong> {order.shippingAddress.fullName}</p>
-          <p><strong>Số điện thoại:</strong> {order.shippingAddress.phone}</p>
-          <p><strong>Địa chỉ:</strong> {order.shippingAddress.addressLine}</p>
-        </div>
+             {/* Thanh toán */}
+             <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
+                Thanh toán
+             </Typography>
+             <Paper elevation={0} variant="outlined" sx={{ p: 2, bgcolor: '#fff', borderRadius: 2 }}>
+                <Stack direction="row" justifyContent="space-between" mb={1}>
+                    <Typography variant="body2" color="text.secondary">Phương thức:</Typography>
+                    <Typography variant="body2" fontWeight="600">{order.paymentMethod.toUpperCase()}</Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" mb={1}>
+                    <Typography variant="body2" color="text.secondary">Trạng thái:</Typography>
+                    <Typography variant="body2" sx={{ color: order.paymentStatus === 'paid' ? 'success.main' : 'warning.main', fontWeight: 'bold' }}>
+                        {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                    </Typography>
+                </Stack>
+                <Divider sx={{ my: 1.5 }} />
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography variant="body1" fontWeight="bold">Tổng cộng:</Typography>
+                    <Typography variant="h6" color="primary.main" fontWeight="bold">{formatCurrency(order.totalPrice)}</Typography>
+                </Stack>
+             </Paper>
+          </Box>
 
-        <div className="order-summary">
-          <p><strong>Trạng thái:</strong> <span className={`status-${order.status}`}>{getStatusLabel(order.status)}</span></p>
-          <p><strong>Phương thức thanh toán:</strong> {order.paymentMethod}</p>
-          <p><strong>Trạng thái thanh toán:</strong> {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}</p>
-          <p><strong>Tổng tiền:</strong> {order.totalPrice.toLocaleString()}₫</p>
-        </div>
-      </div>
+          {/* Cột Phải: Sản phẩm (Chiếm 40% trên desktop) */}
+          <Box flex={{ xs: 1, md: 1 }}>
+            <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
+                Sản phẩm ({order.products.length})
+            </Typography>
+            <Box sx={{ maxHeight: 450, overflowY: 'auto', pr: 1 }}>
+                {order.products.map((item, idx) => (
+                <ProductItem key={idx} item={item} orderId={order.id} orderStatus={order.status} />
+                ))}
+            </Box>
+          </Box>
+        </Box>
+      </DialogContent>
 
-      <div className="modal-actions">
-        {/* ✅ Nút "Thanh toán lại" */}
+      <DialogActions sx={{ p: 2.5, bgcolor: '#f5f5f5' }}>
         {canRetryPayment && (
-          <div className="retry-payment-section">
-            <button
-              className="retry-payment-btn"
-              onClick={() => {
-                onClose();
-                navigate('/payment/seepay', { state: { orderId: order.id } });
-              }}
-            >
-              Thanh toán lại
-            </button>
-          </div>
+          <Button variant="contained" color="secondary" onClick={() => { onClose(); navigate('/payment/seepay', { state: { orderId: order.id } }); }}>
+            Thanh toán lại
+          </Button>
         )}
-
         {canMarkDelivered && (
-          <div className="mark-delivered-section">
-            {markDeliveredError && <p className="error-message">{markDeliveredError}</p>}
-            <button
-              className="mark-delivered-btn"
-              onClick={() => onMarkDelivered(order)}
-              disabled={markDeliveredLoading}
-            >
-              {markDeliveredLoading ? 'Đang cập nhật...' : 'Đã nhận hàng'}
-            </button>
-          </div>
+          <Button variant="contained" color="success" onClick={() => onMarkDelivered(order)} disabled={markDeliveredLoading}>
+            {markDeliveredLoading ? 'Đang xử lý...' : 'Đã nhận hàng'}
+          </Button>
         )}
-
         {canCancel && (
-          <div className="cancel-section">
-            {cancelError && <p className="error-message">{cancelError}</p>}
-            <button
-              className="cancel-order-btn"
-              onClick={() => onCancel(order)}
-              disabled={cancelLoading}
-            >
-              {cancelLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
-            </button>
-          </div>
+          <Button variant="outlined" color="error" onClick={() => onCancel(order)} disabled={cancelLoading}>
+             {cancelLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
+          </Button>
         )}
-
-        {!canCancel && !canMarkDelivered && !canRetryPayment && (
-          <div className="no-action-section">
-            <p>Không thể thực hiện hành động ở trạng thái này.</p>
-          </div>
-        )}
-      </div>
-
-      <button className="close-modal-btn" onClick={onClose}>
-        Đóng
-      </button>
-    </div>
+        <Button onClick={onClose} color="inherit" variant="text">Đóng</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
+// --- Main Page ---
 const OrderHistoryPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
+
+  // Modal Actions State
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
-  const [cancelError, setCancelError] = useState<string | null>(null);
   const [markDeliveredLoading, setMarkDeliveredLoading] = useState(false);
-  const [markDeliveredError, setMarkDeliveredError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
   const fetchOrders = async () => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+    if (!token) { navigate('/login'); return; }
     setLoading(true);
     setError(null);
-
     try {
       let url = `${import.meta.env.VITE_API_BASE_URL}/api/orders`;
       if (selectedStatus !== 'all') url += `?status=${selectedStatus}`;
 
-      const res = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const ordersWithDefaultPaymentStatus = Array.isArray(res.data)
-        ? res.data.map(order => ({
-          ...order,
-          paymentStatus: order.paymentStatus || 'unpaid'
-        }))
-        : [];
-
-      setOrders(ordersWithDefaultPaymentStatus);
-    } catch (err: any) {
-      console.error('Lỗi khi lấy danh sách đơn hàng:', err);
-      setError('Không thể tải danh sách đơn hàng. Vui lòng thử lại sau.');
+      const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+      const data = Array.isArray(res.data) ? res.data.reverse() : [];
+      
+      setOrders(data.map(order => ({
+         ...order,
+         paymentStatus: order.paymentStatus || 'unpaid'
+      })));
+      setPage(1); 
+    } catch (err) {
+      console.error(err);
+      setError('Không thể tải danh sách đơn hàng.');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, [selectedStatus]);
+  useEffect(() => { fetchOrders(); }, [selectedStatus]);
 
-  const openModal = (order: Order) => {
-    setSelectedOrder(order);
-    setIsModalOpen(true);
-    setCancelError(null);
-    setMarkDeliveredError(null);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedOrder(null);
-    setCancelError(null);
-    setMarkDeliveredError(null);
-  };
-
-  const markOrderAsDelivered = async (order: Order) => {
+  // Actions Handlers
+  const handleMarkDelivered = async (order: Order) => {
     if (!token) return;
-
+    if(!window.confirm('Bạn xác nhận đã nhận được hàng?')) return;
+    
     setMarkDeliveredLoading(true);
-    setMarkDeliveredError(null);
-
     try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/mark-delivered`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.data.success) {
-        alert('Đơn hàng đã được đánh dấu là đã nhận.');
-        await fetchOrders();
-        closeModal();
-      }
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/mark-delivered`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      alert('Cập nhật thành công!');
+      fetchOrders();
+      setSelectedOrder(null);
     } catch (err: any) {
-      console.error('Lỗi khi đánh dấu đơn hàng đã nhận:', err);
-      setMarkDeliveredError(err.response?.data?.message || 'Không thể cập nhật trạng thái. Vui lòng thử lại.');
+      alert(err.response?.data?.message || 'Lỗi cập nhật.');
     } finally {
       setMarkDeliveredLoading(false);
     }
   };
 
-  const checkPaymentAndCancel = async (order: Order) => {
+  const handleCancelOrder = async (order: Order) => {
     if (!token) return;
-
-    if (order.paymentMethod === 'cod') {
-      if (['pending', 'paid'].includes(order.status)) {
-        await performCancel(order);
-      } else {
-        setCancelError('Không thể hủy đơn ở trạng thái này.');
-      }
-      return;
-    }
+    if(!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
 
     setCancelLoading(true);
-    setCancelError(null);
-
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/check-payment-status`,
-        { orderId: order.id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.data.status === 'paid') {
-        setCancelError('Đơn hàng đã được thanh toán, không thể hủy.');
-      } else {
-        await performCancel(order);
-      }
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/cancel`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      alert('Đơn hàng đã được hủy.');
+      fetchOrders();
+      setSelectedOrder(null);
     } catch (err: any) {
-      console.error('Lỗi khi kiểm tra trạng thái thanh toán:', err);
-      setCancelError('Không thể kiểm tra trạng thái thanh toán. Vui lòng thử lại.');
+      alert(err.response?.data?.message || 'Lỗi hủy đơn.');
     } finally {
       setCancelLoading(false);
     }
   };
 
-  const performCancel = async (order: Order) => {
-    if (!token) return;
-
-    try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/cancel`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (res.data.success) {
-        alert('Đơn hàng đã được hủy.');
-        await fetchOrders();
-        closeModal();
-      }
-    } catch (err: any) {
-      console.error('Lỗi khi hủy đơn:', err);
-      setCancelError(err.response?.data?.message || 'Không thể hủy đơn. Vui lòng thử lại.');
-    }
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const indexOfLastOrder = page * ITEMS_PER_PAGE;
+  const indexOfFirstOrder = indexOfLastOrder - ITEMS_PER_PAGE;
+  const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
 
   const statusTabs = [
     { value: 'all', label: 'Tất cả' },
@@ -413,72 +352,157 @@ const OrderHistoryPage: React.FC = () => {
     { value: 'cancelled', label: 'Đã hủy' },
   ];
 
-  if (loading) {
-    return (
-      <OrderHistoryErrorBoundary>
-        <div className="order-history-container">
-          <div className="loader">Đang tải đơn hàng...</div>
-        </div>
-      </OrderHistoryErrorBoundary>
-    );
-  }
-
-  if (error) {
-    return (
-      <OrderHistoryErrorBoundary>
-        <div className="order-history-container error">
-          <h2>❌ Lỗi</h2>
-          <p>{error}</p>
-          <button onClick={() => navigate('/')}>Về trang chủ</button>
-        </div>
-      </OrderHistoryErrorBoundary>
-    );
-  }
+  if (loading) return <Box display="flex" justifyContent="center" mt={10}><CircularProgress /></Box>;
+  if (error) return <Container sx={{ mt: 5 }}><Alert severity="error">{error}</Alert></Container>;
 
   return (
     <OrderHistoryErrorBoundary>
-      <div className="order-history-container">
-        <h2>Lịch sử đơn hàng</h2>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 8, minHeight: '70vh' }}>
+        <Typography variant="h5" gutterBottom fontWeight="700" sx={{ mb: 3, color: '#333' }}>
+          Lịch sử đơn hàng
+        </Typography>
 
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Paper elevation={0} variant="outlined" sx={{ mb: 4, bgcolor: '#fdfdfd', borderRadius: 2 }}>
           <Tabs
             value={selectedStatus}
-            onChange={(_, newValue) => setSelectedStatus(newValue)}
+            onChange={(_, val) => setSelectedStatus(val)}
             variant="scrollable"
             scrollButtons="auto"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, fontSize: '0.95rem', minHeight: 56 } }}
           >
             {statusTabs.map((tab) => (
               <Tab key={tab.value} label={tab.label} value={tab.value} />
             ))}
           </Tabs>
-        </Box>
+        </Paper>
 
         {orders.length === 0 ? (
-          <p className="no-orders">Bạn chưa có đơn hàng nào.</p>
+          <Box textAlign="center" py={8} bgcolor="#fff" borderRadius={2} border="1px dashed #ddd">
+             <ShoppingBag sx={{ fontSize: 60, color: '#eee', mb: 2 }} />
+             <Typography color="text.secondary" variant="body1">Chưa có đơn hàng nào ở trạng thái này.</Typography>
+             <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/')}>Mua sắm ngay</Button>
+          </Box>
         ) : (
-          <div className="orders-list">
-            {orders.map((order) => (
-              <OrderItem key={order.id} order={order} onClick={() => openModal(order)} />
-            ))}
-          </div>
+          <Stack spacing={2.5}>
+            {currentOrders.map((order) => {
+                const statusConfig = getStatusConfig(order.status);
+                return (
+                  <Card 
+                    key={order.id} 
+                    elevation={0} 
+                    variant="outlined" 
+                    sx={{ 
+                        borderLeft: `6px solid ${statusConfig.hex}`, 
+                        transition: 'transform 0.2s, box-shadow 0.2s',
+                        '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' },
+                        bgcolor: '#fff',
+                        borderRadius: 2
+                    }}
+                  >
+                    <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                      {/* ĐÃ BỎ GRID, DÙNG BOX FLEX */}
+                      <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" gap={2}>
+                         
+                         {/* Cột 1: Thông tin đơn hàng */}
+                         <Box flex={1.5} width="100%">
+                            <Stack spacing={0.5}>
+                                <Stack direction="row" alignItems="center" spacing={1}>
+                                    <ReceiptLong color="action" fontSize="small" />
+                                    <Typography variant="subtitle1" fontWeight="bold">#{order.id}</Typography>
+                                </Stack>
+                                <Stack direction="row" alignItems="center" spacing={1}>
+                                    <CalendarToday color="action" sx={{ fontSize: 14 }} />
+                                    <Typography variant="body2" color="text.secondary">{formatDate(order.createdAt)}</Typography>
+                                </Stack>
+                            </Stack>
+                         </Box>
+
+                         {/* Cột 2: Giá tiền */}
+                         <Box flex={1} width="100%" display="flex" flexDirection="column" alignItems={{ xs: 'flex-start', md: 'center' }}>
+                            <Typography variant="caption" display="block" color="text.secondary" sx={{ mb: 0.5 }}>Tổng tiền</Typography>
+                            <Typography variant="h6" fontWeight="bold" color="primary.main">{formatCurrency(order.totalPrice)}</Typography>
+                         </Box>
+
+                         {/* Cột 3: Trạng thái & Nút bấm */}
+                         <Box 
+                            flex={1.5} 
+                            width="100%" 
+                            display="flex" 
+                            flexDirection={{ xs: 'row', md: 'column' }} 
+                            alignItems={{ xs: 'center', md: 'flex-end' }} 
+                            justifyContent={{ xs: 'space-between', md: 'center' }}
+                            gap={1}
+                         >
+                            <Chip 
+                                label={statusConfig.label} 
+                                icon={statusConfig.icon}
+                                size="small" 
+                                sx={{ 
+                                    fontWeight: 600, 
+                                    bgcolor: statusConfig.bg, 
+                                    color: statusConfig.hex,
+                                    border: '1px solid transparent',
+                                    borderColor: `${statusConfig.hex}30`
+                                }} 
+                            />
+                            {/* Nút Xem chi tiết đã sửa màu */}
+                            <Button 
+                                variant="outlined" 
+                                color="primary"
+                                endIcon={<Visibility />} 
+                                size="small" 
+                                onClick={() => setSelectedOrder(order)}
+                                sx={{ 
+                                    textTransform: 'none', 
+                                    borderRadius: 20, 
+                                    px: 3,
+                                    fontWeight: 600,
+                                    whiteSpace: 'nowrap',
+                                    borderWidth: 2,
+                                    '&:hover': { borderWidth: 2 }
+                                }}
+                            >
+                                Xem chi tiết
+                            </Button>
+                         </Box>
+
+                      </Box>
+                    </CardContent>
+                  </Card>
+                );
+            })}
+          </Stack>
         )}
 
-        {isModalOpen && selectedOrder && (
-          <div className="modal-overlay" onClick={closeModal}>
-            <ModalContent
-              order={selectedOrder}
-              onClose={closeModal}
-              onCancel={checkPaymentAndCancel}
-              onMarkDelivered={markOrderAsDelivered}
-              cancelLoading={cancelLoading}
-              cancelError={cancelError}
-              markDeliveredLoading={markDeliveredLoading}
-              markDeliveredError={markDeliveredError}
-              navigate={navigate}
-            />
-          </div>
+        {/* Pagination Control */}
+        {orders.length > ITEMS_PER_PAGE && (
+            <Box display="flex" justifyContent="center" mt={5}>
+                <Pagination 
+                    count={totalPages} 
+                    page={page} 
+                    onChange={handlePageChange} 
+                    color="primary" 
+                    shape="rounded"
+                    size="medium"
+                />
+            </Box>
         )}
-      </div>
+
+        {/* Order Detail Dialog */}
+        <OrderDetailsDialog 
+            open={!!selectedOrder}
+            order={selectedOrder}
+            onClose={() => setSelectedOrder(null)}
+            onCancel={handleCancelOrder}
+            onMarkDelivered={handleMarkDelivered}
+            cancelLoading={cancelLoading}
+            markDeliveredLoading={markDeliveredLoading}
+            navigate={navigate}
+        />
+
+      </Container>
     </OrderHistoryErrorBoundary>
   );
 };

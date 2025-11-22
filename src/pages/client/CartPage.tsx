@@ -8,18 +8,15 @@ import { RootState } from '../../store';
 import { decreaseQuantity, increaseQuantity, removeFromCart, setCartItems } from '../../store/cartSlice';
 import '../../styles/CartPage.css';
 import { CartItem } from '../../types/CartItem';
-// ✅ Bỏ import fetchCart nếu bạn không dùng
 
 const CartPage: React.FC = () => {
   const dispatch = useDispatch();
   const { userId } = useAuth();
-  // ✅ Lấy giỏ hàng từ Redux store
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
 
-  // ✅ Fetch lại giỏ hàng khi vào trang
   useEffect(() => {
     const fetchCart = async () => {
       if (!userId) return;
@@ -34,75 +31,57 @@ const CartPage: React.FC = () => {
       }
     };
     fetchCart();
-  }, [userId, dispatch]); // ✅ Thêm dispatch vào deps
+  }, [userId, dispatch]);
 
-  // Tăng số lượng
   const handleIncrease = async (item: CartItem) => {
     if (!userId) return;
     const newQuantity = (item.quantity ?? 1) + 1;
-
     dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     try {
       await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
     } catch (err) {
-      console.error('Lỗi khi tăng số lượng:', err);
       dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     }
   };
 
-  // Giảm số lượng
   const handleDecrease = async (item: CartItem) => {
     if (!userId) return;
     const currentQty = item.quantity ?? 1;
     if (currentQty <= 1) return;
-
     const newQuantity = currentQty - 1;
     dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     try {
       await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
     } catch (err) {
-      console.error('Lỗi khi giảm số lượng:', err);
       dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
     }
   };
 
-  // Xóa sản phẩm
   const handleRemove = async (item: CartItem) => {
     if (!userId) return;
+    const confirm = window.confirm("Bạn có chắc muốn xóa sản phẩm này?");
+    if(!confirm) return;
+
     dispatch(removeFromCart({ productId: item.productId, color: item.color, size: item.size }));
     try {
       await CartService.removeItem(item.productId, userId, item.color, item.size);
     } catch (err) {
-      console.error('Lỗi khi xóa sản phẩm:', err);
-      // ✅ Cập nhật lại giỏ hàng từ server nếu lỗi
       const data = await CartService.getCart(userId);
       dispatch(setCartItems(data));
     }
   };
 
-  // Hàm xử lý khi nhấn nút "Thanh toán"
   const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      alert('Giỏ hàng của bạn đang trống!');
-      return;
-    }
-
-    // ✅ Lọc các item được chọn
+    if (cartItems.length === 0) return alert('Giỏ hàng trống!');
     const selectedCartItems = cartItems.filter(item => {
       const id = `${item.productId}-${item.color}-${item.size}`;
       return selectedItems[id] ?? false;
     });
 
-    if (selectedCartItems.length === 0) {
-      alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-      return;
-    }
-
-    // ✅ Truyền data qua state khi điều hướng
+    if (selectedCartItems.length === 0) return alert('Vui lòng chọn sản phẩm để thanh toán.');
     navigate('/checkout', { state: { selectedCartItems } });
   };
 
-  // ✅ Tính tổng tiền chỉ cho các sản phẩm được chọn
   const totalSelectedAmount = cartItems.reduce((acc, item) => {
     const id = `${item.productId}-${item.color}-${item.size}`;
     if (selectedItems[id]) {
@@ -111,108 +90,131 @@ const CartPage: React.FC = () => {
     return acc;
   }, 0);
 
-  if (loading) return <div className="loading">Đang tải giỏ hàng...</div>;
+  if (loading) return <div className="cart-loading"><div className="spinner"></div>Đang tải giỏ hàng...</div>;
 
   if (cartItems.length === 0) {
     return (
-      <div className="empty-cart" style={{ textAlign: 'center', padding: '60px 20px', color: '#555', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <img src="/assets/images/empty-cart.png" alt="Empty Cart" style={{ width: '220px', maxWidth: '90%', marginBottom: '20px', opacity: 0.85 }} />
-        <p style={{ fontSize: '18px', marginBottom: '16px', color: '#666' }}>Hãy thêm sản phẩm để bắt đầu mua sắm!</p>
-        <a href="/" style={{ display: 'inline-block', padding: '10px 24px', backgroundColor: '#000', color: '#fff', textDecoration: 'none', fontWeight: 500, borderRadius: '5px', transition: 'background-color 0.3s ease' }}
-           onMouseEnter={(e) => ((e.target as HTMLAnchorElement).style.backgroundColor = '#333')}
-           onMouseLeave={(e) => ((e.target as HTMLAnchorElement).style.backgroundColor = '#000')}>
-          Tiếp tục mua sắm
-        </a>
+      <div className="empty-cart-container">
+        <img src="/assets/images/empty-cart.png" alt="Empty Cart" />
+        <p>Giỏ hàng của bạn đang trống</p>
+        <a href="/" className="continue-shopping-btn">Tiếp tục mua sắm</a>
       </div>
     );
   }
 
   return (
-    <div className="cart-container">
-      <DynamicBreadcrumbs />
-      <div className="cart-content">
-        <table className="cart-table">
-          <thead>
-            <tr>
-              <th>
-                <input
-                  type="checkbox"
-                  checked={cartItems.length > 0 && cartItems.every(item => 
-                    selectedItems[`${item.productId}-${item.color}-${item.size}`]
-                  )}
-                  onChange={(e) => {
-                    const newSelected = {};
-                    cartItems.forEach(item => {
-                      const id = `${item.productId}-${item.color}-${item.size}`;
-                      (newSelected as Record<string, boolean>)[id] = e.target.checked;
-                    });
-                    setSelectedItems(newSelected);
-                  }}
-                />
-              </th>
-              <th>Thông tin sản phẩm</th>
-              <th>Đơn giá</th>
-              <th>Số lượng</th>
-              <th>Thành tiền</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cartItems.map((item) => {
-              const itemId = `${item.productId}-${item.color}-${item.size}`;
-              const isChecked = selectedItems[itemId] ?? false;
-
-              return (
-                <tr key={itemId}>
-                  <td className="select-checkbox">
+    <div className="cart-page-wrapper">
+      <div className="cart-container">
+        <DynamicBreadcrumbs />
+        <h2 className="cart-title">Giỏ hàng ({cartItems.length})</h2>
+        
+        <div className="cart-layout">
+          {/* Cột trái: Danh sách sản phẩm */}
+          <div className="cart-list-section">
+            <table className="cart-table">
+              <thead>
+                <tr>
+                  <th className="col-checkbox">
                     <input
                       type="checkbox"
-                      checked={isChecked}
+                      className="custom-checkbox"
+                      checked={cartItems.length > 0 && cartItems.every(item => 
+                        selectedItems[`${item.productId}-${item.color}-${item.size}`]
+                      )}
                       onChange={(e) => {
-                        setSelectedItems(prev => ({
-                          ...prev,
-                          [itemId]: e.target.checked
-                        }));
+                        const newSelected: Record<string, boolean> = {};
+                        cartItems.forEach(item => {
+                          newSelected[`${item.productId}-${item.color}-${item.size}`] = e.target.checked;
+                        });
+                        setSelectedItems(newSelected);
                       }}
                     />
-                  </td>
-
-                  <td className="product-info">
-                    <img src={item.image} alt={item.name} />
-                    <div>
-                      <div className="product-name">{item.name}</div>
-                      <div className="product-variant">{item.color} / {item.size}</div>
-                      <button className="delete-btn" onClick={() => handleRemove(item)}>Xóa</button>
-                    </div>
-                  </td>
-                  <td className="price">{(item.price ?? 0).toLocaleString()}₫</td>
-                  <td className="quantity">
-                    <div className="quantity-controls">
-                      <button onClick={() => handleDecrease(item)}>−</button>
-                      <input type="text" readOnly value={item.quantity ?? 1} />
-                      <button onClick={() => handleIncrease(item)}>+</button>
-                    </div>
-                  </td>
-                  <td className="total-price">{((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}₫</td>
+                  </th>
+                  <th className="col-product">Sản phẩm</th>
+                  <th className="col-price">Đơn giá</th>
+                  <th className="col-quantity">Số lượng</th>
+                  <th className="col-total">Thành tiền</th>
+                  <th className="col-action"></th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {cartItems.map((item) => {
+                  const itemId = `${item.productId}-${item.color}-${item.size}`;
+                  const isChecked = selectedItems[itemId] ?? false;
 
-        <div className="cart-summary">
-          <div className="shipping-time">
-            
+                  return (
+                    <tr key={itemId} className={isChecked ? "row-selected" : ""}>
+                      <td className="col-checkbox" data-label="Chọn">
+                        <input
+                          type="checkbox"
+                          className="custom-checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            setSelectedItems(prev => ({ ...prev, [itemId]: e.target.checked }));
+                          }}
+                        />
+                      </td>
+
+                      <td className="col-product" data-label="Sản phẩm">
+                        <div className="product-item">
+                          <img src={item.image} alt={item.name} />
+                          <div className="product-details">
+                            <div className="product-name">{item.name}</div>
+                            <div className="product-variant">
+                              <span>Màu: {item.color}</span>
+                              <span>Size: {item.size}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="col-price" data-label="Đơn giá">
+                        {(item.price ?? 0).toLocaleString()}₫
+                      </td>
+
+                      <td className="col-quantity" data-label="Số lượng">
+                        <div className="quantity-box">
+                          <button onClick={() => handleDecrease(item)} disabled={(item.quantity ?? 1) <= 1}>-</button>
+                          <input type="text" readOnly value={item.quantity ?? 1} />
+                          <button onClick={() => handleIncrease(item)}>+</button>
+                        </div>
+                      </td>
+
+                      <td className="col-total" data-label="Thành tiền">
+                        {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}₫
+                      </td>
+                      
+                      <td className="col-action">
+                         <button className="remove-btn" onClick={() => handleRemove(item)} title="Xóa sản phẩm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                         </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
 
-          <div className="checkout">
-            <div className="total">
-              Tổng tiền:{' '}
-              <span className="total-amount">
-                {totalSelectedAmount.toLocaleString()}₫
-              </span>
-            </div>
-            <button className="checkout-btn" onClick={handleCheckout}>Thanh toán</button>
+          {/* Cột phải: Tổng tiền */}
+          <div className="cart-summary-section">
+             <div className="summary-card">
+                <h3>Thanh toán</h3>
+                <div className="summary-row">
+                   <span>Tạm tính:</span>
+                   <span>{totalSelectedAmount.toLocaleString()}₫</span>
+                </div>
+                 <div className="summary-row total">
+                   <span>Tổng cộng:</span>
+                   <span className="total-price-final">{totalSelectedAmount.toLocaleString()}₫</span>
+                </div>
+                <p className="vat-note">(Đã bao gồm VAT nếu có)</p>
+                <button className="checkout-btn" onClick={handleCheckout}>
+                   Tiến hành đặt hàng
+                </button>
+             </div>
           </div>
+
         </div>
       </div>
     </div>

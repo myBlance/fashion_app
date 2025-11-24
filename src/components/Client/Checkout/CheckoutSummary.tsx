@@ -36,6 +36,24 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   // Tính phí vận chuyển
   const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
 
+  // --- LOGIC TÍNH NGÀY GIAO HÀNG (REAL-TIME) ---
+  const getFutureDate = (daysToAdd: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() + daysToAdd);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${day}/${month}`;
+  };
+
+  // Giao hàng tiết kiệm: 4 - 6 ngày
+  const standardDateStart = getFutureDate(4);
+  const standardDateEnd = getFutureDate(6);
+
+  // Giao hàng nhanh: 2 - 3 ngày
+  const expressDateStart = getFutureDate(2);
+  const expressDateEnd = getFutureDate(3);
+  // ---------------------------------------------
+
   // Kiểm tra điều kiện áp dụng voucher
   const isVoucherValid = selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
 
@@ -232,7 +250,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         </div>
       </div>
 
-      {/* Các phần còn lại giữ nguyên */}
+      {/* Sản phẩm */}
       <div className="section products-section">
         <div className="section-header">
           <h3>Sản phẩm</h3>
@@ -304,6 +322,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         )}
       </div>
 
+      {/* Phần vận chuyển đã được sửa đổi Logic */}
       <div className="section shipping-section">
         <div className="section-header">
           <h3>Phương Thức Vận Chuyển</h3>
@@ -319,9 +338,9 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
               onChange={() => setShippingMethod('standard')}
             />
             <label htmlFor="standard-shipping">
-              <div className="shipping-title">Nhận hàng 10/11</div>
+              <div className="shipping-title">Nhận hàng {standardDateStart} - {standardDateEnd}</div>
               <div className="shipping-desc">
-                Nhận hàng 10/11 nếu đơn hàng được giao trước 12:00 ngày 07/11/2025.
+                Giao hàng tiết kiệm (4-6 ngày)
               </div>
             </label>
             <div className="shipping-price">16.500₫</div>
@@ -336,8 +355,8 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
               onChange={() => setShippingMethod('express')}
             />
             <label htmlFor="express-shipping">
-              <div className="shipping-title">Nhận hàng 09/11 - 10/11</div>
-              <div className="shipping-desc">Giao hàng nhanh</div>
+              <div className="shipping-title">Nhận hàng {expressDateStart} - {expressDateEnd}</div>
+              <div className="shipping-desc">Giao hàng nhanh (2-3 ngày)</div>
             </label>
             <div className="shipping-price">30.000₫</div>
           </div>

@@ -1,31 +1,32 @@
-import {
-  List,
-  TextField,
-  DateField,
-  NumberField,
-  useRecordContext,
-  DatagridConfigurable,
-  useNotify,
-  useRefresh,
-  useDataProvider,
-  FunctionField,
-} from 'react-admin';
-import { Box, Card, Chip, Tooltip, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
-import { orderFilters } from './OrderFilter';
-import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
-import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Box, Card, Chip, IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
+import {
+  DatagridConfigurable,
+  DateField,
+  FunctionField,
+  List,
+  NumberField,
+  TextField,
+  useDataProvider,
+  useNotify,
+  useRecordContext,
+  useRefresh,
+} from 'react-admin';
+import { useNavigate } from 'react-router-dom';
+import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
+import { orderFilters } from './OrderFilter';
 
 const StatusChip = () => {
   const record = useRecordContext();
   const status = record?.status;
   const labelMap: Record<string, string> = {
     pending: 'Chờ xác nhận',
+    awaiting_payment: 'Chờ thanh toán',
     paid: 'Đã thanh toán',
     processing: 'Đang xử lý',
     shipped: 'Đang giao',
@@ -34,6 +35,7 @@ const StatusChip = () => {
   };
   const colorMap: Record<string, any> = {
     pending: 'warning',
+    awaiting_payment: 'warning',
     paid: 'success',
     processing: 'info',
     shipped: 'info',
@@ -106,7 +108,7 @@ export const OrderList = () => {
     >
       <Box sx={{ padding: 2 }}>
         <CustomAppBar />
-        <CustomBreadcrumbs 
+        <CustomBreadcrumbs
           onCreate={handleCreate}
           onRefresh={handleSync}
           onExport={handleExport}
@@ -163,6 +165,15 @@ export const OrderList = () => {
             source="totalPrice"
             label="Tổng tiền"
             options={{ style: 'currency', currency: 'VND' }}
+          />
+
+          <FunctionField
+            label="Vận chuyển"
+            render={(record: any) => {
+              if (record.shippingMethod === 'express') return 'Nhanh';
+              if (record.shippingMethod === 'standard') return 'Tiêu chuẩn';
+              return 'Mặc định';
+            }}
           />
 
           {/* ✅ Dùng component StatusChip đã định nghĩa */}

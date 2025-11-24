@@ -1,18 +1,18 @@
-import React, { useRef } from 'react';
-import {
-    Box,
-    Typography,
-    TextField,
-    Button,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    Avatar,
-    Divider,
-    InputAdornment,
-    IconButton,
-} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import {
+    Avatar,
+    Box,
+    Button,
+    Divider,
+    FormControlLabel,
+    IconButton,
+    InputAdornment,
+    Radio,
+    RadioGroup,
+    TextField,
+    Typography,
+} from '@mui/material';
+import React, { useRef } from 'react';
 
 interface ProfileContentProps {
     profile: {
@@ -30,8 +30,6 @@ interface ProfileContentProps {
     onSave: () => void;
     message: string;
     onEditEmail?: () => void;
-    onEditPhone?: () => void;
-    onEditBirthDate?: () => void;
 }
 
 const ProfileContent: React.FC<ProfileContentProps> = ({
@@ -42,8 +40,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
     onSave,
     message,
     onEditEmail,
-    onEditPhone,
-    onEditBirthDate,
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -150,19 +146,22 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
                         <Typography variant="subtitle2" fontWeight="bold">
                             Số điện thoại
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="body1" sx={{ mt: 0.5, flex: 1 }}>
-                                {profile.phone || 'Chưa có số điện thoại'}
-                            </Typography>
-                            <Button
-                                variant="text"
-                                color="primary"
-                                sx={{ ml: 1, textTransform: 'none', fontSize: '14px' }}
-                                onClick={onEditPhone}
-                            >
-                                Thay Đổi
-                            </Button>
-                        </Box>
+                        <TextField
+                            fullWidth
+                            name="phone"
+                            type="tel"
+                            value={profile.phone || ""}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                // Chỉ cho phép số và dấu +
+                                if (value === '' || /^\+?[0-9]*$/.test(value)) {
+                                    onProfileChange('phone', value);
+                                }
+                            }}
+                            placeholder="+84 123 456 789"
+                            helperText="Ví dụ: +84 987654321"
+                            sx={{ mt: 0.5 }}
+                        />
                     </Box>
 
                     {/* Giới tính */}
@@ -188,19 +187,16 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
                         <Typography variant="subtitle2" fontWeight="bold">
                             Ngày sinh
                         </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="body1" sx={{ mt: 0.5, flex: 1 }}>
-                                {profile.birthDate || 'Chưa có ngày sinh'}
-                            </Typography>
-                            <Button
-                                variant="text"
-                                color="primary"
-                                sx={{ ml: 1, textTransform: 'none', fontSize: '14px' }}
-                                onClick={onEditBirthDate}
-                            >
-                                Thay Đổi
-                            </Button>
-                        </Box>
+                        <TextField
+                            fullWidth
+                            name="birthDate"
+                            type="date"
+                            value={profile.birthDate ? new Date(profile.birthDate).toISOString().split('T')[0] : ""}
+                            onChange={(e) => onProfileChange('birthDate', e.target.value)}
+                            sx={{ mt: 0.5 }}
+                            InputLabelProps={{ shrink: true }}
+                            helperText={profile.birthDate ? `Ngày sinh: ${new Date(profile.birthDate).toLocaleDateString('vi-VN')}` : "Chọn ngày sinh của bạn"}
+                        />
                     </Box>
 
                     {/* Nút Lưu */}

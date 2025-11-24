@@ -1,7 +1,12 @@
+import { LockOutlined, PersonOutline, PhotoCamera } from "@mui/icons-material";
 import {
+    Alert,
     Avatar,
     Box,
     Button,
+    Card,
+    Divider,
+    Paper,
     Tab,
     Tabs,
     TextField,
@@ -9,6 +14,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+import { CustomAppBar } from "../../components/Admin/CustomAppBar";
+
 interface AdminProfile {
     username: string;
     name?: string;
@@ -35,7 +42,6 @@ const AdminProfilePage: React.FC = () => {
 
     const token = localStorage.getItem("token");
 
-
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -52,7 +58,7 @@ const AdminProfilePage: React.FC = () => {
         };
 
         fetchProfile();
-    }, []);
+    }, [token]);
 
     const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -87,15 +93,24 @@ const AdminProfilePage: React.FC = () => {
                 }
             );
             setMessage(res.data.message || "Cập nhật thành công");
+            setTimeout(() => setMessage(""), 3000);
         } catch (err: any) {
             console.error("Lỗi cập nhật:", err);
             setMessage("Cập nhật thất bại");
+            setTimeout(() => setMessage(""), 3000);
         }
     };
 
     const handleChangePassword = async () => {
         if (newPassword !== confirmPassword) {
             setPasswordMessage("Mật khẩu xác nhận không khớp");
+            setTimeout(() => setPasswordMessage(""), 3000);
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setPasswordMessage("Mật khẩu mới phải có ít nhất 6 ký tự");
+            setTimeout(() => setPasswordMessage(""), 3000);
             return;
         }
 
@@ -114,107 +129,197 @@ const AdminProfilePage: React.FC = () => {
             setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
+            setTimeout(() => setPasswordMessage(""), 3000);
         } catch (err: any) {
             console.error("Lỗi đổi mật khẩu:", err);
-            setPasswordMessage("Đổi mật khẩu thất bại");
+            setPasswordMessage(err.response?.data?.message || "Đổi mật khẩu thất bại");
+            setTimeout(() => setPasswordMessage(""), 3000);
         }
     };
 
-    if (loading) return <Typography align="center">Đang tải thông tin...</Typography>;
+    if (loading) {
+        return (
+            <Card sx={{ borderRadius: '20px', mr: '-24px', p: 4 }}>
+                <Typography align="center">Đang tải thông tin...</Typography>
+            </Card>
+        );
+    }
 
     return (
-        <Box sx={{ maxWidth: 600, mx: "auto", p: 3, backgroundColor:"#fff" }}>
-            <Tabs value={tab} onChange={(_, newTab) => setTab(newTab)} sx={{ mb: 3 }}>
-                <Tab label="Thông tin Admin" />
-                <Tab label="Đổi mật khẩu" />
-            </Tabs>
+        <Card sx={{ borderRadius: '20px', mr: '-24px', height: '100%' }}>
+            <Box sx={{ padding: 2 }}>
+                <CustomAppBar />
 
-            {tab === 0 && (
-                <>
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                        <Avatar
-                            src={profile.avatarUrl || "https://i.pravatar.cc/150?img=5"}
-                            alt={profile.name || profile.username}
-                            sx={{ width: 80, height: 80, mr: 2, cursor: "pointer" }}
-                            onClick={handleAvatarClick}
+                <Typography variant="h4" fontWeight="bold" mb={3} mt={2}>
+                    Cài đặt Admin
+                </Typography>
+
+                <Tabs
+                    value={tab}
+                    onChange={(_, newTab) => setTab(newTab)}
+                    sx={{
+                        mb: 3,
+                        borderBottom: 1,
+                        borderColor: 'divider'
+                    }}
+                >
+                    <Tab
+                        icon={<PersonOutline />}
+                        iconPosition="start"
+                        label="Thông tin cá nhân"
+                    />
+                    <Tab
+                        icon={<LockOutlined />}
+                        iconPosition="start"
+                        label="Đổi mật khẩu"
+                    />
+                </Tabs>
+
+                {tab === 0 && (
+                    <Paper elevation={2} sx={{ p: 4, maxWidth: 600 }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 4 }}>
+                            <Box sx={{ position: 'relative' }}>
+                                <Avatar
+                                    src={profile.avatarUrl || "https://i.pravatar.cc/150?img=5"}
+                                    alt={profile.name || profile.username}
+                                    sx={{
+                                        width: 120,
+                                        height: 120,
+                                        cursor: "pointer",
+                                        border: '4px solid',
+                                        borderColor: 'primary.main',
+                                        transition: 'transform 0.2s',
+                                        '&:hover': {
+                                            transform: 'scale(1.05)'
+                                        }
+                                    }}
+                                    onClick={handleAvatarClick}
+                                />
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        bottom: 0,
+                                        right: 0,
+                                        bgcolor: 'primary.main',
+                                        borderRadius: '50%',
+                                        p: 1,
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={handleAvatarClick}
+                                >
+                                    <PhotoCamera sx={{ color: 'white', fontSize: 20 }} />
+                                </Box>
+                            </Box>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                ref={fileInputRef}
+                                onChange={handleAvatarChange}
+                            />
+                            <Typography variant="h6" mt={2}>{profile.name || profile.username}</Typography>
+                            <Typography variant="body2" color="text.secondary">@{profile.username}</Typography>
+                        </Box>
+
+                        <Divider sx={{ mb: 3 }} />
+
+                        <TextField
+                            label="Họ và tên"
+                            name="name"
+                            value={profile.name || ""}
+                            onChange={handleProfileChange}
+                            fullWidth
+                            margin="normal"
+                            variant="outlined"
                         />
-                        <input
-                            type="file"
-                            accept="image/*"
-                            style={{ display: "none" }}
-                            ref={fileInputRef}
-                            onChange={handleAvatarChange}
+                        <TextField
+                            label="Email"
+                            name="email"
+                            type="email"
+                            value={profile.email || ""}
+                            onChange={handleProfileChange}
+                            fullWidth
+                            margin="normal"
+                            variant="outlined"
                         />
-                        <Typography variant="h6">{profile.name || profile.username}</Typography>
-                    </Box>
 
-                    <TextField
-                        label="Họ và tên"
-                        name="name"
-                        value={profile.name || ""}
-                        onChange={handleProfileChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Email"
-                        name="email"
-                        value={profile.email || ""}
-                        onChange={handleProfileChange}
-                        fullWidth
-                        margin="normal"
-                    />
+                        <Button
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                            sx={{ mt: 3 }}
+                            onClick={handleUpdateProfile}
+                        >
+                            Cập nhật thông tin
+                        </Button>
 
-                    <Button variant="contained" sx={{ mt: 2 }} onClick={handleUpdateProfile}>
-                        Cập nhật thông tin
-                    </Button>
+                        {message && (
+                            <Alert
+                                severity={message.includes("thành công") ? "success" : "error"}
+                                sx={{ mt: 2 }}
+                            >
+                                {message}
+                            </Alert>
+                        )}
+                    </Paper>
+                )}
 
-                    {message && (
-                        <Typography sx={{ mt: 2, color: message.includes("thành công") ? "green" : "red" }}>
-                            {message}
-                        </Typography>
-                    )}
-                </>
-            )}
+                {tab === 1 && (
+                    <Paper elevation={2} sx={{ p: 4, maxWidth: 600 }}>
+                        <Typography variant="h6" mb={3}>Đổi mật khẩu</Typography>
 
-            {tab === 1 && (
-                <>
-                    <TextField
-                        label="Mật khẩu cũ"
-                        type="password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Mật khẩu mới"
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Xác nhận mật khẩu mới"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <Button variant="contained" sx={{ mt: 2 }} onClick={handleChangePassword}>
-                        Đổi mật khẩu
-                    </Button>
+                        <TextField
+                            label="Mật khẩu cũ"
+                            type="password"
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            variant="outlined"
+                        />
+                        <TextField
+                            label="Mật khẩu mới"
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            variant="outlined"
+                            helperText="Tối thiểu 6 ký tự"
+                        />
+                        <TextField
+                            label="Xác nhận mật khẩu mới"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            fullWidth
+                            margin="normal"
+                            variant="outlined"
+                        />
 
-                    {passwordMessage && (
-                        <Typography sx={{ mt: 2, color: passwordMessage.includes("thành công") ? "green" : "red" }}>
-                            {passwordMessage}
-                        </Typography>
-                    )}
-                </>
-            )}
-        </Box>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                            sx={{ mt: 3 }}
+                            onClick={handleChangePassword}
+                            disabled={!currentPassword || !newPassword || !confirmPassword}
+                        >
+                            Đổi mật khẩu
+                        </Button>
+
+                        {passwordMessage && (
+                            <Alert
+                                severity={passwordMessage.includes("thành công") ? "success" : "error"}
+                                sx={{ mt: 2 }}
+                            >
+                                {passwordMessage}
+                            </Alert>
+                        )}
+                    </Paper>
+                )}
+            </Box>
+        </Card>
     );
 };
 

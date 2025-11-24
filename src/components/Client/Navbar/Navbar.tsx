@@ -1,27 +1,32 @@
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import SearchIcon from '@mui/icons-material/Search';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 // --- Import mới cho Menu Drawer ---
-import { Collapse } from '@mui/material';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import CloseIcon from '@mui/icons-material/Close';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import CloseIcon from '@mui/icons-material/Close';
-import LoginIcon from '@mui/icons-material/Login';
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout'; // ✅ Đã thêm icon Đăng xuất
 import WidgetsOutlinedIcon from '@mui/icons-material/WidgetsOutlined';
+import { Collapse } from '@mui/material';
 
-import { 
-  Button, Badge, Box, Drawer, List, ListItem, 
-  ListItemButton, ListItemIcon, ListItemText, Typography, IconButton 
+import {
+  Badge, Box,
+  Button,
+  Drawer,
+  IconButton,
+  List, ListItem,
+  ListItemButton, ListItemIcon, ListItemText, Typography
 } from '@mui/material';
 
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { fetchCart } from '../../../store/cartSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -49,10 +54,21 @@ const Navbar: React.FC = () => {
   const totalQuantity = cartItems?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0;
   const wishlistCount = wishlistItems?.length || 0;
 
+  // ✅ Fetch cart & wishlist continuously
   useEffect(() => {
     if (userId) {
+      // Fetch immediately
       dispatch(fetchCart(userId));
       dispatch(fetchWishlist(userId));
+
+      // Set up polling every 2 seconds
+      const interval = setInterval(() => {
+        dispatch(fetchCart(userId));
+        dispatch(fetchWishlist(userId));
+      }, 2000);
+
+      // Clean up interval on unmount
+      return () => clearInterval(interval);
     }
   }, [userId, dispatch]);
 
@@ -93,10 +109,9 @@ const Navbar: React.FC = () => {
     return () => clearTimeout(typingTimer);
   }, [typedPlaceholder, isDeleting, placeholderIndex, placeholders]);
 
-  // --- Menu Drawer Logic (Mobile) ---
+  // --- Menu Drawer Logic ---
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Hàm này dùng cho prop onClose của Drawer (cần trả về function event handler)
   const toggleMobileMenu = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
       return;
@@ -104,7 +119,6 @@ const Navbar: React.FC = () => {
     setMobileMenuOpen(open);
   };
 
-  // Hàm đóng menu trực tiếp (dùng cho các nút điều hướng)
   const closeMenu = () => setMobileMenuOpen(false);
 
   const [menuActive, setMenuActive] = useState(false);
@@ -134,8 +148,6 @@ const Navbar: React.FC = () => {
     <Box
       sx={{ width: 300, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: '#fff' }}
       role="presentation"
-      // Lưu ý: Không để onClick={toggleMobileMenu(false)} ở Box ngoài cùng này
-      // vì nó sẽ chặn việc click mở menu con (collapse).
       onKeyDown={toggleMobileMenu(false)}
     >
       {/* Header Đỏ */}
@@ -151,14 +163,14 @@ const Navbar: React.FC = () => {
         <Box sx={{ bgcolor: '#b11116', color: 'white', px: 2, py: 1, mt: 0 }}>
           <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: '14px' }}>MENU CHÍNH</Typography>
         </Box>
-        
+
         <List sx={{ p: 0 }}>
           {[
             { text: 'Trang chủ', path: '/' },
             { text: 'Giới thiệu', path: '/about' },
-            { 
-              text: 'Sản phẩm', 
-              hasSub: true, 
+            {
+              text: 'Sản phẩm',
+              hasSub: true,
               subMenu: [
                 { text: 'Tất cả sản phẩm', path: '/shop' },
                 { text: 'Quần', path: '/shop?category=quan' },
@@ -172,19 +184,19 @@ const Navbar: React.FC = () => {
           ].map((item, index) => (
             <React.Fragment key={index}>
               <ListItem disablePadding sx={{ borderBottom: '1px solid #eee', display: 'block' }}>
-                <ListItemButton 
+                <ListItemButton
                   onClick={() => {
                     if (item.hasSub) {
-                      handleProductClick(); // Chỉ mở menu con, không đóng drawer
+                      handleProductClick();
                     } else {
-                      navigate(item.path || '/'); 
-                      setMobileMenuOpen(false); // Đóng drawer
+                      navigate(item.path || '/');
+                      setMobileMenuOpen(false);
                     }
                   }}
                 >
-                  <ListItemText 
-                    primary={item.text} 
-                    primaryTypographyProps={{ fontSize: '14px', fontWeight: 500, color: '#333' }} 
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{ fontSize: '14px', fontWeight: 500, color: '#333' }}
                   />
                   {item.hasSub && (
                     openProductSubMenu ? <ExpandLess sx={{ color: '#666' }} /> : <ExpandMore sx={{ color: '#666' }} />
@@ -195,17 +207,17 @@ const Navbar: React.FC = () => {
                   <Collapse in={openProductSubMenu} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding sx={{ bgcolor: '#f9f9f9' }}>
                       {item.subMenu.map((subItem, subIndex) => (
-                        <ListItemButton 
-                          key={subIndex} 
-                          sx={{ pl: 4, borderTop: '1px solid #f0f0f0' }} 
+                        <ListItemButton
+                          key={subIndex}
+                          sx={{ pl: 4, borderTop: '1px solid #f0f0f0' }}
                           onClick={() => {
                             navigate(subItem.path);
-                            setMobileMenuOpen(false); // Đóng drawer sau khi chọn mục con
+                            setMobileMenuOpen(false);
                           }}
                         >
-                          <ListItemText 
-                            primary={subItem.text} 
-                            primaryTypographyProps={{ fontSize: '13px', color: '#555' }} 
+                          <ListItemText
+                            primary={subItem.text}
+                            primaryTypographyProps={{ fontSize: '13px', color: '#555' }}
                           />
                         </ListItemButton>
                       ))}
@@ -223,7 +235,20 @@ const Navbar: React.FC = () => {
         </Box>
 
         <List sx={{ p: 0 }}>
-          {role !== 'client' && (
+
+          {/* ✅ LOGIC MỚI: Kiểm tra role để hiển thị */}
+          {role === 'client' ? (
+            // Nếu ĐÃ đăng nhập -> Hiện nút Đăng xuất
+            <ListItem disablePadding sx={{ borderBottom: '1px solid #eee' }}>
+              <ListItemButton onClick={() => { logout(); setMobileMenuOpen(false); }}>
+                <ListItemIcon sx={{ minWidth: 35, color: '#b11116' }}>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Đăng xuất" primaryTypographyProps={{ fontSize: '14px' }} />
+              </ListItemButton>
+            </ListItem>
+          ) : (
+            // Nếu CHƯA đăng nhập -> Hiện Đăng nhập / Đăng ký
             <>
               <ListItem disablePadding sx={{ borderBottom: '1px solid #eee' }}>
                 <ListItemButton onClick={() => { navigate('/auth?tab=login'); setMobileMenuOpen(false); }}>
@@ -231,6 +256,7 @@ const Navbar: React.FC = () => {
                   <ListItemText primary="Đăng nhập" primaryTypographyProps={{ fontSize: '14px' }} />
                 </ListItemButton>
               </ListItem>
+
               <ListItem disablePadding sx={{ borderBottom: '1px solid #eee' }}>
                 <ListItemButton onClick={() => { navigate('/auth?tab=register'); setMobileMenuOpen(false); }}>
                   <ListItemIcon sx={{ minWidth: 35, color: '#b11116' }}><AppRegistrationIcon fontSize="small" /></ListItemIcon>
@@ -288,7 +314,7 @@ const Navbar: React.FC = () => {
           <input type="text" placeholder={typedPlaceholder} className="navbar-search-input" />
           <span className="navbar-search-icon"><SearchIcon /></span>
         </div>
-        
+
         <div className='navbar-logo-icons'>
           <Link to="/" className="navbar-logo">
             <img src="/assets/images/logo.webp" alt="" />
@@ -302,7 +328,7 @@ const Navbar: React.FC = () => {
 
             <Box className="navbar-icon" onClick={() => navigate('/wishlist')} sx={{ display: 'flex' }}>
               <Badge badgeContent={wishlistCount} color="error">
-                <FavoriteBorderOutlinedIcon 
+                <FavoriteBorderOutlinedIcon
                   className={wishlistCount > 0 ? 'wishlist-filled' : ''}
                   sx={{ color: wishlistCount > 0 ? '#e91e63' : 'inherit' }}
                 />
@@ -338,8 +364,7 @@ const Navbar: React.FC = () => {
       <Drawer
         anchor="left"
         open={mobileMenuOpen}
-        // ✅ Prop này quan trọng: Nó giúp đóng Drawer khi click ra ngoài (backdrop)
-        onClose={toggleMobileMenu(false)} 
+        onClose={toggleMobileMenu(false)}
         sx={{ zIndex: 1300 }}
       >
         {mobileMenuContent}
@@ -348,9 +373,9 @@ const Navbar: React.FC = () => {
       {/* --- MOBILE BOTTOM NAVIGATION BAR --- */}
       <div className="navbar-bottom-mobile">
         {/* 1. Giỏ hàng */}
-        <div 
-          className={`bottom-nav-item ${activeTab === 'cart' ? 'active' : ''}`} 
-          onClick={() => { navigate('/cart'); closeMenu(); }} // ✅ Click là đóng menu
+        <div
+          className={`bottom-nav-item ${activeTab === 'cart' ? 'active' : ''}`}
+          onClick={() => { navigate('/cart'); closeMenu(); }}
         >
           <div className="nav-icon-wrapper">
             <Badge badgeContent={totalQuantity} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', height: '16px', minWidth: '16px' } }}>
@@ -358,11 +383,11 @@ const Navbar: React.FC = () => {
             </Badge>
           </div>
         </div>
-        
+
         {/* 2. Yêu thích */}
-        <div 
-          className={`bottom-nav-item ${activeTab === 'wishlist' ? 'active' : ''}`} 
-          onClick={() => { navigate('/wishlist'); closeMenu(); }} // ✅ Click là đóng menu
+        <div
+          className={`bottom-nav-item ${activeTab === 'wishlist' ? 'active' : ''}`}
+          onClick={() => { navigate('/wishlist'); closeMenu(); }}
         >
           <div className="nav-icon-wrapper">
             <Badge badgeContent={wishlistCount} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', height: '16px', minWidth: '16px' } }}>
@@ -370,31 +395,31 @@ const Navbar: React.FC = () => {
             </Badge>
           </div>
         </div>
-        
+
         {/* 3. Trang chủ */}
-        <div 
-          className={`bottom-nav-item ${activeTab === 'home' ? 'active' : ''}`} 
-          onClick={() => { navigate('/'); closeMenu(); }} // ✅ Click là đóng menu
+        <div
+          className={`bottom-nav-item ${activeTab === 'home' ? 'active' : ''}`}
+          onClick={() => { navigate('/'); closeMenu(); }}
         >
           <div className="nav-icon-wrapper">
             <HomeOutlinedIcon className={activeTab === 'home' ? 'active-icon' : ''} />
           </div>
         </div>
-        
+
         {/* 4. DANH MỤC (Toggle Menu) */}
-        <div 
-          className={`bottom-nav-item ${mobileMenuOpen ? 'active' : ''}`} 
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)} // ✅ Toggle bật/tắt
+        <div
+          className={`bottom-nav-item ${mobileMenuOpen ? 'active' : ''}`}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <div className="nav-icon-wrapper">
             <WidgetsOutlinedIcon className={mobileMenuOpen ? 'active-icon' : ''} />
           </div>
         </div>
-        
+
         {/* 5. Tài khoản */}
-        <div 
-          className={`bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`} 
-          onClick={() => { navigate('/profile'); closeMenu(); }} // ✅ Click là đóng menu
+        <div
+          className={`bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+          onClick={() => { navigate('/profile'); closeMenu(); }}
         >
           <div className="nav-icon-wrapper">
             <PermIdentityOutlinedIcon className={activeTab === 'profile' ? 'active-icon' : ''} />

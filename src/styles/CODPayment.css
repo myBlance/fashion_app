@@ -1,47 +1,156 @@
+/* src/styles/CODPayment.css */
+
 .cod-container {
-  max-width: 500px;
-  margin: 40px auto;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  margin-top: 40px;
+}
+
+/* --- Loading State --- */
+.cod-container.loading .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #ff5722;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- Success State --- */
+.success-icon {
+  width: 80px;
+  height: 80px;
+  color: #4caf50;
+  margin-bottom: 24px;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .cod-container h2 {
-  color: #2ecc71;
-  margin-bottom: 20px;
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 10px;
 }
 
-.success-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
+.order-id {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 30px;
 }
 
+.order-summary-card {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 30px;
+  border: 1px dashed #ddd;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #555;
+}
+
+.summary-row.total {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  font-size: 18px;
+  color: #333;
+}
+
+.summary-row.total strong {
+  color: #ff5722;
+}
+
+.note {
+  font-size: 13px;
+  color: #888;
+  font-style: italic;
+  margin-top: 15px;
+}
+
+/* --- Buttons --- */
 .buttons {
-  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  width: 100%;
 }
 
 .buttons button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
+  flex: 1;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn-home {
-  background: #3498db;
-  color: white;
-}
-
-.btn-order {
-  background: #2ecc71;
-  color: white;
+  background: white;
+  border: 1px solid #ddd;
+  color: #555;
 }
 
 .btn-home:hover {
-  background: #2980b9;
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.btn-order {
+  background: #ff5722;
+  border: 1px solid #ff5722;
+  color: white;
 }
 
 .btn-order:hover {
-  background: #27ae60;
+  background: #e64a19;
+}
+
+/* --- Error State --- */
+.cod-container.error .icon-error {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.cod-container.error h2 {
+  color: #d32f2f;
+}
+
+.cod-container.error p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.btn-retry {
+  background: #333;
+  color: white;
+  border: none;
+  margin-right: 10px;
 }

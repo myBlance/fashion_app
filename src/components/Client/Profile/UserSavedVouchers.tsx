@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { VoucherService, UserVoucher, UserVoucherListResponse } from '../../../services/voucherService'; // Điều chỉnh đường dẫn nếu cần
+import React, { useEffect, useState } from 'react';
+import { UserVoucher, UserVoucherListResponse, VoucherService } from '../../../services/voucherService'; // Điều chỉnh đường dẫn nếu cần
 import '../../../styles/UserSavedVouchers.css'; // Điều chỉnh đường dẫn nếu cần
 
 // Giả định bạn có context hoặc cách khác để lấy token người dùng
@@ -10,6 +10,8 @@ const UserSavedVouchers: React.FC = () => {
   const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [claimCode, setClaimCode] = useState('');
+  const [claimMessage, setClaimMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   useEffect(() => {
     const fetchSavedVouchers = async () => {
@@ -50,6 +52,32 @@ const UserSavedVouchers: React.FC = () => {
     fetchSavedVouchers();
   }, []);
 
+  const handleClaimVoucher = async () => {
+    if (!claimCode.trim()) return;
+
+    const token = getToken();
+    if (!token) {
+      setClaimMessage({ type: 'error', text: 'Vui lòng đăng nhập để lưu voucher.' });
+      return;
+    }
+
+    try {
+      const res = await VoucherService.claimVoucher(claimCode, token);
+      if (res.success) {
+        setClaimMessage({ type: 'success', text: 'Lưu voucher thành công!' });
+        setClaimCode('');
+        // Reload danh sách
+        const listRes = await VoucherService.getMyVouchers(token);
+        if (listRes.success) setUserVouchers(listRes.data);
+      }
+    } catch (err: any) {
+      setClaimMessage({
+        type: 'error',
+        text: err.response?.data?.message || 'Không thể lưu voucher. Vui lòng kiểm tra lại mã.'
+      });
+    }
+  };
+
   const handleUseVoucher = (code: string) => {
     // Ví dụ: Sao chép mã voucher vào clipboard
     navigator.clipboard.writeText(code)
@@ -73,6 +101,42 @@ const UserSavedVouchers: React.FC = () => {
   return (
     <div className="user-saved-vouchers-container">
       <h2>Voucher Đã Lưu</h2>
+
+      {/* ✅ Khu vực nhập mã voucher */}
+      <div className="claim-voucher-section" style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <input
+          type="text"
+          placeholder="Nhập mã voucher"
+          value={claimCode}
+          onChange={(e) => setClaimCode(e.target.value)}
+          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', flex: 1, maxWidth: '300px' }}
+        />
+        <button
+          onClick={handleClaimVoucher}
+          disabled={!claimCode.trim()}
+          style={{
+            padding: '8px 16px',
+            borderRadius: '4px',
+            backgroundColor: '#d32f2f',
+            color: '#fff',
+            border: 'none',
+            cursor: claimCode.trim() ? 'pointer' : 'not-allowed',
+            opacity: claimCode.trim() ? 1 : 0.6
+          }}
+        >
+          Lưu
+        </button>
+      </div>
+      {claimMessage && (
+        <p style={{
+          color: claimMessage.type === 'success' ? 'green' : 'red',
+          marginBottom: '15px',
+          fontWeight: 'bold'
+        }}>
+          {claimMessage.text}
+        </p>
+      )}
+
       {userVouchers.length === 0 ? (
         <p>Bạn chưa có voucher nào.</p>
       ) : (

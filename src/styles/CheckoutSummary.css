@@ -366,4 +366,460 @@
 
 .close-modal-btn:hover {
   background-color: #c0392b;
+}/* src/styles/CheckoutSummary.css */
+
+/* --- 1. Cấu trúc chung & Reset --- */
+.checkout-summary {
+  background: #fff;
+  border-radius: 12px; /* Bo tròn mềm mại hơn */
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Đổ bóng sâu hơn tạo chiều sâu */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #333;
+  max-width: 800px; /* Giới hạn chiều rộng để không bị bè ra trên màn hình to */
+  margin: 0 auto;   /* Căn giữa */
+}
+
+/* --- 2. Các Section (Khối nội dung) --- */
+.section {
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px dashed #e0e0e0; /* Đường kẻ nét đứt tinh tế hơn */
+}
+
+.section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-header .icon {
+  font-size: 20px;
+}
+
+.change-btn {
+  background: transparent;
+  border: 1px solid #ff5722;
+  color: #ff5722;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.change-btn:hover {
+  background: #ff5722;
+  color: #fff;
+}
+
+/* --- 3. Phần Địa chỉ --- */
+.address-info {
+  padding: 16px;
+  background: #f8f9fa;
+  border-left: 4px solid #ff5722; /* Điểm nhấn màu cam */
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.address-info strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #222;
+  font-size: 16px;
+}
+
+/* --- 4. Danh sách sản phẩm --- */
+.products-list {
+  margin-top: 16px;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.product-item img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-right: 16px;
+}
+
+.product-details {
+  flex: 1;
+}
+
+.product-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  /* -webkit-line-clamp: 2; Giới hạn 2 dòng */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-variant {
+  font-size: 13px;
+  color: #888;
+  background: #f5f5f5;
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.product-price {
+  font-size: 14px;
+  color: #666;
+  margin-top: 6px;
+}
+
+.product-total {
+  font-weight: 700;
+  color: #ff5722;
+  font-size: 16px;
+  min-width: 100px;
+  text-align: right;
+}
+
+/* --- 5. Voucher --- */
+.voucher-section {
+  background: #fff8e1; /* Màu nền nhẹ cho voucher */
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #ffe082;
+}
+
+.voucher-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.voucher-label {
+  font-weight: 600;
+  color: #f57c00;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.choose-voucher {
+  background: #fff;
+  border: 1px solid #ff5722;
+  color: #ff5722;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.choose-voucher:hover {
+  background: #ff5722;
+  color: #fff;
+}
+
+/* --- 6. Vận chuyển & Thanh toán (Style dạng Card) --- */
+.shipping-options, .payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Style chung cho các ô lựa chọn */
+.shipping-option, .payment-method {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 2px solid #eee; /* Viền mặc định */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  background: #fff;
+}
+
+/* Hiệu ứng khi hover */
+.shipping-option:hover, .payment-method:hover {
+  border-color: #ffccbc;
+  background: #fffbf9;
+}
+
+/* Khi được chọn (dựa vào class hoặc logic checked của input bên trong) */
+.shipping-option:has(input:checked),
+.payment-method:has(input:checked) {
+  border-color: #ff5722;
+  background-color: #fff3e0;
+}
+
+.shipping-option input[type="radio"],
+.payment-method input[type="radio"] {
+  accent-color: #ff5722;
+  margin-right: 12px;
+  transform: scale(1.2); /* Phóng to radio button một chút */
+}
+
+.shipping-option label,
+.payment-method label {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.shipping-title {
+  font-weight: 700;
+  color: #333;
+}
+
+.shipping-desc {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.shipping-price {
+  font-weight: 700;
+  color: #333;
+  margin-left: auto; /* Đẩy giá sang phải cùng */
+}
+
+.payment-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 12px;
+}
+
+/* --- 7. Tổng tiền --- */
+.total-section {
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 15px;
+  color: #555;
+}
+
+.total-row.total-final {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  font-size: 20px;
+  color: #333;
+}
+
+.total-row.total-final strong:last-child {
+  color: #ff5722;
+  font-size: 24px;
+}
+
+/* --- 8. Nút đặt hàng --- */
+.place-order-button {
+  margin-top: 32px;
+}
+
+.order-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(to right, #ff5722, #f4511e);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);
+}
+
+.order-btn:hover {
+  background: linear-gradient(to right, #f4511e, #e64a19);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 87, 34, 0.4);
+}
+
+.order-btn:active {
+  transform: translateY(0);
+}
+
+/* --- 9. MODAL (Cải tiến) --- */
+.address-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Tối hơn chút */
+  backdrop-filter: blur(2px); /* Làm mờ nền phía sau */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.address-modal-content {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.address-item {
+  padding: 16px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.address-item:hover {
+  border-color: #ffab91;
+}
+
+.address-item.selected {
+  border-color: #ff5722;
+  background-color: #fff8f5;
+}
+
+.address-item.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ff5722;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.default-tag {
+  background-color: #ff5722;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 8px;
+  width: fit-content;
+}
+
+.close-modal-btn {
+  margin-top: 16px;
+  background-color: #555;
+  transition: background 0.2s;
+}
+
+.close-modal-btn:hover {
+  background-color: #333;
+}
+
+/* --- 10. RESPONSIVE (Mobile) --- */
+@media (max-width: 768px) {
+  .checkout-summary {
+    padding: 16px;
+    border-radius: 0; /* Full màn hình mobile thì không cần bo góc */
+    box-shadow: none;
+  }
+
+  .product-item {
+    align-items: flex-start;
+  }
+  
+  .product-item img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .product-name {
+    font-size: 14px;
+  }
+
+  .product-total {
+    font-size: 14px;
+    min-width: auto;
+    margin-left: 8px;
+  }
+  
+  .shipping-option, .payment-method {
+    padding: 12px;
+  }
+  
+  .shipping-option label, .payment-method label {
+    font-size: 14px;
+  }
+  
+  .total-row.total-final {
+    font-size: 18px;
+  }
+  
+  .total-row.total-final strong:last-child {
+    font-size: 20px;
+  }
+
+  /* Nút đặt hàng dính dưới đáy màn hình trên mobile (Optional) */
+  /*
+  .place-order-button {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 16px;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+  }
+  */
 }

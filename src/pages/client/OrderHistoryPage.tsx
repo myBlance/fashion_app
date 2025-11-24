@@ -1,17 +1,40 @@
-import React, { useState, useEffect, Component } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import {
-  Tabs, Tab, Box, Card, CardContent, Typography,
-  Chip, Button, Pagination, Stack, Dialog, DialogTitle,
-  DialogContent, DialogActions, Avatar, Container, CircularProgress, Alert,
-  Paper, Divider
-} from '@mui/material';
-import {
-  LocalShipping, CheckCircle, Cancel, AccessTime,
-  Payment, Info, ReceiptLong, CalendarToday,
-  ShoppingBag, Visibility, Phone, LocationOn
+  AccessTime,
+  CalendarToday,
+  Cancel,
+  CheckCircle,
+  Info,
+  LocalShipping,
+  LocationOn,
+  Payment,
+  Phone,
+  ReceiptLong,
+  ShoppingBag, Visibility
 } from '@mui/icons-material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card, CardContent,
+  Chip,
+  CircularProgress,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Pagination,
+  Paper,
+  Stack,
+  Tab,
+  Tabs,
+  Typography
+} from '@mui/material';
+import axios from 'axios';
+import React, { Component, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ProductRating } from '../../components/Client/Review/ProductRating';
 
 // --- Interfaces ---
@@ -36,7 +59,7 @@ export interface Order {
   user: string;
   products: ProductInOrder[];
   totalPrice: number;
-  status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'awaiting_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   paymentMethod: string;
   paymentStatus: 'paid' | 'unpaid';
   shippingAddress: {
@@ -51,6 +74,7 @@ export interface Order {
 const getStatusConfig = (status: string) => {
   switch (status) {
     case 'pending': return { label: 'Chờ xác nhận', color: 'warning', icon: <AccessTime />, hex: '#ed6c02', bg: '#fff7ed' };
+    case 'awaiting_payment': return { label: 'Chờ thanh toán', color: 'warning', icon: <Payment />, hex: '#ff9800', bg: '#fff3e0' };
     case 'paid': return { label: 'Đã thanh toán', color: 'info', icon: <Payment />, hex: '#0288d1', bg: '#e1f5fe' };
     case 'processing': return { label: 'Đang xử lý', color: 'info', icon: <Info />, hex: '#0288d1', bg: '#e1f5fe' };
     case 'shipped': return { label: 'Đang giao', color: 'primary', icon: <LocalShipping />, hex: '#1976d2', bg: '#e3f2fd' };
@@ -119,15 +143,15 @@ const ProductItem: React.FC<{ item: ProductInOrder; orderId: string; orderStatus
           {formatCurrency(product.price)}
         </Typography>
       </Box>
-      
+
       {orderStatus === 'delivered' && (
-         <Box sx={{ minWidth: 120 }}>
-            <ProductRating
-              item={item}
-              orderId={orderId}
-              productId={item.product?.code || item.product?._id || ''}
-            />
-         </Box>
+        <Box sx={{ minWidth: 120 }}>
+          <ProductRating
+            item={item}
+            orderId={orderId}
+            productId={item.product?.code || item.product?._id || ''}
+          />
+        </Box>
       )}
     </Card>
   );
@@ -147,84 +171,84 @@ const OrderDetailsDialog: React.FC<{
   if (!order) return null;
 
   const statusConfig = getStatusConfig(order.status);
-  
+
   const canCancel = order.paymentMethod === 'cod'
-    ? ['pending', 'paid'].includes(order.status)
-    : order.status === 'pending' && order.paymentStatus === 'unpaid';
+    ? ['pending', 'paid', 'awaiting_payment'].includes(order.status)
+    : ['pending', 'awaiting_payment'].includes(order.status) && order.paymentStatus === 'unpaid';
   const canMarkDelivered = order.status === 'shipped';
-  const canRetryPayment = order.paymentStatus === 'unpaid' && order.paymentMethod === 'seepay' && order.status === 'pending';
+  const canRetryPayment = order.paymentStatus === 'unpaid' && order.paymentMethod === 'seepay' && ['pending', 'awaiting_payment'].includes(order.status);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', pb: 2 }}>
         <Stack>
-            <Typography variant="h6" fontWeight="bold">Đơn hàng #{order.id}</Typography>
-            <Stack direction="row" alignItems="center" spacing={1}>
-                <CalendarToday sx={{ fontSize: 14, color: 'text.secondary' }} />
-                <Typography variant="caption" color="text.secondary">{formatDate(order.createdAt)}</Typography>
-            </Stack>
+          <Typography variant="h6" fontWeight="bold">Đơn hàng #{order.id}</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <CalendarToday sx={{ fontSize: 14, color: 'text.secondary' }} />
+            <Typography variant="caption" color="text.secondary">{formatDate(order.createdAt)}</Typography>
+          </Stack>
         </Stack>
         <Chip label={statusConfig.label} sx={{ bgcolor: statusConfig.bg, color: statusConfig.hex, fontWeight: 600 }} icon={statusConfig.icon} />
       </DialogTitle>
-      
+
       <DialogContent dividers sx={{ p: 3 }}>
         {/* LAYOUT FLEX THAY CHO GRID */}
         <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={4}>
-          
+
           {/* Cột Trái: Thông tin (Chiếm 60% trên desktop) */}
           <Box flex={{ xs: 1, md: 1.5 }}>
-             {/* Vận chuyển */}
-             <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
-                Thông tin vận chuyển
-             </Typography>
-             <Paper elevation={0} variant="outlined" sx={{ p: 2, mb: 3, bgcolor: '#fff', borderRadius: 2 }}>
-                <Stack spacing={1}>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="body2" fontWeight="bold">{order.shippingAddress.fullName}</Typography>
-                  </Stack>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Phone fontSize="small" color="action" sx={{ fontSize: 16 }}/>
-                    <Typography variant="body2">{order.shippingAddress.phone}</Typography>
-                  </Stack>
-                  <Stack direction="row" spacing={1} alignItems="flex-start">
-                    <LocationOn fontSize="small" color="action" sx={{ fontSize: 16, mt: 0.3 }}/>
-                    <Typography variant="body2" color="text.secondary">{order.shippingAddress.addressLine}</Typography>
-                  </Stack>
+            {/* Vận chuyển */}
+            <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
+              Thông tin vận chuyển
+            </Typography>
+            <Paper elevation={0} variant="outlined" sx={{ p: 2, mb: 3, bgcolor: '#fff', borderRadius: 2 }}>
+              <Stack spacing={1}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography variant="body2" fontWeight="bold">{order.shippingAddress.fullName}</Typography>
                 </Stack>
-             </Paper>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Phone fontSize="small" color="action" sx={{ fontSize: 16 }} />
+                  <Typography variant="body2">{order.shippingAddress.phone}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="flex-start">
+                  <LocationOn fontSize="small" color="action" sx={{ fontSize: 16, mt: 0.3 }} />
+                  <Typography variant="body2" color="text.secondary">{order.shippingAddress.addressLine}</Typography>
+                </Stack>
+              </Stack>
+            </Paper>
 
-             {/* Thanh toán */}
-             <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
-                Thanh toán
-             </Typography>
-             <Paper elevation={0} variant="outlined" sx={{ p: 2, bgcolor: '#fff', borderRadius: 2 }}>
-                <Stack direction="row" justifyContent="space-between" mb={1}>
-                    <Typography variant="body2" color="text.secondary">Phương thức:</Typography>
-                    <Typography variant="body2" fontWeight="600">{order.paymentMethod.toUpperCase()}</Typography>
-                </Stack>
-                <Stack direction="row" justifyContent="space-between" mb={1}>
-                    <Typography variant="body2" color="text.secondary">Trạng thái:</Typography>
-                    <Typography variant="body2" sx={{ color: order.paymentStatus === 'paid' ? 'success.main' : 'warning.main', fontWeight: 'bold' }}>
-                        {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                    </Typography>
-                </Stack>
-                <Divider sx={{ my: 1.5 }} />
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="body1" fontWeight="bold">Tổng cộng:</Typography>
-                    <Typography variant="h6" color="primary.main" fontWeight="bold">{formatCurrency(order.totalPrice)}</Typography>
-                </Stack>
-             </Paper>
+            {/* Thanh toán */}
+            <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
+              Thanh toán
+            </Typography>
+            <Paper elevation={0} variant="outlined" sx={{ p: 2, bgcolor: '#fff', borderRadius: 2 }}>
+              <Stack direction="row" justifyContent="space-between" mb={1}>
+                <Typography variant="body2" color="text.secondary">Phương thức:</Typography>
+                <Typography variant="body2" fontWeight="600">{order.paymentMethod.toUpperCase()}</Typography>
+              </Stack>
+              <Stack direction="row" justifyContent="space-between" mb={1}>
+                <Typography variant="body2" color="text.secondary">Trạng thái:</Typography>
+                <Typography variant="body2" sx={{ color: order.paymentStatus === 'paid' ? 'success.main' : 'warning.main', fontWeight: 'bold' }}>
+                  {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                </Typography>
+              </Stack>
+              <Divider sx={{ my: 1.5 }} />
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="body1" fontWeight="bold">Tổng cộng:</Typography>
+                <Typography variant="h6" color="primary.main" fontWeight="bold">{formatCurrency(order.totalPrice)}</Typography>
+              </Stack>
+            </Paper>
           </Box>
 
           {/* Cột Phải: Sản phẩm (Chiếm 40% trên desktop) */}
           <Box flex={{ xs: 1, md: 1 }}>
             <Typography variant="subtitle2" fontWeight="bold" gutterBottom textTransform="uppercase" color="text.secondary" fontSize="0.75rem">
-                Sản phẩm ({order.products.length})
+              Sản phẩm ({order.products.length})
             </Typography>
             <Box sx={{ maxHeight: 450, overflowY: 'auto', pr: 1 }}>
-                {order.products.map((item, idx) => (
+              {order.products.map((item, idx) => (
                 <ProductItem key={idx} item={item} orderId={order.id} orderStatus={order.status} />
-                ))}
+              ))}
             </Box>
           </Box>
         </Box>
@@ -243,7 +267,7 @@ const OrderDetailsDialog: React.FC<{
         )}
         {canCancel && (
           <Button variant="outlined" color="error" onClick={() => onCancel(order)} disabled={cancelLoading}>
-             {cancelLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
+            {cancelLoading ? 'Đang hủy...' : 'Hủy đơn hàng'}
           </Button>
         )}
         <Button onClick={onClose} color="inherit" variant="text">Đóng</Button>
@@ -258,7 +282,7 @@ const OrderHistoryPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
-  
+
   // Pagination State
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
@@ -281,12 +305,12 @@ const OrderHistoryPage: React.FC = () => {
 
       const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
       const data = Array.isArray(res.data) ? res.data.reverse() : [];
-      
+
       setOrders(data.map(order => ({
-         ...order,
-         paymentStatus: order.paymentStatus || 'unpaid'
+        ...order,
+        paymentStatus: order.paymentStatus || 'unpaid'
       })));
-      setPage(1); 
+      setPage(1);
     } catch (err) {
       console.error(err);
       setError('Không thể tải danh sách đơn hàng.');
@@ -300,8 +324,8 @@ const OrderHistoryPage: React.FC = () => {
   // Actions Handlers
   const handleMarkDelivered = async (order: Order) => {
     if (!token) return;
-    if(!window.confirm('Bạn xác nhận đã nhận được hàng?')) return;
-    
+    if (!window.confirm('Bạn xác nhận đã nhận được hàng?')) return;
+
     setMarkDeliveredLoading(true);
     try {
       await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/mark-delivered`, {}, { headers: { Authorization: `Bearer ${token}` } });
@@ -317,7 +341,7 @@ const OrderHistoryPage: React.FC = () => {
 
   const handleCancelOrder = async (order: Order) => {
     if (!token) return;
-    if(!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
+    if (!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) return;
 
     setCancelLoading(true);
     try {
@@ -345,6 +369,7 @@ const OrderHistoryPage: React.FC = () => {
   const statusTabs = [
     { value: 'all', label: 'Tất cả' },
     { value: 'pending', label: 'Chờ xác nhận' },
+    { value: 'awaiting_payment', label: 'Chờ thanh toán' },
     { value: 'paid', label: 'Đã thanh toán' },
     { value: 'processing', label: 'Đang xử lý' },
     { value: 'shipped', label: 'Đang giao' },
@@ -380,126 +405,126 @@ const OrderHistoryPage: React.FC = () => {
 
         {orders.length === 0 ? (
           <Box textAlign="center" py={8} bgcolor="#fff" borderRadius={2} border="1px dashed #ddd">
-             <ShoppingBag sx={{ fontSize: 60, color: '#eee', mb: 2 }} />
-             <Typography color="text.secondary" variant="body1">Chưa có đơn hàng nào ở trạng thái này.</Typography>
-             <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/')}>Mua sắm ngay</Button>
+            <ShoppingBag sx={{ fontSize: 60, color: '#eee', mb: 2 }} />
+            <Typography color="text.secondary" variant="body1">Chưa có đơn hàng nào ở trạng thái này.</Typography>
+            <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/')}>Mua sắm ngay</Button>
           </Box>
         ) : (
           <Stack spacing={2.5}>
             {currentOrders.map((order) => {
-                const statusConfig = getStatusConfig(order.status);
-                return (
-                  <Card 
-                    key={order.id} 
-                    elevation={0} 
-                    variant="outlined" 
-                    sx={{ 
-                        borderLeft: `6px solid ${statusConfig.hex}`, 
-                        transition: 'transform 0.2s, box-shadow 0.2s',
-                        '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' },
-                        bgcolor: '#fff',
-                        borderRadius: 2
-                    }}
-                  >
-                    <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                      {/* ĐÃ BỎ GRID, DÙNG BOX FLEX */}
-                      <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" gap={2}>
-                         
-                         {/* Cột 1: Thông tin đơn hàng */}
-                         <Box flex={1.5} width="100%">
-                            <Stack spacing={0.5}>
-                                <Stack direction="row" alignItems="center" spacing={1}>
-                                    <ReceiptLong color="action" fontSize="small" />
-                                    <Typography variant="subtitle1" fontWeight="bold">#{order.id}</Typography>
-                                </Stack>
-                                <Stack direction="row" alignItems="center" spacing={1}>
-                                    <CalendarToday color="action" sx={{ fontSize: 14 }} />
-                                    <Typography variant="body2" color="text.secondary">{formatDate(order.createdAt)}</Typography>
-                                </Stack>
-                            </Stack>
-                         </Box>
+              const statusConfig = getStatusConfig(order.status);
+              return (
+                <Card
+                  key={order.id}
+                  elevation={0}
+                  variant="outlined"
+                  sx={{
+                    borderLeft: `6px solid ${statusConfig.hex}`,
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' },
+                    bgcolor: '#fff',
+                    borderRadius: 2
+                  }}
+                >
+                  <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+                    {/* ĐÃ BỎ GRID, DÙNG BOX FLEX */}
+                    <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" gap={2}>
 
-                         {/* Cột 2: Giá tiền */}
-                         <Box flex={1} width="100%" display="flex" flexDirection="column" alignItems={{ xs: 'flex-start', md: 'center' }}>
-                            <Typography variant="caption" display="block" color="text.secondary" sx={{ mb: 0.5 }}>Tổng tiền</Typography>
-                            <Typography variant="h6" fontWeight="bold" color="primary.main">{formatCurrency(order.totalPrice)}</Typography>
-                         </Box>
-
-                         {/* Cột 3: Trạng thái & Nút bấm */}
-                         <Box 
-                            flex={1.5} 
-                            width="100%" 
-                            display="flex" 
-                            flexDirection={{ xs: 'row', md: 'column' }} 
-                            alignItems={{ xs: 'center', md: 'flex-end' }} 
-                            justifyContent={{ xs: 'space-between', md: 'center' }}
-                            gap={1}
-                         >
-                            <Chip 
-                                label={statusConfig.label} 
-                                icon={statusConfig.icon}
-                                size="small" 
-                                sx={{ 
-                                    fontWeight: 600, 
-                                    bgcolor: statusConfig.bg, 
-                                    color: statusConfig.hex,
-                                    border: '1px solid transparent',
-                                    borderColor: `${statusConfig.hex}30`
-                                }} 
-                            />
-                            {/* Nút Xem chi tiết đã sửa màu */}
-                            <Button 
-                                variant="outlined" 
-                                color="primary"
-                                endIcon={<Visibility />} 
-                                size="small" 
-                                onClick={() => setSelectedOrder(order)}
-                                sx={{ 
-                                    textTransform: 'none', 
-                                    borderRadius: 20, 
-                                    px: 3,
-                                    fontWeight: 600,
-                                    whiteSpace: 'nowrap',
-                                    borderWidth: 2,
-                                    '&:hover': { borderWidth: 2 }
-                                }}
-                            >
-                                Xem chi tiết
-                            </Button>
-                         </Box>
-
+                      {/* Cột 1: Thông tin đơn hàng */}
+                      <Box flex={1.5} width="100%">
+                        <Stack spacing={0.5}>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <ReceiptLong color="action" fontSize="small" />
+                            <Typography variant="subtitle1" fontWeight="bold">#{order.id}</Typography>
+                          </Stack>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <CalendarToday color="action" sx={{ fontSize: 14 }} />
+                            <Typography variant="body2" color="text.secondary">{formatDate(order.createdAt)}</Typography>
+                          </Stack>
+                        </Stack>
                       </Box>
-                    </CardContent>
-                  </Card>
-                );
+
+                      {/* Cột 2: Giá tiền */}
+                      <Box flex={1} width="100%" display="flex" flexDirection="column" alignItems={{ xs: 'flex-start', md: 'center' }}>
+                        <Typography variant="caption" display="block" color="text.secondary" sx={{ mb: 0.5 }}>Tổng tiền</Typography>
+                        <Typography variant="h6" fontWeight="bold" color="primary.main">{formatCurrency(order.totalPrice)}</Typography>
+                      </Box>
+
+                      {/* Cột 3: Trạng thái & Nút bấm */}
+                      <Box
+                        flex={1.5}
+                        width="100%"
+                        display="flex"
+                        flexDirection={{ xs: 'row', md: 'column' }}
+                        alignItems={{ xs: 'center', md: 'flex-end' }}
+                        justifyContent={{ xs: 'space-between', md: 'center' }}
+                        gap={1}
+                      >
+                        <Chip
+                          label={statusConfig.label}
+                          icon={statusConfig.icon}
+                          size="small"
+                          sx={{
+                            fontWeight: 600,
+                            bgcolor: statusConfig.bg,
+                            color: statusConfig.hex,
+                            border: '1px solid transparent',
+                            borderColor: `${statusConfig.hex}30`
+                          }}
+                        />
+                        {/* Nút Xem chi tiết đã sửa màu */}
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          endIcon={<Visibility />}
+                          size="small"
+                          onClick={() => setSelectedOrder(order)}
+                          sx={{
+                            textTransform: 'none',
+                            borderRadius: 20,
+                            px: 3,
+                            fontWeight: 600,
+                            whiteSpace: 'nowrap',
+                            borderWidth: 2,
+                            '&:hover': { borderWidth: 2 }
+                          }}
+                        >
+                          Xem chi tiết
+                        </Button>
+                      </Box>
+
+                    </Box>
+                  </CardContent>
+                </Card>
+              );
             })}
           </Stack>
         )}
 
         {/* Pagination Control */}
         {orders.length > ITEMS_PER_PAGE && (
-            <Box display="flex" justifyContent="center" mt={5}>
-                <Pagination 
-                    count={totalPages} 
-                    page={page} 
-                    onChange={handlePageChange} 
-                    color="primary" 
-                    shape="rounded"
-                    size="medium"
-                />
-            </Box>
+          <Box display="flex" justifyContent="center" mt={5}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+              size="medium"
+            />
+          </Box>
         )}
 
         {/* Order Detail Dialog */}
-        <OrderDetailsDialog 
-            open={!!selectedOrder}
-            order={selectedOrder}
-            onClose={() => setSelectedOrder(null)}
-            onCancel={handleCancelOrder}
-            onMarkDelivered={handleMarkDelivered}
-            cancelLoading={cancelLoading}
-            markDeliveredLoading={markDeliveredLoading}
-            navigate={navigate}
+        <OrderDetailsDialog
+          open={!!selectedOrder}
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          onCancel={handleCancelOrder}
+          onMarkDelivered={handleMarkDelivered}
+          cancelLoading={cancelLoading}
+          markDeliveredLoading={markDeliveredLoading}
+          navigate={navigate}
         />
 
       </Container>

@@ -53,10 +53,6 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
 
   const handleAddToCart = async () => {
     if (!product) return;
-    if (!userId) {
-      alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
-      return;
-    }
 
     // Lấy index của màu đã chọn trong mảng colors
     const colorIndex = product.colors.indexOf(selectedColor);
@@ -73,12 +69,18 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
     };
 
     try {
-      const savedItem = await CartService.addToCart(userId, newItem);
-      const cartItem: CartItem = {
-        ...newItem,
-        id: savedItem.id,
-      };
-      dispatch(addToCart(cartItem));
+      // If user is logged in, save to backend
+      if (userId) {
+        const savedItem = await CartService.addToCart(userId, newItem);
+        const cartItem: CartItem = {
+          ...newItem,
+          id: savedItem.id,
+        };
+        dispatch(addToCart(cartItem));
+      } else {
+        // If user is not logged in, just save to Redux (which auto-saves to localStorage)
+        dispatch(addToCart(newItem as CartItem));
+      }
       alert("Đã thêm vào giỏ!");
       // Gọi callback nếu có
       if (onAddToCart) {

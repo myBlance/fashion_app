@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import { useAuth } from './contexts/AuthContext';
 import ClientLayout from './layouts/ClientLayout';
 import LoginPage from './pages/auth/LoginPage';
 import { adminRoutes, clientRoutes } from './routes';
 import PrivateRoute from './routes/PrivateRoute';
+import { loadGuestCart } from './store/cartSlice';
+import { useAppDispatch } from './store/hooks';
+import { loadGuestWishlist } from './store/wishlistSlice';
 
 const App: React.FC = () => {
+    const { userId, loading } = useAuth();
+    const dispatch = useAppDispatch();
+
+    // Load guest cart and wishlist from localStorage when app starts (for non-logged-in users)
+    useEffect(() => {
+        if (!loading && !userId) {
+            dispatch(loadGuestCart());
+            dispatch(loadGuestWishlist());
+        }
+    }, [loading, userId, dispatch]);
+
     return (
         <Routes>
             {/* Trang đăng nhập */}

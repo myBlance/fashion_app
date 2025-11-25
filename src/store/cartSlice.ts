@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CartService } from '../services/cartService';
 import { CartItem } from '../types/CartItem';
+import { clearLocalCart, getLocalCart, saveLocalCart } from '../utils/cartStorage';
 
 interface CartState {
   items: CartItem[];
@@ -29,6 +30,13 @@ const cartSlice = createSlice({
   reducers: {
     setCartItems: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload;
+      saveLocalCart(state.items);
+    },
+
+    // Load guest cart from localStorage
+    loadGuestCart: (state) => {
+      const localCart = getLocalCart();
+      state.items = localCart;
     },
 
     addToCart: (state, action: PayloadAction<CartItem>) => {
@@ -43,6 +51,7 @@ const cartSlice = createSlice({
       } else {
         state.items.push(action.payload);
       }
+      saveLocalCart(state.items);
     },
 
     increaseQuantity: (state, action: PayloadAction<{ productId: string; color?: string; size?: string }>) => {
@@ -53,6 +62,7 @@ const cartSlice = createSlice({
           i.size === action.payload.size
       );
       if (item) item.quantity = (item.quantity ?? 1) + 1;
+      saveLocalCart(state.items);
     },
 
     decreaseQuantity: (state, action: PayloadAction<{ productId: string; color?: string; size?: string }>) => {
@@ -63,6 +73,7 @@ const cartSlice = createSlice({
           i.size === action.payload.size
       );
       if (item && (item.quantity ?? 1) > 1) item.quantity!--;
+      saveLocalCart(state.items);
     },
 
     removeFromCart: (state, action: PayloadAction<{ productId: string; color?: string; size?: string }>) => {
@@ -74,15 +85,18 @@ const cartSlice = createSlice({
             i.size === action.payload.size
           )
       );
+      saveLocalCart(state.items);
     },
 
     clearCart: (state) => {
       state.items = [];
+      clearLocalCart();
     },
 
     // Đồng bộ giỏ hàng sau khi login
     syncCartAfterLogin: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload;
+      clearLocalCart(); // Clear guest cart after login
     },
   },
 
@@ -105,6 +119,7 @@ const cartSlice = createSlice({
 
 export const {
   setCartItems,
+  loadGuestCart,
   addToCart,
   increaseQuantity,
   decreaseQuantity,

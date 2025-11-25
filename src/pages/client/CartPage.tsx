@@ -5,7 +5,7 @@ import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadc
 import { useAuth } from '../../contexts/AuthContext';
 import { CartService } from '../../services/cartService';
 import { RootState } from '../../store';
-import { decreaseQuantity, increaseQuantity, removeFromCart, setCartItems } from '../../store/cartSlice';
+import { decreaseQuantity, increaseQuantity, loadGuestCart, removeFromCart, setCartItems } from '../../store/cartSlice';
 import '../../styles/CartPage.css';
 import { CartItem } from '../../types/CartItem';
 
@@ -19,55 +19,69 @@ const CartPage: React.FC = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      if (!userId) return;
-      setLoading(true);
-      try {
-        const data = await CartService.getCart(userId);
-        dispatch(setCartItems(data));
-      } catch (err) {
-        console.error('Lỗi khi tải giỏ hàng:', err);
-      } finally {
-        setLoading(false);
+      if (userId) {
+        // If user is logged in, fetch from backend
+        setLoading(true);
+        try {
+          const data = await CartService.getCart(userId);
+          dispatch(setCartItems(data));
+        } catch (err) {
+          console.error('Lỗi khi tải giỏ hàng:', err);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // If user is not logged in, load from localStorage
+        dispatch(loadGuestCart());
       }
     };
     fetchCart();
   }, [userId, dispatch]);
 
   const handleIncrease = async (item: CartItem) => {
-    if (!userId) return;
     const newQuantity = (item.quantity ?? 1) + 1;
     dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
-    try {
-      await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
-    } catch (err) {
-      dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
+
+    // Only sync to backend if user is logged in
+    if (userId) {
+      try {
+        await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
+      } catch (err) {
+        dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
+      }
     }
   };
 
   const handleDecrease = async (item: CartItem) => {
-    if (!userId) return;
     const currentQty = item.quantity ?? 1;
     if (currentQty <= 1) return;
     const newQuantity = currentQty - 1;
     dispatch(decreaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
-    try {
-      await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
-    } catch (err) {
-      dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
+
+    // Only sync to backend if user is logged in
+    if (userId) {
+      try {
+        await CartService.updateQuantity(item.productId, userId, newQuantity, item.color, item.size);
+      } catch (err) {
+        dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
+      }
     }
   };
 
   const handleRemove = async (item: CartItem) => {
-    if (!userId) return;
     const confirm = window.confirm("Bạn có chắc muốn xóa sản phẩm này?");
-    if(!confirm) return;
+    if (!confirm) return;
 
     dispatch(removeFromCart({ productId: item.productId, color: item.color, size: item.size }));
-    try {
-      await CartService.removeItem(item.productId, userId, item.color, item.size);
-    } catch (err) {
-      const data = await CartService.getCart(userId);
-      dispatch(setCartItems(data));
+
+    // Only sync to backend if user is logged in
+    if (userId) {
+      try {
+        await CartService.removeItem(item.productId, userId, item.color, item.size);
+      } catch (err) {
+        const data = await CartService.getCart(userId);
+        dispatch(setCartItems(data));
+      }
     }
   };
 
@@ -107,7 +121,7 @@ const CartPage: React.FC = () => {
       <div className="cart-container">
         <DynamicBreadcrumbs />
         <h2 className="cart-title">Giỏ hàng ({cartItems.length})</h2>
-        
+
         <div className="cart-layout">
           {/* Cột trái: Danh sách sản phẩm */}
           <div className="cart-list-section">
@@ -118,7 +132,7 @@ const CartPage: React.FC = () => {
                     <input
                       type="checkbox"
                       className="custom-checkbox"
-                      checked={cartItems.length > 0 && cartItems.every(item => 
+                      checked={cartItems.length > 0 && cartItems.every(item =>
                         selectedItems[`${item.productId}-${item.color}-${item.size}`]
                       )}
                       onChange={(e) => {
@@ -183,11 +197,11 @@ const CartPage: React.FC = () => {
                       <td className="col-total" data-label="Thành tiền">
                         {((item.price ?? 0) * (item.quantity ?? 1)).toLocaleString()}₫
                       </td>
-                      
+
                       <td className="col-action">
-                         <button className="remove-btn" onClick={() => handleRemove(item)} title="Xóa sản phẩm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                         </button>
+                        <button className="remove-btn" onClick={() => handleRemove(item)} title="Xóa sản phẩm">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -198,21 +212,21 @@ const CartPage: React.FC = () => {
 
           {/* Cột phải: Tổng tiền */}
           <div className="cart-summary-section">
-             <div className="summary-card">
-                <h3>Thanh toán</h3>
-                <div className="summary-row">
-                   <span>Tạm tính:</span>
-                   <span>{totalSelectedAmount.toLocaleString()}₫</span>
-                </div>
-                 <div className="summary-row total">
-                   <span>Tổng cộng:</span>
-                   <span className="total-price-final">{totalSelectedAmount.toLocaleString()}₫</span>
-                </div>
-                <p className="vat-note">(Đã bao gồm VAT nếu có)</p>
-                <button className="checkout-btn" onClick={handleCheckout}>
-                   Tiến hành đặt hàng
-                </button>
-             </div>
+            <div className="summary-card">
+              <h3>Thanh toán</h3>
+              <div className="summary-row">
+                <span>Tạm tính:</span>
+                <span>{totalSelectedAmount.toLocaleString()}₫</span>
+              </div>
+              <div className="summary-row total">
+                <span>Tổng cộng:</span>
+                <span className="total-price-final">{totalSelectedAmount.toLocaleString()}₫</span>
+              </div>
+              <p className="vat-note">(Đã bao gồm VAT nếu có)</p>
+              <button className="checkout-btn" onClick={handleCheckout}>
+                Tiến hành đặt hàng
+              </button>
+            </div>
           </div>
 
         </div>

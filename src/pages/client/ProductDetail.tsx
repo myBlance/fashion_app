@@ -76,10 +76,6 @@ const ProductDetail: React.FC = () => {
 
   const handleAddToCart = async () => {
     if (!product) return;
-    if (!userId) {
-      alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
-      return;
-    }
 
     const newItem: Omit<CartItem, "id"> = {
       productId: product.id,
@@ -92,12 +88,18 @@ const ProductDetail: React.FC = () => {
     };
 
     try {
-      const savedItem = await CartService.addToCart(userId, newItem);
-      const cartItem: CartItem = {
-        ...newItem,
-        id: savedItem.id,
-      };
-      dispatch(addToCart(cartItem));
+      // If user is logged in, save to backend
+      if (userId) {
+        const savedItem = await CartService.addToCart(userId, newItem);
+        const cartItem: CartItem = {
+          ...newItem,
+          id: savedItem.id,
+        };
+        dispatch(addToCart(cartItem));
+      } else {
+        // If user is not logged in, just save to Redux (which auto-saves to localStorage)
+        dispatch(addToCart(newItem as CartItem));
+      }
       alert("Đã thêm vào giỏ!");
     } catch (err) {
       console.error("Lỗi khi thêm vào giỏ:", err);
@@ -111,7 +113,7 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="product-detail-container">
       <DynamicBreadcrumbs />
-      
+
       <div className="product-detail-wrapper">
         {/* Khu vực hiển thị ảnh (Gallery) */}
         <div className="gallery-container">
@@ -151,14 +153,14 @@ const ProductDetail: React.FC = () => {
         {/* Khu vực thông tin sản phẩm (Info) */}
         <div className="info-container">
           <h1 className="product-title">{product.name}</h1>
-          
+
           <div className="meta-info">
             <div>
-              Loại: <span className="highlight">{product.type}</span> | 
+              Loại: <span className="highlight">{product.type}</span> |
               Thương hiệu: <span className="highlight">{product.brand}</span>
             </div>
             <div>
-              Mã SP: <span className="code">{product.id}</span> | 
+              Mã SP: <span className="code">{product.id}</span> |
               Tình trạng: <span className={`status ${product.status ? "available" : "unavailable"}`}>
                 {product.status ? "Còn hàng" : "Hết hàng"}
               </span>
@@ -168,7 +170,7 @@ const ProductDetail: React.FC = () => {
           <div className="price-section">
             <span className="current-price">{product.price.toLocaleString()}₫</span>
             {product.originalPrice > product.price && (
-               <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
+              <span className="original-price">{product.originalPrice.toLocaleString()}₫</span>
             )}
           </div>
 
@@ -178,9 +180,9 @@ const ProductDetail: React.FC = () => {
               <span className="option-label">Màu sắc: <span className="selected-val">{product.colors[selectedColorIndex]}</span></span>
               <div className="color-list">
                 {product.colors.map((color, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`color-item ${selectedColorIndex === idx ? 'selected' : ''}`} 
+                  <div
+                    key={idx}
+                    className={`color-item ${selectedColorIndex === idx ? 'selected' : ''}`}
                     onClick={() => setSelectedColorIndex(idx)}
                     title={color}
                   >
@@ -195,9 +197,9 @@ const ProductDetail: React.FC = () => {
               <span className="option-label">Kích cỡ: <span className="selected-val">{selectedSize}</span></span>
               <div className="size-list">
                 {sizes.map((size) => (
-                  <button 
-                    key={size} 
-                    className={`size-btn ${selectedSize === size ? "selected" : ""}`} 
+                  <button
+                    key={size}
+                    className={`size-btn ${selectedSize === size ? "selected" : ""}`}
                     onClick={() => setSelectedSize(size)}
                   >
                     {size}
@@ -221,7 +223,7 @@ const ProductDetail: React.FC = () => {
             <button className="btn add-to-cart" onClick={handleAddToCart}>THÊM VÀO GIỎ</button>
             <button className="btn buy-now" onClick={() => alert("Chuyển đến thanh toán")}>MUA NGAY</button>
           </div>
-          
+
           <div className="policy-wrapper">
             <StorePolicies />
           </div>
@@ -230,9 +232,9 @@ const ProductDetail: React.FC = () => {
 
       <Box sx={{ marginTop: '40px' }}>
         <ProductDetailTabs
-            productId={product._id}
-            description={product.description || ''}
-            details={product.details || ''}
+          productId={product._id}
+          description={product.description || ''}
+          details={product.details || ''}
         />
         <SimilarProducts
           currentProductId={product.id}

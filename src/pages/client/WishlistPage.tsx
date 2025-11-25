@@ -6,7 +6,7 @@ import ProductCard from '../../components/Client/Productcard/ProductCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProducts } from '../../services/productService';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchWishlist } from '../../store/wishlistSlice';
+import { fetchWishlist, loadGuestWishlist } from '../../store/wishlistSlice';
 import { Product } from "../../types/Product";
 
 const WishlistPage: React.FC = () => {
@@ -21,21 +21,19 @@ const WishlistPage: React.FC = () => {
     const [error, setError] = React.useState<string | null>(null);
 
     useEffect(() => {
-        if (!userId) {
-            setProducts([]);
-            setLoading(false);
-            return;
+        if (userId) {
+            // ✅ Fetch wishlist từ Redux store cho logged-in users
+            dispatch(fetchWishlist(userId));
+        } else {
+            // Load guest wishlist from localStorage
+            dispatch(loadGuestWishlist());
         }
-
-        // ✅ Fetch wishlist từ Redux store
-        dispatch(fetchWishlist(userId));
-
     }, [userId, dispatch]);
 
     // ✅ Khi wishlistIds thay đổi (sau khi fetch thành công), cập nhật products
     useEffect(() => {
         const loadProducts = async () => {
-            if (!userId || wishlistLoading) return;
+            if (wishlistLoading) return;
 
             if (wishlistError) {
                 setError('Không thể tải sản phẩm yêu thích.');
@@ -62,15 +60,7 @@ const WishlistPage: React.FC = () => {
         };
 
         loadProducts();
-    }, [userId, wishlistIds, wishlistLoading, wishlistError]);
-
-    if (!userId) {
-        return (
-            <Box p={4}>
-                <Typography variant="body1">Vui lòng đăng nhập để xem sản phẩm yêu thích.</Typography>
-            </Box>
-        );
-    }
+    }, [wishlistIds, wishlistLoading, wishlistError]);
 
     return (
         <Box p={4}>

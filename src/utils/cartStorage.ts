@@ -1,4 +1,6 @@
-export const getLocalCart = () => {
+import { CartItem } from '../types/CartItem';
+
+export const getLocalCart = (): CartItem[] => {
   try {
     const cart = localStorage.getItem("cart");
     return cart ? JSON.parse(cart) : [];
@@ -7,7 +9,7 @@ export const getLocalCart = () => {
   }
 };
 
-export const saveLocalCart = (cart: any[]) => {
+export const saveLocalCart = (cart: CartItem[]) => {
   localStorage.setItem("cart", JSON.stringify(cart));
 };
 

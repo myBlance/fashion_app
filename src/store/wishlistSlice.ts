@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { WishlistService } from '../services/wishlistService';
+import { clearLocalWishlist, getLocalWishlist, saveLocalWishlist } from '../utils/wishlistStorage';
 
 // Async action: fetch wishlist từ backend
 export const fetchWishlist = createAsyncThunk(
@@ -26,6 +27,12 @@ const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState,
   reducers: {
+    // Load guest wishlist from localStorage
+    loadGuestWishlist: (state) => {
+      const localWishlist = getLocalWishlist();
+      state.items = localWishlist;
+    },
+
     toggleWishlist: (state, action: PayloadAction<string>) => {
       const id = action.payload;
       if (state.items.includes(id)) {
@@ -33,9 +40,18 @@ const wishlistSlice = createSlice({
       } else {
         state.items.push(id);
       }
+      saveLocalWishlist(state.items);
     },
+
     clearWishlist: (state) => {
       state.items = [];
+      clearLocalWishlist();
+    },
+
+    // Sync wishlist after login
+    syncWishlistAfterLogin: (state, action: PayloadAction<string[]>) => {
+      state.items = action.payload;
+      clearLocalWishlist();
     },
   },
   extraReducers: (builder) => {
@@ -55,5 +71,5 @@ const wishlistSlice = createSlice({
   },
 });
 
-export const { toggleWishlist, clearWishlist } = wishlistSlice.actions;
+export const { loadGuestWishlist, toggleWishlist, clearWishlist, syncWishlistAfterLogin } = wishlistSlice.actions;
 export default wishlistSlice.reducer;

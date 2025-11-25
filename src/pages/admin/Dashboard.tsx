@@ -16,7 +16,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -58,6 +60,8 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     fetchDashboardStats();
@@ -133,16 +137,16 @@ const Dashboard: React.FC = () => {
   const COLORS = ['#ff9800', '#4caf50', '#2196f3', '#f44336', '#9c27b0', '#00bcd4'];
 
   return (
-    <Card sx={{ borderRadius: '20px', mr: '-24px', height: '100%' }}>
-      <Box sx={{ padding: 2 }}>
+    <Card sx={{ borderRadius: '20px', mr: { xs: '0', sm: '-24px' }, height: '100%' }}>
+      <Box sx={{ padding: { xs: 1, sm: 2 } }}>
         <CustomAppBar />
-        <Typography variant="h4" fontWeight="bold" mb={3} mt={2}>
+        <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight="bold" mb={{ xs: 2, sm: 3 }} mt={2}>
           Dashboard
         </Typography>
 
         {/* Stats Cards */}
-        <Box display="flex" gap={3} mb={4} flexWrap="wrap">
-          <Box flex="1" minWidth="200px">
+        <Box display="flex" gap={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }} flexWrap="wrap">
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
             <StatCard
               title="Tổng doanh thu"
               value={formatCurrency(stats.totalRevenue)}
@@ -150,7 +154,7 @@ const Dashboard: React.FC = () => {
               color="#4caf50"
             />
           </Box>
-          <Box flex="1" minWidth="200px">
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
             <StatCard
               title="Tổng đơn hàng"
               value={stats.totalOrders}
@@ -158,7 +162,7 @@ const Dashboard: React.FC = () => {
               color="#2196f3"
             />
           </Box>
-          <Box flex="1" minWidth="200px">
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
             <StatCard
               title="Sản phẩm"
               value={stats.totalProducts}
@@ -166,7 +170,7 @@ const Dashboard: React.FC = () => {
               color="#ff9800"
             />
           </Box>
-          <Box flex="1" minWidth="200px">
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
             <StatCard
               title="Người dùng"
               value={stats.totalUsers}
@@ -177,18 +181,18 @@ const Dashboard: React.FC = () => {
         </Box>
 
         {/* Charts */}
-        <Box display="flex" gap={3} mb={4} flexWrap="wrap">
+        <Box display="flex" gap={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }} flexWrap="wrap">
           {/* Revenue Chart */}
-          <Box flex="2" minWidth="400px">
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Doanh thu 7 ngày qua</Typography>
-              <ResponsiveContainer width="100%" height={300}>
+          <Box flex="2" minWidth={{ xs: '100%', md: '300px' }}>
+            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Doanh thu 7 ngày qua</Typography>
+              <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <LineChart data={revenueChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
+                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                  <YAxis tick={{ fontSize: isMobile ? 10 : 12 }} />
                   <Tooltip formatter={(value: any) => formatCurrency(value)} />
-                  <Legend />
+                  {!isMobile && <Legend />}
                   <Line type="monotone" dataKey="revenue" stroke="#4caf50" strokeWidth={2} name="Doanh thu" />
                 </LineChart>
               </ResponsiveContainer>
@@ -196,18 +200,18 @@ const Dashboard: React.FC = () => {
           </Box>
 
           {/* Pie Chart */}
-          <Box flex="1" minWidth="300px">
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Trạng thái đơn hàng</Typography>
-              <ResponsiveContainer width="100%" height={300}>
+          <Box flex="1" minWidth={{ xs: '100%', md: '280px' }}>
+            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Trạng thái đơn hàng</Typography>
+              <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <PieChart>
                   <Pie
                     data={orderStatusPieData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }: any) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
+                    label={isMobile ? false : ({ name, percent }: any) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={isMobile ? 60 : 80}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -216,6 +220,7 @@ const Dashboard: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip />
+                  {isMobile && <Legend />}
                 </PieChart>
               </ResponsiveContainer>
             </Paper>
@@ -223,12 +228,12 @@ const Dashboard: React.FC = () => {
         </Box>
 
         {/* Tables */}
-        <Box display="flex" gap={3} flexWrap="wrap">
+        <Box display="flex" gap={{ xs: 2, sm: 3 }} flexWrap="wrap">
           {/* Top Products */}
-          <Box flex="1" minWidth="400px">
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Top 5 sản phẩm bán chạy</Typography>
-              <TableContainer>
+          <Box flex="1" minWidth={{ xs: '100%', md: '350px' }}>
+            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Top 5 sản phẩm bán chạy</Typography>
+              <TableContainer sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow>
@@ -241,8 +246,8 @@ const Dashboard: React.FC = () => {
                       <TableRow key={product.productId}>
                         <TableCell>
                           <Box display="flex" alignItems="center" gap={1}>
-                            <img src={product.image} alt={product.name} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} />
-                            <Typography variant="body2">{product.name}</Typography>
+                            <img src={product.image} alt={product.name} style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40, objectFit: 'cover', borderRadius: 4 }} />
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{product.name}</Typography>
                           </Box>
                         </TableCell>
                         <TableCell align="right">
@@ -257,15 +262,15 @@ const Dashboard: React.FC = () => {
           </Box>
 
           {/* Recent Orders */}
-          <Box flex="1" minWidth="400px">
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="bold" mb={2}>Đơn hàng gần đây</Typography>
-              <TableContainer>
+          <Box flex="1" minWidth={{ xs: '100%', md: '350px' }}>
+            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Đơn hàng gần đây</Typography>
+              <TableContainer sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell>Mã</TableCell>
-                      <TableCell>Khách hàng</TableCell>
+                      <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Khách hàng</TableCell>
                       <TableCell align="right">Giá trị</TableCell>
                       <TableCell>Trạng thái</TableCell>
                     </TableRow>
@@ -274,15 +279,20 @@ const Dashboard: React.FC = () => {
                     {stats.recentOrders.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell>
-                          <Typography variant="body2" fontWeight="bold">{order.id}</Typography>
+                          <Typography variant="body2" fontWeight="bold" sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}>{order.id.slice(-6)}</Typography>
                         </TableCell>
-                        <TableCell>{order.customerName}</TableCell>
-                        <TableCell align="right">{formatCurrency(order.totalPrice)}</TableCell>
+                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                          <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{order.customerName}</Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Typography variant="body2" sx={{ fontSize: { xs: '0.7rem', sm: '0.875rem' } }}>{formatCurrency(order.totalPrice)}</Typography>
+                        </TableCell>
                         <TableCell>
                           <Chip
                             label={getStatusLabel(order.status)}
                             color={getStatusColor(order.status)}
                             size="small"
+                            sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
                           />
                         </TableCell>
                       </TableRow>

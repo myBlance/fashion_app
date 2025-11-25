@@ -1,7 +1,12 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { clearCart, syncCartAfterLogin } from '../store/cartSlice';
-import { useAppDispatch } from './../store/hooks';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CartService } from '../services/cartService';
+import { WishlistService } from '../services/wishlistService';
+import { clearCart, syncCartAfterLogin } from '../store/cartSlice';
+import { syncWishlistAfterLogin } from '../store/wishlistSlice';
+import { getLocalCart } from '../utils/cartStorage';
+import { getLocalWishlist } from '../utils/wishlistStorage';
+import { useAppDispatch } from './../store/hooks';
 
 type Role = 'admin' | 'client' | null;
 
@@ -9,7 +14,7 @@ type AuthContextType = {
   role: Role;
   userId: string | null;
   loading: boolean;
-  loginAs: (role: Role, userId?: string) => void;
+  loginAs: (role: Role, userId?: string) => Promise<void>;
   logout: () => void;
   checkAuthStatus: () => void;
 };
@@ -62,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false); // ✅ Đảm bảo setLoading(false) được gọi
   }, []);
 
-  const loginAs = (newRole: Role, newUserId?: string) => {
+  const loginAs = async (newRole: Role, newUserId?: string) => {
     if (newRole) localStorage.setItem('role', newRole);
     else localStorage.removeItem('role');
 
@@ -72,8 +77,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRole(newRole);
     setUserId(newUserId || null);
 
+    // Merge guest cart with user cart when logging in
     if (newUserId) {
-      dispatch(syncCartAfterLogin([]));
+      try {
+        // 1. Sync cart
+        const guestCart = getLocalCart();
+        if (guestCart.length > 0) {
+          const mergedCart = await CartService.syncCart(newUserId, guestCart);
+          dispatch(syncCartAfterLogin(mergedCart));
+        } else {
+          const userCart = await CartService.getCart(newUserId);
+          dispatch(syncCartAfterLogin(userCart));
+        }
+
+        // 2. Sync wishlist
+        const guestWishlist = getLocalWishlist();
+        if (guestWishlist.length > 0) {
+          // Toggle each item in guest wishlist (backend doesn't have bulk sync)
+          for (const productId of guestWishlist) {
+            try {
+              await WishlistService.toggleItem(newUserId, productId);
+            } catch (err) {
+              console.error('Error toggling wishlist item:', productId, err);
+            }
+          }
+        }
+        // Fetch final wishlist from backend
+        const finalWishlist = await WishlistService.getWishlist(newUserId);
+        dispatch(syncWishlistAfterLogin(finalWishlist));
+
+      } catch (err) {
+        console.error('Error syncing cart/wishlist after login:', err);
+        dispatch(syncCartAfterLogin([]));
+        dispatch(syncWishlistAfterLogin([]));
+      }
     }
   };
 

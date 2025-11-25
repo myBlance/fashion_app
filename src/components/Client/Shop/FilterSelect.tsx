@@ -1,13 +1,13 @@
-import React from 'react';
 import {
     Checkbox,
-    ListItemText,
     FormControl,
     InputLabel,
-    Select,
+    ListItemText,
     MenuItem,
+    Select,
     SelectChangeEvent,
 } from '@mui/material';
+import React from 'react';
 
 interface FilterSelectProps {
     label: string;
@@ -15,6 +15,7 @@ interface FilterSelectProps {
     onChange: (event: SelectChangeEvent<string[]>) => void;
     options: { value: string; label: string }[];
     ariaLabel: string;
+    count?: number;
 }
 
 const FilterSelect: React.FC<FilterSelectProps> = ({
@@ -23,10 +24,13 @@ const FilterSelect: React.FC<FilterSelectProps> = ({
     onChange,
     options,
     ariaLabel,
+    count = 0,
 }) => {
     return (
-        <FormControl size="small" sx={{ minWidth: 180, }}>
-            <InputLabel shrink={false}>{label}</InputLabel>
+        <FormControl size="small" sx={{ minWidth: 180 }}>
+            <InputLabel shrink={false}>
+                {label} {count > 0 && `(${count})`}
+            </InputLabel>
             <Select
                 multiple
                 value={value}

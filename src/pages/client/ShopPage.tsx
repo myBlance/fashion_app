@@ -11,6 +11,7 @@ import {
   useTheme
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
 import ActiveFilters from '../../components/Client/Shop/ActiveFilters';
 import FilterSelect from '../../components/Client/Shop/FilterSelect';
@@ -34,6 +35,7 @@ interface Filters {
 }
 
 const ShopPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -51,6 +53,17 @@ const ShopPage: React.FC = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // ✅ Read URL params and apply filters on mount
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    if (typeParam) {
+      setFilters(prev => ({
+        ...prev,
+        type: [typeParam],
+      }));
+    }
+  }, [searchParams]);
 
   // Apply filters client-side
   useEffect(() => {
@@ -312,7 +325,7 @@ const ShopPage: React.FC = () => {
         <Box
           display="grid"
           gridTemplateColumns={{
-            xs: '1fr',
+            xs: 'repeat(2, 1fr)',
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
             lg: 'repeat(4, 1fr)',
@@ -333,7 +346,7 @@ const ShopPage: React.FC = () => {
         <Box
           display="grid"
           gridTemplateColumns={{
-            xs: '1fr',
+            xs: 'repeat(2, 1fr)',
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
             lg: 'repeat(4, 1fr)',

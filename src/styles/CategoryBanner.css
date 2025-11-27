@@ -1,0 +1,147 @@
+/* ========================================
+   CATEGORY BANNER STYLES
+   ======================================== */
+
+.category-banner-section {
+    padding: 40px 20px;
+    background: var(--bg-page);
+}
+
+.category-banner-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+/* Banner Card */
+.category-banner-card {
+    position: relative;
+    height: 280px;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: all 0.4s ease;
+}
+
+.category-banner-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Overlay */
+.category-banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.1) 50%,
+            rgba(0, 0, 0, 0.05) 100%);
+    transition: background 0.4s ease;
+}
+
+.category-banner-card:hover .category-banner-overlay {
+    background: linear-gradient(to right,
+            rgba(0, 0, 0, 0.4) 0%,
+            rgba(0, 0, 0, 0.2) 50%,
+            rgba(0, 0, 0, 0.1) 100%);
+}
+
+/* Content */
+.category-banner-content {
+    position: absolute;
+    top: 50%;
+    left: 50px;
+    transform: translateY(-50%);
+    z-index: 2;
+    transition: all 0.4s ease;
+}
+
+.category-banner-card:hover .category-banner-content {
+    left: 60px;
+}
+
+.category-banner-title {
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin: 0 0 8px 0;
+    line-height: 1;
+    font-family: 'Playfair Display', serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.category-banner-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .category-banner-container {
+        gap: 20px;
+    }
+
+    .category-banner-card {
+        height: 240px;
+    }
+
+    .category-banner-content {
+        left: 40px;
+    }
+
+    .category-banner-card:hover .category-banner-content {
+        left: 50px;
+    }
+
+    .category-banner-title {
+        font-size: 48px;
+    }
+
+    .category-banner-subtitle {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-banner-section {
+        padding: 30px 16px;
+    }
+
+    .category-banner-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .category-banner-card {
+        height: 200px;
+    }
+
+    .category-banner-content {
+        left: 30px;
+    }
+
+    .category-banner-card:hover .category-banner-content {
+        left: 35px;
+    }
+
+    .category-banner-title {
+        font-size: 42px;
+    }
+
+    .category-banner-subtitle {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+}

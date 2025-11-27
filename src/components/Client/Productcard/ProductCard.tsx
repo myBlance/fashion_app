@@ -1,21 +1,11 @@
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    CardMedia,
-    Chip,
-    IconButton,
-    LinearProgress,
-    Typography,
-} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { WishlistService } from '../../../services/wishlistService';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { toggleWishlist } from '../../../store/wishlistSlice';
+import '../../../styles/ProductCard.css';
 import { Product } from '../../../types/Product';
 import QuickView from '../ProductDetail/QuickView';
 
@@ -51,12 +41,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích');
       return;
     }
-    if (loadingFavorite) return; // tránh nhấp liên tục
+    if (loadingFavorite) return;
 
     setLoadingFavorite(true);
     try {
       await WishlistService.toggleItem(userId, product.id);
-      dispatch(toggleWishlist(product.id)); // cập nhật Redux
+      dispatch(toggleWishlist(product.id));
     } catch (err) {
       console.error('Lỗi khi toggle wishlist:', err);
     } finally {
@@ -78,164 +68,127 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setSelectedProduct(null);
   };
 
+  const discountPercentage = product.originalPrice > product.price
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0;
+
   return (
-    <div className="card-container">
-      <Card
-        sx={{
-          width: 220,
-          position: 'relative',
-          cursor: 'pointer',
-          transition: '0.3s',
-          '&:hover': { boxShadow: 6 },
-          overflow: 'visible',
-        }}
+    <>
+      <div
+        className="product-card"
         onClick={handleClick}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Discount Chip */}
-        {product.originalPrice > product.price && (
-          <Chip
-            label={`-${Math.round(
-              ((product.originalPrice - product.price) / product.originalPrice) * 100
-            )}%`}
-            color="error"
-            size="small"
-            sx={{ position: 'absolute', top: 8, left: 8, zIndex: 3 }}
-          />
-        )}
-
-        {/* Wishlist Icon */}
-        <IconButton
-          onClick={handleToggleWishlist}
-          disabled={loadingFavorite}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            zIndex: 3,
-            backgroundColor: 'white',
-            '&:hover': { backgroundColor: '#fce4ec' },
-          }}
-        >
-          {isFavoriteLocal ? <Favorite sx={{ color: '#e91e63' }} /> : <FavoriteBorder sx={{ color: '#999' }} />}
-        </IconButton>
-
-        <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            height="260"
-            image={displayedImage}
+        {/* Image Section */}
+        <div className="product-card-image-wrapper">
+          <img
+            src={displayedImage}
             alt={product.name}
-            sx={{ transition: '0.3s' }}
+            className="product-card-image"
             draggable={false}
             onDragStart={(e) => e.preventDefault()}
-            style={{ userSelect: 'none' }}
           />
 
-          {product.sale && (
-            <Chip
-              label="Khuyến mãi đặc biệt"
-              color="warning"
-              size="small"
-              sx={{
-                position: 'absolute',
-                bottom: 8,
-                left: 8,
-                zIndex: 3,
-                bgcolor: 'warning.main',
-                color: 'white',
-                fontWeight: 'bold',
-              }}
-            />
+          {/* Gradient Overlay */}
+          <div className="product-card-image-overlay" />
+
+          {/* Discount Badge */}
+          {discountPercentage > 0 && (
+            <div className="product-card-discount-badge">
+              -{discountPercentage}%
+            </div>
           )}
 
-          {/* Hover Buttons */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 8,
-              left: 0,
-              right: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 1,
-              zIndex: 4,
-              opacity: hovered ? 1 : 0,
-              transform: hovered ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.3s ease, transform 0.3s ease',
-              pointerEvents: hovered ? 'auto' : 'none',
-            }}
+          {/* Wishlist Button */}
+          <button
+            className={`product-card-wishlist-btn ${isFavoriteLocal ? 'is-favorite' : ''}`}
+            onClick={handleToggleWishlist}
+            disabled={loadingFavorite}
+            aria-label="Add to wishlist"
           >
-            <Button
-              variant="contained"
-              size="small"
+            {isFavoriteLocal ? <Favorite /> : <FavoriteBorder />}
+          </button>
+
+          {/* Sale Badge */}
+          {product.sale && (
+            <div className="product-card-sale-badge">
+              Khuyến mãi đặc biệt
+            </div>
+          )}
+
+          {/* Hover Action Buttons */}
+          <div className="product-card-actions">
+            <button
+              className="product-card-action-btn primary"
               onClick={(e) => {
                 e.stopPropagation();
                 handleClick();
               }}
-              sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } }}
             >
               Xem chi tiết
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
+            </button>
+            <button
+              className="product-card-action-btn secondary"
               onClick={(e) => {
                 e.stopPropagation();
                 handleOpenQuickView(product);
               }}
-              sx={{
-                color: '#000',
-                borderColor: '#000',
-                '&:hover': { borderColor: '#000', bgcolor: 'rgba(255,255,255,0.2)' },
-              }}
             >
               Xem nhanh
-            </Button>
-          </Box>
-        </Box>
+            </button>
+          </div>
+        </div>
 
         {/* Card Content */}
-        <CardContent>
-          <Typography variant="body1" fontWeight="bold">
-            {product.name.toUpperCase()}
-          </Typography>
-          <Typography variant="body2" color="error" fontWeight="bold">
-            {product.price.toLocaleString()}đ{' '}
-            <Typography
-              component="span"
-              variant="body2"
-              sx={{ textDecoration: 'line-through', color: '#999' }}
-            >
-              {product.originalPrice.toLocaleString()}đ
-            </Typography>
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+        <div className="product-card-content">
+          {/* Product Name */}
+          <h3 className="product-card-name">{product.name}</h3>
+
+          {/* Price */}
+          <div className="product-card-price-wrapper">
+            <span className="product-card-price">
+              {product.price.toLocaleString()}đ
+            </span>
+            {product.originalPrice > product.price && (
+              <span className="product-card-original-price">
+                {product.originalPrice.toLocaleString()}đ
+              </span>
+            )}
+          </div>
+
+          {/* Color Swatches */}
+          <div className="product-card-colors">
             {product.colors.map((color, idx) => (
-              <Box
+              <div
                 key={idx}
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: '50%',
-                  bgcolor: color,
-                  border: '1px solid #ccc',
-                }}
+                className="product-card-color-dot"
+                style={{ backgroundColor: color }}
+                title={color}
               />
             ))}
-          </Box>
-          <Box mt={1}>
-            <LinearProgress variant="determinate" value={soldPercentage} />
-            <Typography variant="caption">Đã bán {product.sold}</Typography>
-          </Box>
-        </CardContent>
-      </Card>
+          </div>
 
+          {/* Sold Progress */}
+          <div className="product-card-progress-section">
+            <div className="product-card-progress-bar">
+              <div
+                className="product-card-progress-fill"
+                style={{ width: `${soldPercentage}%` }}
+              />
+            </div>
+            <span className="product-card-sold-text">
+              Đã bán {product.sold}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* QuickView Modal */}
       {selectedProduct && (
         <QuickView open={quickViewOpen} onClose={handleCloseQuickView} product={selectedProduct} />
       )}
-    </div>
+    </>
   );
 };
 

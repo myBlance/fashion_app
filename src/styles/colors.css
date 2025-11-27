@@ -1,0 +1,138 @@
+/**
+ * Hệ thống màu sắc tập trung cho Fashion App
+ * 
+ * File này định nghĩa tất cả các biến màu sử dụng trong ứng dụng
+ * để đảm bảo tính đồng nhất và dễ dàng bảo trì
+ */
+
+:root {
+    /* ===== BRAND COLORS (Màu chủ đạo) ===== */
+    --color-primary: #b11116;
+    /* Đỏ chính - navbar menu, accent */
+    --color-primary-dark: #990808;
+    /* Đỏ đậm - hover states */
+    --color-primary-light: #bb0c0c;
+    /* Đỏ nhạt - checkout, cart */
+
+    --color-secondary: #ff5722;
+    /* Cam - CTA buttons, highlights */
+    --color-secondary-dark: #f4511e;
+    /* Cam đậm - hover */
+    --color-secondary-light: #ff8a65;
+    /* Cam nhạt */
+
+    /* ===== NEUTRAL COLORS (Màu trung tính) ===== */
+    --color-white: #ffffff;
+    --color-black: #000000;
+
+    --color-gray-50: #fafafa;
+    /* Background nhẹ nhất */
+    --color-gray-100: #f8f9fa;
+    /* Background sections */
+    --color-gray-200: #f5f5f5;
+    /* Background subtle */
+    --color-gray-300: #f0f0f0;
+    /* Borders nhẹ */
+    --color-gray-400: #eee;
+    /* Borders, dividers */
+    --color-gray-500: #ddd;
+    /* Borders medium */
+    --color-gray-600: #ccc;
+    /* Disabled states */
+    --color-gray-700: #999;
+    /* Text muted */
+    --color-gray-800: #888;
+    /* Text secondary */
+    --color-gray-900: #666;
+    /* Text tertiary */
+
+    /* ===== TEXT COLORS (Màu chữ) ===== */
+    --color-text-primary: #333;
+    /* Chữ chính */
+    --color-text-secondary: #555;
+    /* Chữ phụ */
+    --color-text-tertiary: #777;
+    /* Chữ mờ */
+    --color-text-muted: #999;
+    /* Chữ rất mờ */
+    --color-text-light: #ffffff;
+    /* Chữ trắng */
+
+    /* ===== FUNCTIONAL COLORS (Màu chức năng) ===== */
+    --color-success: #28a745;
+    /* Trạng thái thành công */
+    --color-success-dark: #1e7e34;
+
+    --color-danger: #d32f2f;
+    /* Lỗi, xóa */
+    --color-danger-dark: #b71c1c;
+    --color-danger-light: #e74c3c;
+
+    --color-warning: #f57c00;
+    /* Cảnh báo */
+    --color-warning-light: #ffa726;
+
+    --color-info: #3498db;
+    /* Thông tin */
+    --color-info-dark: #2980b9;
+
+    /* ===== SPECIAL PURPOSE COLORS ===== */
+    --color-link: #007bff;
+    /* Links */
+    --color-link-hover: #0056b3;
+
+    --color-badge: #e91e63;
+    /* Wishlist badge */
+    --color-badge-bg: #ff0000;
+    /* Notification badges */
+
+    --color-voucher-bg: #fff8e1;
+    /* Background voucher */
+    --color-voucher-border: #ffe082;
+
+    --color-highlight: #e1a203;
+    /* Highlight color (gold) */
+
+    /* ===== BACKGROUNDS ===== */
+    --bg-body: #ffffff;
+    --bg-page: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-subtle: #f9f9f9;
+    --bg-muted: #f5f5f5;
+    --bg-hover: #f0f0f0;
+
+    /* ===== BORDERS ===== */
+    --border-light: #f0f0f0;
+    --border-medium: #eee;
+    --border-normal: #ddd;
+    --border-dark: #626262;
+
+    /* ===== SHADOWS ===== */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+    /* Button shadows */
+    --shadow-button-primary: 0 4px 12px rgba(211, 47, 47, 0.3);
+    --shadow-button-secondary: 0 4px 10px rgba(255, 87, 34, 0.3);
+
+    /* ===== RESPONSIVE BREAKPOINTS (for reference) ===== */
+    /* Không thể định nghĩa breakpoints trong CSS variables, 
+     nhưng document ở đây để tham khảo */
+    /*
+  --breakpoint-mobile: 600px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1200px;
+  */
+}
+
+/* ===== DARK MODE SUPPORT (Optional - for future) ===== */
+/* Uncomment and add dark mode variants when needed
+@media (prefers-color-scheme: dark) {
+  :root {
+    // Add dark mode color overrides here
+  }
+}
+*/

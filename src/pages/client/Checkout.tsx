@@ -15,21 +15,32 @@ type CartItem = {
 
 const CheckoutPage: React.FC = () => {
   const location = useLocation();
-  const { selectedCartItems } = location.state || {};
+  const { selectedCartItems, buyNowItem, isBuyNow } = location.state || {};
 
-  // Kiểm tra nếu không có item được truyền
-  if (!selectedCartItems || selectedCartItems.length === 0) {
+  // ✅ Xử lý cho cả 2 trường hợp: checkout từ cart và buy now
+  let cartItems: CartItem[] = [];
+
+  if (isBuyNow && buyNowItem) {
+    // Buy now mode: chỉ có 1 sản phẩm
+    cartItems = [buyNowItem];
+  } else if (selectedCartItems && selectedCartItems.length > 0) {
+    // Checkout from cart mode: nhiều sản phẩm
+    cartItems = selectedCartItems;
+  }
+
+  // Kiểm tra nếu không có item nào
+  if (cartItems.length === 0) {
     return (
       <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-        <h2>Không có sản phẩm nào được chọn để thanh toán.</h2>
-        <p>Vui lòng quay lại giỏ hàng để chọn sản phẩm.</p>
+        <h2>Không có sản phẩm nào để thanh toán.</h2>
+        <p>Vui lòng quay lại trang sản phẩm hoặc giỏ hàng.</p>
         <a href="/cart" style={{ color: '#000', textDecoration: 'underline' }}>Quay lại giỏ hàng</a>
       </div>
     );
   }
 
   // Lọc hoặc ánh xạ để đảm bảo image không undefined
-  const processedCartItems = selectedCartItems.map((item: CartItem) => ({
+  const processedCartItems = cartItems.map((item: CartItem) => ({
     ...item,
     image: item.image || '/assets/images/placeholder.png', // ảnh mặc định nếu không có
   })) as Array<{
@@ -49,12 +60,12 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h2>Thanh Toán</h2>
+      <h2>Thanh Toán {isBuyNow && '(Mua Ngay)'}</h2>
       <CheckoutSummary
         cartItems={processedCartItems}
         totalAmount={totalAmount}
-        // Nếu bạn vẫn muốn giữ onPlaceOrder, có thể truyền vào
-        // onPlaceOrder={handlePlaceOrder}
+      // Nếu bạn vẫn muốn giữ onPlaceOrder, có thể truyền vào
+      // onPlaceOrder={handlePlaceOrder}
       />
     </div>
   );

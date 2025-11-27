@@ -2,7 +2,7 @@ import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DynamicBreadcrumbs from "../../components/Client/Breadcrumb/DynamicBreadcrumbs";
 import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs";
 import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
@@ -20,6 +20,7 @@ import { Product } from "../../types/Product";
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { userId: authUserId, loading: authLoading } = useAuth();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -105,6 +106,38 @@ const ProductDetail: React.FC = () => {
       console.error("Lỗi khi thêm vào giỏ:", err);
       alert("Thêm vào giỏ thất bại. Vui lòng thử lại.");
     }
+  };
+
+  // ✅ Mua ngay: Đi thẳng đến thanh toán với sản phẩm này (không thêm vào giỏ)
+  const handleBuyNow = async () => {
+    if (!product) return;
+
+    // ✅ Kiểm tra đăng nhập
+    if (!userId) {
+      alert("Vui lòng đăng nhập để mua hàng");
+      navigate('/auth?tab=login');
+      return;
+    }
+
+    // ✅ Tạo item để checkout ngay
+    const buyNowItem: CartItem = {
+      id: `buynow-${Date.now()}`, // Temporary ID
+      productId: product.id,
+      name: product.name,
+      color: product.colors[selectedColorIndex] || "Chưa chọn",
+      size: selectedSize,
+      price: product.price,
+      quantity,
+      image: product.images[selectedColorIndex] || product.thumbnail || "",
+    };
+
+    // ✅ Navigate đến checkout với sản phẩm trong state (không save vào cart)
+    navigate('/checkout', {
+      state: {
+        buyNowItem,
+        isBuyNow: true
+      }
+    });
   };
 
   if (loading || authLoading) return <div className="loading">Đang tải dữ liệu...</div>;
@@ -221,7 +254,7 @@ const ProductDetail: React.FC = () => {
 
           <div className="action-buttons">
             <button className="btn add-to-cart" onClick={handleAddToCart}>THÊM VÀO GIỎ</button>
-            <button className="btn buy-now" onClick={() => alert("Chuyển đến thanh toán")}>MUA NGAY</button>
+            <button className="btn buy-now" onClick={handleBuyNow}>MUA NGAY</button>
           </div>
 
           <div className="policy-wrapper">

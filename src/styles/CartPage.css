@@ -1,6 +1,6 @@
 /* --- RESET & BASE --- */
 .cart-page-wrapper {
-  background-color: #f8f9fa; /* Màu nền xám nhẹ làm nổi bật nội dung trắng */
+  background-color: var(--bg-page);
   min-height: 100vh;
   padding-bottom: 40px;
 }
@@ -16,7 +16,7 @@
   font-size: 24px;
   font-weight: 700;
   margin: 20px 0;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .cart-loading {
@@ -25,7 +25,7 @@
   align-items: center;
   justify-content: center;
   height: 300px;
-  color: #666;
+  color: var(--color-gray-900);
 }
 
 /* --- LAYOUT CHÍNH (Desktop: Flex) --- */
@@ -36,15 +36,16 @@
 }
 
 .cart-list-section {
-  flex: 1; /* Chiếm phần lớn không gian (khoảng 70%) */
-  background: #fff;
+  flex: 1;
+  background: var(--bg-card);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  overflow: hidden; /* Để bo góc không bị table chém mất */
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 .cart-summary-section {
-  width: 320px; /* Cố định chiều rộng cột phải */
+  width: 320px;
+  /* Cố định chiều rộng cột phải */
 }
 
 /* --- TABLE STYLES --- */
@@ -54,20 +55,20 @@
 }
 
 .cart-table th {
-  background-color: #fff;
+  background-color: var(--bg-card);
   padding: 16px;
   text-align: left;
   font-weight: 600;
-  color: #555;
-  border-bottom: 2px solid #eee;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid var(--border-medium);
   font-size: 14px;
 }
 
 .cart-table td {
   padding: 20px 16px;
-  vertical-align: top; /* Căn item lên trên */
-  border-bottom: 1px solid #eee;
-  color: #333;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-medium);
+  color: var(--color-text-primary);
 }
 
 .cart-table tr:last-child td {
@@ -82,10 +83,10 @@
 
 .product-item img {
   width: 80px;
-  height: 100px; /* Tỉ lệ chữ nhật đứng cho thời trang */
+  height: 100px;
   object-fit: cover;
   border-radius: 4px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border-light);
 }
 
 .product-details {
@@ -105,7 +106,7 @@
 .product-variant span {
   display: block;
   font-size: 13px;
-  color: #888;
+  color: var(--color-gray-800);
   margin-bottom: 2px;
 }
 
@@ -113,7 +114,7 @@
 .quantity-box {
   display: flex;
   align-items: center;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-normal);
   border-radius: 4px;
   width: fit-content;
   height: 32px;
@@ -122,20 +123,20 @@
 .quantity-box button {
   width: 30px;
   height: 100%;
-  background: #fff;
+  background: var(--bg-card);
   border: none;
   cursor: pointer;
   font-size: 16px;
-  color: #333;
+  color: var(--color-text-primary);
   transition: background 0.2s;
 }
 
 .quantity-box button:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: var(--bg-hover);
 }
 
 .quantity-box button:disabled {
-  color: #ccc;
+  color: var(--color-gray-600);
   cursor: not-allowed;
 }
 
@@ -143,54 +144,55 @@
   width: 40px;
   height: 100%;
   border: none;
-  border-left: 1px solid #ddd;
-  border-right: 1px solid #ddd;
+  border-left: 1px solid var(--border-normal);
+  border-right: 1px solid var(--border-normal);
   text-align: center;
   font-weight: 600;
   font-size: 14px;
   outline: none;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 /* Cột Checkbox & Action */
 .custom-checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #bb0c0c;
+  accent-color: var(--color-primary-light);
   cursor: pointer;
 }
 
 .remove-btn {
   background: transparent;
   border: none;
-  color: #999;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: color 0.2s;
   padding: 4px;
 }
 
 .remove-btn:hover {
-  color: #d32f2f;
+  color: var(--color-danger);
 }
 
 /* Cột Price & Total */
-.col-price, .col-total {
+.col-price,
+.col-total {
   font-weight: 500;
 }
 
 .col-total {
-  color: #bb0c0c;
+  color: var(--color-primary-light);
   font-weight: 700;
 }
 
 /* --- SUMMARY SECTION (Cột phải) --- */
 .summary-card {
-  background: #fff;
+  background: var(--bg-card);
   padding: 24px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
   position: sticky;
-  top: 20px; /* Trượt theo khi cuộn */
+  top: 20px;
 }
 
 .summary-card h3 {
@@ -204,27 +206,27 @@
   justify-content: space-between;
   margin-bottom: 12px;
   font-size: 14px;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .summary-row.total {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-medium);
   font-size: 16px;
   font-weight: 700;
-  color: #333;
+  color: var(--color-text-primary);
   align-items: center;
 }
 
 .total-price-final {
-  color: #bb0c0c;
+  color: var(--color-primary-light);
   font-size: 20px;
 }
 
 .vat-note {
   font-size: 12px;
-  color: #999;
+  color: var(--color-text-muted);
   text-align: right;
   margin-bottom: 20px;
   margin-top: -8px;
@@ -233,8 +235,8 @@
 .checkout-btn {
   width: 100%;
   padding: 14px;
-  background-color: #bb0c0c;
-  color: #fff;
+  background-color: var(--color-primary-light);
+  color: var(--color-text-light);
   border: none;
   border-radius: 4px;
   font-size: 16px;
@@ -245,7 +247,7 @@
 }
 
 .checkout-btn:hover {
-  background-color: #990808;
+  background-color: var(--color-primary-dark);
 }
 
 .checkout-btn:active {
@@ -259,11 +261,11 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  background: #fff;
+  background: var(--bg-card);
   margin: 20px auto;
   max-width: 800px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-md);
 }
 
 .empty-cart-container img {
@@ -274,14 +276,14 @@
 
 .empty-cart-container p {
   font-size: 18px;
-  color: #666;
+  color: var(--color-gray-900);
   margin-bottom: 24px;
 }
 
 .continue-shopping-btn {
   padding: 10px 30px;
-  background: #333;
-  color: #fff;
+  background: var(--color-text-primary);
+  color: var(--color-text-light);
   text-decoration: none;
   border-radius: 4px;
   font-weight: 500;
@@ -289,47 +291,55 @@
 }
 
 .continue-shopping-btn:hover {
-  background: #000;
+  background: var(--color-black);
 }
 
 /* --- RESPONSIVE (MOBILE) --- */
 @media (max-width: 900px) {
   .cart-layout {
-    flex-direction: column; /* Chuyển thành cột dọc */
+    flex-direction: column;
+    /* Chuyển thành cột dọc */
   }
 
-  .cart-list-section, .cart-summary-section {
+  .cart-list-section,
+  .cart-summary-section {
     width: 100%;
   }
 
   .summary-card {
-    position: static; /* Bỏ sticky trên mobile */
+    position: static;
+    /* Bỏ sticky trên mobile */
   }
 }
 
 @media (max-width: 600px) {
+
   /* Ẩn tiêu đề bảng vì ta sẽ chuyển sang dạng thẻ */
   .cart-table thead {
     display: none;
   }
 
-  .cart-table, .cart-table tbody, .cart-table tr, .cart-table td {
+  .cart-table,
+  .cart-table tbody,
+  .cart-table tr,
+  .cart-table td {
     display: block;
     width: 100%;
   }
 
   .cart-table tr {
     margin-bottom: 16px;
-    background: #fff;
-    border-bottom: 1px solid #eee;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-medium);
     position: relative;
     padding-bottom: 16px;
-    padding-left: 40px; /* Chừa chỗ cho checkbox */
+    padding-left: 40px;
     box-sizing: border-box;
   }
 
   .cart-table td {
-    padding: 5px 16px 5px 0; /* Giảm padding */
+    padding: 5px 16px 5px 0;
+    /* Giảm padding */
     border: none;
     text-align: left;
   }
@@ -352,26 +362,30 @@
     padding: 0 !important;
     width: auto !important;
   }
-  
+
   /* Layout lại sản phẩm */
   .product-item {
     margin-top: 10px;
   }
+
   .product-item img {
     width: 70px;
     height: 90px;
   }
-  
-  .col-quantity, .col-total {
-     margin-left: 86px; /* Căn thẳng hàng với tên sản phẩm (bỏ qua ảnh) */
+
+  .col-quantity,
+  .col-total {
+    margin-left: 86px;
+    /* Căn thẳng hàng với tên sản phẩm (bỏ qua ảnh) */
   }
 
   .col-price {
-    display: none; /* Ẩn đơn giá trên mobile cho gọn, chỉ hiện thành tiền */
+    display: none;
+    /* Ẩn đơn giá trên mobile cho gọn, chỉ hiện thành tiền */
   }
 
   /* Hiển thị nhãn data-label nếu cần (ở đây mình ẩn cho gọn, chỉ hiện số liệu) */
-  
+
   .col-total {
     margin-top: 8px;
     font-size: 16px;
@@ -382,12 +396,13 @@
     position: sticky;
     bottom: 0;
     z-index: 100;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .summary-card {
     border-radius: 0;
     padding: 16px;
-    margin: 0 -16px; /* Full width */
+    margin: 0 -16px;
+    /* Full width */
   }
 }

@@ -9,11 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getProducts } from '../../../services/productService';
 import { Product } from '../../../types/Product';
 import ProductCard from '../Productcard/ProductCard';
 
 const ShirtCollection: React.FC = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,14 +36,14 @@ const ShirtCollection: React.FC = () => {
 
       if (width < 600) {
         // Mobile
-        setProductWidth(160);
-        setBannerSize({ w: 280, h: 340 });
-        setVisibleCount(1.2);
+        setProductWidth(220);
+        setBannerSize({ w: '100%' as any, h: 340 });
+        setVisibleCount(1.3);
       } else if (width < 900) {
         // Tablet
-        setProductWidth(200);
-        setBannerSize({ w: 320, h: 400 });
-        setVisibleCount(2);
+        setProductWidth(220);
+        setBannerSize({ w: '100%' as any, h: 400 });
+        setVisibleCount(2.5);
       } else {
         // Desktop
         setProductWidth(220);
@@ -90,7 +92,7 @@ const ShirtCollection: React.FC = () => {
   };
 
   const handleViewAll = () => {
-    window.location.href = '/shop?type=áo';
+    navigate('/shop?type=Áo');
   };
 
   if (loading)
@@ -110,55 +112,19 @@ const ShirtCollection: React.FC = () => {
   return (
     <Box
       display="flex"
+      flexDirection={{ xs: 'column', md: 'row' }}
       gap={3}
       p={2}
       justifyContent="center"
-      flexWrap={{ xs: 'wrap', sm: 'wrap', md: 'nowrap' }}
+      alignItems={{ xs: 'center', md: 'flex-start' }}
     >
-      {/* Product slider */}
-      <Box
-        display="flex"
-        alignItems="center"
-        gap={1}
-        width={{ xs: '100%', md: 'auto' }}
-        justifyContent="center"
-      >
-        <IconButton onClick={() => scrollByOneProduct('left')}>
-          <ChevronLeftIcon />
-        </IconButton>
-
-        <Box
-          ref={scrollRef}
-          display="flex"
-          sx={{
-            overflowX: 'auto',
-            width: containerWidth,
-            maxWidth: { xs: '90vw', sm: '80vw', md: containerWidth },
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-          }}
-        >
-          {products.map((product) => (
-            <Box
-              key={product.id}
-              flex="0 0 auto"
-              sx={{ minWidth: productWidth, mr: 2 }}
-            >
-              <ProductCard product={product} />
-            </Box>
-          ))}
-        </Box>
-
-        <IconButton onClick={() => scrollByOneProduct('right')}>
-          <ChevronRightIcon />
-        </IconButton>
-      </Box>
-
-      {/* Banner */}
+      {/* Banner - Hiển thị đầu tiên trên mobile */}
       <Box
         sx={{
+          order: { xs: 1, md: 2 },
           position: 'relative',
-          width: `${bannerSize.w}px`,
+          width: { xs: '100%', sm: '100%', md: `${bannerSize.w}px` },
+          maxWidth: { xs: '100%', sm: '500px', md: `${bannerSize.w}px` },
           height: `${bannerSize.h}px`,
           borderRadius: 2,
           overflow: 'hidden',
@@ -206,6 +172,46 @@ const ShirtCollection: React.FC = () => {
             Xem ngay
           </Button>
         </Box>
+      </Box>
+
+      {/* Product slider - Hiển thị sau banner trên mobile */}
+      <Box
+        display="flex"
+        alignItems="center"
+        gap={1}
+        width={{ xs: '100%', md: 'auto' }}
+        justifyContent="center"
+        sx={{ order: { xs: 2, md: 1 } }}
+      >
+        <IconButton onClick={() => scrollByOneProduct('left')}>
+          <ChevronLeftIcon />
+        </IconButton>
+
+        <Box
+          ref={scrollRef}
+          display="flex"
+          sx={{
+            overflowX: 'auto',
+            width: { xs: '100%', md: containerWidth },
+            maxWidth: { xs: '85vw', sm: '90vw', md: containerWidth },
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': { display: 'none' },
+          }}
+        >
+          {products.map((product) => (
+            <Box
+              key={product.id}
+              flex="0 0 auto"
+              sx={{ minWidth: { xs: 220, md: productWidth }, mr: 2 }}
+            >
+              <ProductCard product={product} />
+            </Box>
+          ))}
+        </Box>
+
+        <IconButton onClick={() => scrollByOneProduct('right')}>
+          <ChevronRightIcon />
+        </IconButton>
       </Box>
     </Box>
   );

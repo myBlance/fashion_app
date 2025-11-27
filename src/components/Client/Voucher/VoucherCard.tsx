@@ -1,7 +1,7 @@
 // src/components/Client/Voucher/VoucherCard.tsx
-import React from 'react';
-import { Box, Typography, Button, Chip } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import React from 'react';
+import '../../../styles/VoucherCard.css';
 
 export interface VoucherCardProps {
   _id: string;
@@ -23,7 +23,7 @@ export interface VoucherCardProps {
   currentTotalAmount?: number;
   onCopy: () => void;
   onClaim?: (code: string) => void;
-  isClaimed?: boolean; // ✅ Thêm prop mới
+  isClaimed?: boolean;
 }
 
 const VoucherCard: React.FC<VoucherCardProps> = ({
@@ -42,7 +42,7 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
   currentTotalAmount,
   onCopy,
   onClaim,
-  isClaimed = false, // ✅ Mặc định là chưa lưu
+  isClaimed = false,
 }) => {
   const isEligible =
     currentTotalAmount !== undefined ? currentTotalAmount >= minOrderAmount && isActive : isActive;
@@ -53,7 +53,7 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
     }
   };
 
-  // ✅ Tính toán discountText nếu không có
+  // Tính toán discountText nếu không có
   const displayDiscountText = discountText || (type && value !== undefined
     ? type === 'percentage'
       ? `Giảm ${value}%`
@@ -61,151 +61,70 @@ const VoucherCard: React.FC<VoucherCardProps> = ({
     : 'Giảm giá');
 
   return (
-    <Box
-      sx={{
-        width: 300,
-        borderRadius: 3,
-        overflow: 'hidden',
-        backgroundColor: '#fff',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
-        },
-        cursor: 'pointer',
-        border: isEligible ? '1px solid #e0e0e0' : '1px dashed #f44336',
-      }}
-    >
+    <div className={`voucher-card ${isEligible ? 'eligible' : 'ineligible'}`}>
       {/* Header */}
-      <Box
-        sx={{
-          background: isFreeShip
-            ? 'linear-gradient(90deg, #ff9800, #ffb74d)'
-            : 'linear-gradient(90deg, #d32f2f, #f44336)',
-          color: 'white',
-          py: 1.2,
-          textAlign: 'center',
-          fontWeight: 'bold',
-          fontSize: 18,
-          letterSpacing: 1,
-          borderBottom: '2px dashed rgba(255,255,255,0.3)',
-        }}
-      >
-        🎟 {code} {name && `- ${name}`}
-      </Box>
+      <div className={`voucher-card-header ${isFreeShip ? 'freeship' : ''}`}>
+        <span className="voucher-card-code">
+          {code} {name && `- ${name}`}
+        </span>
+      </div>
 
-      {/* Nội dung chính */}
-      <Box
-        sx={{
-          p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0.5,
-          backgroundColor: '#fafafa',
-        }}
-      >
-        <Typography
-          variant="subtitle1"
-          sx={{ fontWeight: 'bold', color: isEligible ? '#d32f2f' : '#9e9e9e' }}
-        >
+      {/* Body */}
+      <div className="voucher-card-body">
+        <div className={`voucher-discount-text ${!isEligible ? 'ineligible' : ''}`}>
           {displayDiscountText}
-        </Typography>
+        </div>
 
         {minOrderAmount !== undefined && (
-          <Typography variant="caption" color="text.secondary">
+          <div className="voucher-card-info">
             Đơn tối thiểu: {minOrderAmount.toLocaleString()}đ
-          </Typography>
+          </div>
         )}
 
         {validFrom && validUntil && (
-          <Typography variant="caption" display="block" color="text.secondary">
-            {`Hiệu lực: ${new Date(validFrom).toLocaleDateString()} - ${new Date(validUntil).toLocaleDateString()}`}
-          </Typography>
+          <div className="voucher-card-info">
+            Hiệu lực: {new Date(validFrom).toLocaleDateString()} - {new Date(validUntil).toLocaleDateString()}
+          </div>
         )}
 
         {maxUses !== undefined && (
-          <Typography variant="caption" color="text.secondary">
+          <div className="voucher-card-info">
             Số lần tối đa: {maxUses}
-          </Typography>
+          </div>
         )}
 
         {maxUsesPerUser !== undefined && (
-          <Typography variant="caption" color="text.secondary">
+          <div className="voucher-card-info">
             Mỗi người tối đa: {maxUsesPerUser}
-          </Typography>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* Footer */}
-      <Box
-        sx={{
-          p: 1.5,
-          borderTop: '1px dashed #eee',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: '#fff',
-        }}
-      >
-        <Chip
-          icon={<LocalOfferIcon />}
-          label={isEligible ? 'Có thể áp dụng' : 'Không đủ điều kiện'}
-          size="small"
-          sx={{
-            backgroundColor: isEligible ? '#e8f5e9' : '#ffebee',
-            color: isEligible ? '#2e7d32' : '#c62828',
-            fontWeight: 'bold',
-            mb: 0.5,
-          }}
-        />
-        <Box display="flex" gap={1}>
-          <Button
-            variant="outlined"
-            size="small"
+      <div className="voucher-card-footer">
+        <div className={`voucher-status-badge ${isEligible ? 'eligible' : 'ineligible'}`}>
+          <LocalOfferIcon />
+          {isEligible ? 'Có thể áp dụng' : 'Không đủ điều kiện'}
+        </div>
+
+        <div className="voucher-card-actions">
+          <button
+            className="voucher-action-btn voucher-copy-btn"
             onClick={onCopy}
             disabled={currentTotalAmount !== undefined && !isEligible}
-            sx={{
-              borderColor: isEligible ? '#ff9800' : '#bdbdbd',
-              color: isEligible ? '#ff9800' : '#bdbdbd',
-              textTransform: 'none',
-              fontWeight: 'bold',
-              px: 1.5,
-              borderRadius: 2,
-            }}
           >
             Sao chép
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
+          </button>
+          <button
+            className={`voucher-action-btn voucher-claim-btn ${isClaimed ? 'claimed' : ''}`}
             onClick={handleClaim}
-            disabled={currentTotalAmount !== undefined && !isEligible || isClaimed} // ✅ Vô hiệu hóa nếu đã lưu
-            sx={{
-              background: isClaimed
-                ? 'linear-gradient(90deg, #9e9e9e, #616161)' // Màu xám nếu đã lưu
-                : isEligible
-                ? 'linear-gradient(90deg, #4caf50, #2e7d32)' // Màu xanh nếu có thể lưu
-                : '#bdbdbd',
-              color: '#fff',
-              textTransform: 'none',
-              fontWeight: 'bold',
-              px: 1.5,
-              borderRadius: 2,
-              '&:hover': {
-                background: isClaimed
-                  ? 'linear-gradient(90deg, #9e9e9e, #616161)' // Không đổi nếu đã lưu
-                  : isEligible
-                  ? 'linear-gradient(90deg, #2e7d32, #1b5e20)' // Hover xanh
-                  : '#bdbdbd',
-              },
-            }}
+            disabled={(currentTotalAmount !== undefined && !isEligible) || isClaimed}
           >
-            {isClaimed ? 'Đã lưu' : 'Lưu'} {/* ✅ Hiển thị trạng thái */}
-          </Button>
-        </Box>
-      </Box>
-    </Box>
+            {isClaimed ? 'Đã lưu' : 'Lưu'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

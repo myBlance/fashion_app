@@ -1,10 +1,10 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAuth } from '../../../contexts/AuthContext';
 import { CartService } from "../../../services/cartService";
 import { addToCart } from "../../../store/cartSlice";
+import '../../../styles/QuickView.css';
 import { CartItem } from '../../../types/CartItem';
 import { Product } from '../../../types/Product';
 
@@ -54,7 +54,6 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
   const handleAddToCart = async () => {
     if (!product) return;
 
-    // Lấy index của màu đã chọn trong mảng colors
     const colorIndex = product.colors.indexOf(selectedColor);
     const actualColorIndex = colorIndex >= 0 ? colorIndex : 0;
 
@@ -69,7 +68,6 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
     };
 
     try {
-      // If user is logged in, save to backend
       if (userId) {
         const savedItem = await CartService.addToCart(userId, newItem);
         const cartItem: CartItem = {
@@ -78,11 +76,9 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
         };
         dispatch(addToCart(cartItem));
       } else {
-        // If user is not logged in, just save to Redux (which auto-saves to localStorage)
         dispatch(addToCart(newItem as CartItem));
       }
       alert("Đã thêm vào giỏ!");
-      // Gọi callback nếu có
       if (onAddToCart) {
         onAddToCart(product.colors[actualColorIndex], selectedSize, quantity);
       }
@@ -94,220 +90,128 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
 
   return (
     <>
-      {open && (
-        <Box
-          onClick={onClose}
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            bgcolor: 'rgba(0,0,0,0.3)',
-            zIndex: 1400,
-          }}
-        />
-      )}
+      {/* Overlay */}
+      <div
+        className={`quickview-overlay ${open ? 'open' : ''}`}
+        onClick={onClose}
+      />
 
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          height: '100vh',
-          width: 360,
-          bgcolor: 'background.paper',
-          boxShadow: '-3px 0 10px rgba(0,0,0,0.1)',
-          transform: open ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.3s ease',
-          zIndex: 1500,
-          display: 'flex',
-          flexDirection: 'column',
-          pointerEvents: open ? 'auto' : 'none',
-        }}
-      >
+      {/* Sidebar Panel */}
+      <div className={`quickview-panel ${open ? 'open' : ''}`}>
         {/* Header */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            p: 2,
-            borderBottom: '1px solid #ddd',
-            bgcolor: 'error.main',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: 18,
-          }}
-        >
-          <Typography variant="h6">Xem nhanh</Typography>
-          <IconButton onClick={onClose} sx={{ color: 'white' }}>
+        <div className="quickview-header">
+          <h3>Xem nhanh</h3>
+          <button className="quickview-close-btn" onClick={onClose} aria-label="Close">
             <CloseIcon />
-          </IconButton>
-        </Box>
+          </button>
+        </div>
 
         {/* Content */}
-        <Box sx={{ p: 2, overflowY: 'auto', flexGrow: 1 }}>
+        <div className="quickview-content">
           {/* Main Image */}
-          <Box
-            component="img"
+          <img
             src={product.images[selectedImage]}
             alt={product.name}
-            sx={{ width: '100%', height: 180, objectFit: 'contain', mb: 1 }}
+            className="quickview-main-image"
           />
 
           {/* Thumbnails */}
-          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+          <div className="quickview-thumbnails">
             {product.images.map((img, index) => (
-              <Box
+              <img
                 key={index}
-                component="img"
                 src={img}
                 alt={`${product.name} ${index + 1}`}
                 onClick={() => setSelectedImage(index)}
-                sx={{
-                  width: 80,
-                  height: 80,
-                  objectFit: 'contain',
-                  cursor: 'pointer',
-                  border: selectedImage === index ? '2px solid #b71c1c' : '1px solid #ddd',
-                  borderRadius: 1,
-                }}
+                className={`quickview-thumbnail ${selectedImage === index ? 'active' : ''}`}
               />
             ))}
-          </Box>
+          </div>
 
           {/* Product Info */}
-          <Typography variant="h6" fontWeight="bold" mb={1}>
-            {product.name}
-          </Typography>
+          <h3 className="quickview-product-name">{product.name}</h3>
 
-          <Typography variant="body1" mb={1}>
-            Tình trạng:{' '}
-            <Typography component="span" color={product.status ? 'error' : 'text.secondary'}>
+          <div className="quickview-status">
+            Tình trạng:
+            <span className={`quickview-status-value ${product.status ? 'available' : 'unavailable'}`}>
               {product.status ? 'Còn hàng' : 'Hết hàng'}
-            </Typography>
-          </Typography>
+            </span>
+          </div>
 
-          <Typography variant="h5" color="error" fontWeight="bold" mb={2}>
-            {product.price.toLocaleString()}đ
-            <Typography
-              component="span"
-              sx={{ textDecoration: 'line-through', color: '#999', ml: 1, fontWeight: 'normal', fontSize: 14 }}
-            >
+          {/* Price */}
+          <div className="quickview-price-wrapper">
+            <span className="quickview-price">
+              {product.price.toLocaleString()}đ
+            </span>
+            <span className="quickview-original-price">
               {product.originalPrice.toLocaleString()}đ
-            </Typography>
-          </Typography>
+            </span>
+          </div>
 
           {/* Color selection */}
-          <Box mb={1}>
-            <Typography fontWeight="bold" mb={0.5}>
-              Màu sắc:
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
+          <div className="quickview-option-section">
+            <label className="quickview-option-label">Màu sắc:</label>
+            <div className="quickview-color-options">
               {product.colors.map((color) => (
-                <Button
+                <button
                   key={color}
-                  variant={selectedColor === color ? 'contained' : 'outlined'}
-                  color={selectedColor === color ? 'error' : 'inherit'}
-                  size="small"
-                  onClick={() => {
-                    setSelectedColor(color);
-                  }}
-                  sx={{
-                    textTransform: 'none',
-                    minWidth: 70,
-                    bgcolor: selectedColor === color ? color : undefined,
-                    color: selectedColor === color ? 'white' : 'inherit',
-                    borderColor: selectedColor === color ? '#b71c1c' : undefined,
-                  }}
+                  className={`quickview-color-btn ${selectedColor === color ? 'selected' : ''}`}
+                  onClick={() => setSelectedColor(color)}
                 >
                   {color}
-                </Button>
+                </button>
               ))}
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           {/* Size selection */}
-          <Box mb={1}>
-            <Typography fontWeight="bold" mb={0.5}>
-              Size:
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
+          <div className="quickview-option-section">
+            <label className="quickview-option-label">Size:</label>
+            <div className="quickview-size-options">
               {product.sizes.map((size) => (
-                <Button
+                <button
                   key={size}
-                  variant={selectedSize === size ? 'contained' : 'outlined'}
-                  color={selectedSize === size ? 'error' : 'inherit'}
-                  size="small"
+                  className={`quickview-size-btn ${selectedSize === size ? 'selected' : ''}`}
                   onClick={() => setSelectedSize(size)}
-                  sx={{
-                    minWidth: 40,
-                    textTransform: 'uppercase',
-                    fontWeight: 'bold',
-                    borderColor: selectedSize === size ? '#b71c1c' : undefined,
-                    bgcolor: selectedSize === size ? '#b71c1c' : undefined,
-                    color: selectedSize === size ? 'white' : 'inherit',
-                  }}
                 >
                   {size}
-                </Button>
+                </button>
               ))}
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           {/* Quantity selection */}
-          <Box mb={2}>
-            <Typography fontWeight="bold" mb={0.5}>
-              Số lượng:
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Button
-                variant="contained"
-                color="error"
+          <div className="quickview-option-section">
+            <label className="quickview-option-label">Số lượng:</label>
+            <div className="quickview-quantity-controls">
+              <button
+                className="quickview-quantity-btn"
                 onClick={() => handleQuantityChange(-1)}
-                sx={{ minWidth: 36, padding: 0, fontWeight: 'bold' }}
               >
                 -
-              </Button>
-              <Typography
-                sx={{
-                  border: '1px solid #b71c1c',
-                  px: 2,
-                  py: '6px',
-                  minWidth: 32,
-                  textAlign: 'center',
-                  borderRadius: 1,
-                  userSelect: 'none',
-                }}
-              >
+              </button>
+              <div className="quickview-quantity-display">
                 {quantity}
-              </Typography>
-              <Button
-                variant="contained"
-                color="error"
+              </div>
+              <button
+                className="quickview-quantity-btn"
                 onClick={() => handleQuantityChange(1)}
-                sx={{ minWidth: 36, padding: 0, fontWeight: 'bold' }}
               >
                 +
-              </Button>
-            </Box>
-          </Box>
+              </button>
+            </div>
+          </div>
 
           {/* Add to cart */}
-          <Button
-            className="btn add-to-cart"
+          <button
+            className="quickview-add-to-cart"
             onClick={handleAddToCart}
-            variant="contained"
-            fullWidth
-            color="error"
             disabled={!product.status}
-            sx={{ fontWeight: 'bold' }}
           >
             THÊM VÀO GIỎ HÀNG
-          </Button>
-        </Box>
-      </Box>
+          </button>
+        </div>
+      </div>
     </>
   );
 };

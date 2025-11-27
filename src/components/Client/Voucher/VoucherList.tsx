@@ -1,9 +1,9 @@
 // src/components/Client/Voucher/VoucherList.tsx
-import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, Alert } from '@mui/material';
-import VoucherCard from './VoucherCard';
-import { VoucherService, UserVoucher } from '../../../services/voucherService';
+import { Alert, Box, CircularProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { UserVoucher, VoucherService } from '../../../services/voucherService';
 import { Voucher } from '../../../types/Voucher';
+import VoucherCard from './VoucherCard';
 interface VoucherListProps {
   totalAmount?: number;
 }
@@ -115,6 +115,18 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
     );
   }
 
+  // ✅ Debug: Kiểm tra số lượng vouchers
+  console.log('VoucherList - Total vouchers:', vouchers.length);
+  console.log('VoucherList - Vouchers data:', vouchers);
+
+  if (vouchers.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <p>Không có voucher nào khả dụng.</p>
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -148,7 +160,7 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
           currentTotalAmount={totalAmount}
           onCopy={() => handleCopy(voucher.code)}
           onClaim={handleClaim}
-          isClaimed={claimedVoucherCodes.includes(voucher.code)} // ✅ Truyền trạng thái đúng
+          isClaimed={claimedVoucherCodes.includes(voucher.code)}
         />
       ))}
     </Box>

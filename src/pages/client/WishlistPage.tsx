@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 // ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
 import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
@@ -20,6 +20,9 @@ const WishlistPage: React.FC = () => {
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<string | null>(null);
 
+    // ✅ Sử dụng useMemo để tạo stable string từ wishlistIds
+    const wishlistIdsStr = useMemo(() => wishlistIds.join(','), [wishlistIds.length, wishlistIds.join(',')]);
+
     useEffect(() => {
         if (userId) {
             // ✅ Fetch wishlist từ Redux store cho logged-in users
@@ -33,10 +36,18 @@ const WishlistPage: React.FC = () => {
     // ✅ Khi wishlistIds thay đổi (sau khi fetch thành công), cập nhật products
     useEffect(() => {
         const loadProducts = async () => {
+            // ✅ Chỉ load khi không đang loading và không có error
             if (wishlistLoading) return;
 
             if (wishlistError) {
                 setError('Không thể tải sản phẩm yêu thích.');
+                setLoading(false);
+                return;
+            }
+
+            // ✅ Nếu wishlist rỗng, set products rỗng ngay và return
+            if (wishlistIds.length === 0) {
+                setProducts([]);
                 setLoading(false);
                 return;
             }
@@ -60,7 +71,8 @@ const WishlistPage: React.FC = () => {
         };
 
         loadProducts();
-    }, [wishlistIds, wishlistLoading, wishlistError]);
+        // ✅ Dùng stable string từ useMemo thay vì JSON.stringify trực tiếp
+    }, [wishlistIdsStr, wishlistLoading, wishlistError]);
 
     return (
         <Box p={4}>

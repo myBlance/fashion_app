@@ -26,6 +26,7 @@ const StatusChip = () => {
   const status = record?.status;
   const labelMap: Record<string, string> = {
     pending: 'Chờ xác nhận',
+    confirmed: 'Đã xác nhận',
     awaiting_payment: 'Chờ thanh toán',
     paid: 'Đã thanh toán',
     processing: 'Đang xử lý',
@@ -35,6 +36,7 @@ const StatusChip = () => {
   };
   const colorMap: Record<string, any> = {
     pending: 'warning',
+    confirmed: 'info',
     awaiting_payment: 'warning',
     paid: 'success',
     processing: 'info',
@@ -192,7 +194,10 @@ export const OrderList = () => {
                   <IconButton
                     size="small"
                     color="primary"
-                    onClick={() => navigate(`/admin/orders/${record.id}/show`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/admin/orders/${record.id}/show`);
+                    }}
                   >
                     <VisibilityIcon fontSize="small" />
                   </IconButton>
@@ -202,7 +207,10 @@ export const OrderList = () => {
                   <IconButton
                     size="small"
                     color="info"
-                    onClick={() => navigate(`/admin/orders/${record.id}`)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/admin/orders/${record.id}`);
+                    }}
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>
@@ -212,16 +220,22 @@ export const OrderList = () => {
                   <IconButton
                     color="error"
                     size="small"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent row click
                       if (window.confirm('Bạn có chắc muốn xoá đơn hàng này?')) {
                         dataProvider
                           .delete('orders', { id: record.id })
                           .then(() => {
                             notify('Xoá thành công', { type: 'info' });
+                            // Navigate to list if we're on the detail/edit page
+                            if (window.location.pathname.includes(record.id)) {
+                              navigate('/admin/orders');
+                            }
                             refresh();
                           })
-                          .catch(() => {
-                            notify('Xoá thất bại', { type: 'warning' });
+                          .catch((error) => {
+                            console.error('Delete error:', error);
+                            notify('Xoá thất bại: ' + (error?.message || 'Unknown error'), { type: 'warning' });
                           });
                       }
                     }}

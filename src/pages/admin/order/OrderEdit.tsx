@@ -1,26 +1,26 @@
+import CloseIcon from '@mui/icons-material/Close';
 import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Stack,
+  Typography,
+} from '@mui/material';
+import {
+  DateField,
   Edit,
+  SaveButton,
+  SelectInput,
   SimpleForm,
   TextInput,
-  DateField,
-  SelectInput,
   Toolbar,
-  SaveButton,
   required,
   useRecordContext,
 } from 'react-admin';
-import {
-  Box,
-  Typography,
-  Chip,
-  Card,
-  CardContent,
-  Button,
-  Divider,
-  Stack,
-  Avatar,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import { Order } from '../../../types/Order';
 // === Component trạng thái đơn hàng ===
 const CurrentStatus = () => {
@@ -29,6 +29,7 @@ const CurrentStatus = () => {
 
   const statusLabels: Record<string, string> = {
     pending: 'Chờ xác nhận',
+    confirmed: 'Đã xác nhận',
     paid: 'Đã thanh toán',
     processing: 'Đang xử lý',
     shipped: 'Đang giao',
@@ -38,6 +39,7 @@ const CurrentStatus = () => {
 
   const statusColors: Record<string, 'default' | 'success' | 'error' | 'warning' | 'info'> = {
     pending: 'warning',
+    confirmed: 'info',
     paid: 'success',
     processing: 'info',
     shipped: 'info',
@@ -219,6 +221,7 @@ export const OrderEdit = (props: any) => {
           label="Trạng thái mới"
           choices={[
             { id: 'pending', name: 'Chờ xác nhận' },
+            { id: 'confirmed', name: 'Đã xác nhận' },
             { id: 'paid', name: 'Đã thanh toán' },
             { id: 'processing', name: 'Đang xử lý' },
             { id: 'shipped', name: 'Đang giao' },

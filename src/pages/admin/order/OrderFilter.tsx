@@ -23,6 +23,7 @@ export const orderFilters = [
         label='Trạng thái'
         choices={[
             { id: 'pending', name: 'Chờ xác nhận' },
+            { id: 'confirmed', name: 'Đã xác nhận' },
             { id: 'awaiting_payment', name: 'Chờ thanh toán' },
             { id: 'paid', name: 'Đã thanh toán' },
             { id: 'processing', name: 'Đang xử lý' },

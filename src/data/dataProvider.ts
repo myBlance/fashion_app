@@ -57,8 +57,8 @@ const dataProvider = {
     const rawData = Array.isArray(response.json)
       ? response.json
       : Array.isArray(response.json.data)
-      ? response.json.data
-      : [];
+        ? response.json.data
+        : [];
 
     const data = rawData.map((item: any) => ({
       ...item,
@@ -145,7 +145,7 @@ const dataProvider = {
     }
 
     const hasFile = params.data.thumbnail?.rawFile ||
-                   (Array.isArray(params.data.images) && params.data.images.some((img: any) => img.rawFile));
+      (Array.isArray(params.data.images) && params.data.images.some((img: any) => img.rawFile));
 
     let response;
 
@@ -207,6 +207,7 @@ const dataProvider = {
   async delete(resource: string, params: DeleteParams): Promise<DeleteResult> {
     const url = `${baseUrl}/${resource}/${params.id}`;
     const response = await httpClient(url, { method: "DELETE" });
+
     const item = response.json.data || response.json;
     return { data: item };
   },

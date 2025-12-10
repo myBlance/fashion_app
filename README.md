@@ -1,54 +1,66 @@
-# React + TypeScript + Vite
+# Dola Style - Frontend (React + TypeScript)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Đây là mã nguồn Frontend cho dự án **Dola Style**, được xây dựng bằng **React**, **TypeScript** và **Vite**.
 
-Currently, two official plugins are available:
+## 🚀 Công Nghệ Sử Dụng
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **Core**: React 18, TypeScript, Vite
+-   **UI Framework**: Material UI (MUI) v5
+-   **State Management**: Redux Toolkit & React Context
+-   **Form & Validation**: React Hook Form, Zod
+-   **Routing**: React Router DOM v6
+-   **HTTP Client**: Axios
+-   **Repository**: [Frontend GitHub](https://github.com/myBlance/fashion_app.git)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Hướng Dẫn Cài Đặt
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 1. Yêu cầu
+-   Node.js (v16 trở lên)
+-   Backend server đã khởi chạy (xem hướng dẫn tại `../backend/README.md`)
+
+### 2. Cài đặt Packages
+Tại thư mục `fashion_app`, chạy lệnh:
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### 3. Cấu hình môi trường
+Tạo file `.env` trong thư mục `fashion_app` (nếu chưa có):
+```env
+VITE_API_BASE_URL=http://localhost:5000
 ```
+
+### 4. Chạy ứng dụng (Development)
+```bash
+npm run dev
+```
+Ứng dụng sẽ chạy tại: `http://localhost:5173`
+
+---
+
+## 📂 Cấu Trúc Thư Mục
+
+```
+src/
+├── components/         # Các component tái sử dụng (Header, Footer, Card...)
+├── contexts/           # Context API (Toast, Theme, ...)
+├── hooks/              # Custom Hooks (useCart, useAuth, ...)
+├── layouts/            # Layout chính (MainLayout, AdminLayout)
+├── pages/              # Các trang giao diện
+│   ├── admin/          # Giao diện quản trị (Dashboard, Products, Orders...)
+│   └── client/         # Giao diện người dùng (Home, Shop, Cart...)
+├── services/           # Gọi API (axios configuration)
+├── store/              # Redux store (Slices: cart, user...)
+├── styles/             # Styles global & CSS modules
+├── types/              # TypeScript definitions
+└── utils/              # Các hàm tiện ích
+```
+
+## 🌟 Tính Năng Chính
+-   **Client**: Mua sắm, giỏ hàng, thanh toán, quản lý tài khoản, xem lịch sử đơn hàng.
+-   **Admin**: Thống kê dashboard, quản lý sản phẩm, quản lý đơn hàng, quản lý voucher.
+
+---
+*Dola Style Frontend*

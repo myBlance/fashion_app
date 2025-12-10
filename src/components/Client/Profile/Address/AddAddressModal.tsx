@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
     Box,
-    Typography,
-    RadioGroup,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
     FormControlLabel,
     Radio,
-    Divider,
+    RadioGroup,
+    TextField,
+    Typography,
 } from '@mui/material';
+import React, { useState } from 'react';
 
 interface AddAddressModalProps {
     open: boolean;
@@ -28,8 +28,11 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
-        address: '',
-        type: 'home' as 'home' | 'work' ,
+        city: '',
+        district: '',
+        ward: '',
+        specificAddress: '',
+        type: 'home' as 'home' | 'work',
         isDefault: false,
     });
 
@@ -39,17 +42,23 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
     };
 
     const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({ ...prev, type: e.target.value as 'home' | 'work'}));
+        setFormData(prev => ({ ...prev, type: e.target.value as 'home' | 'work' }));
     };
 
     const handleSave = () => {
-        if (!formData.name || !formData.phone || !formData.address) {
+        if (!formData.name || !formData.phone || !formData.city || !formData.district || !formData.ward || !formData.specificAddress) {
             alert('Vui lòng điền đầy đủ thông tin');
             return;
         }
 
+        const fullAddress = `${formData.specificAddress}, ${formData.ward}, ${formData.district}, ${formData.city}`;
+
         onAdd({
-            ...formData,
+            name: formData.name,
+            phone: formData.phone,
+            address: fullAddress,
+            type: formData.type,
+            isDefault: formData.isDefault,
             // _id sẽ do backend tự sinh
         });
         onClose();
@@ -61,7 +70,7 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
                 Thêm địa chỉ mới
             </DialogTitle>
             <DialogContent>
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2, mb: 2, mt: 1 }}>
                     <TextField
                         fullWidth
                         label="Họ và tên"
@@ -69,6 +78,7 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
                         value={formData.name}
                         onChange={handleChange}
                         variant="outlined"
+                        size="small"
                     />
                     <TextField
                         fullWidth
@@ -77,52 +87,49 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
                         value={formData.phone}
                         onChange={handleChange}
                         variant="outlined"
+                        size="small"
                     />
                 </Box>
 
-                <TextField
-                    fullWidth
-                    label="Địa chỉ chi tiết"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    variant="outlined"
-                    multiline
-                    rows={3}
-                    sx={{ mb: 2 }}
-                />
+                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                        fullWidth
+                        label="Tỉnh / Thành phố"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Quận / Huyện"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
+                    />
+                </Box>
 
-                {/* Bản đồ giả lập */}
-                <Box
-                    sx={{
-                        width: '100%',
-                        height: 150,
-                        backgroundColor: '#f0f0f0',
-                        borderRadius: '8px',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        mb: 2,
-                    }}
-                >
-                    <img
-  src="https://placehold.co/600x150?text=Google+Maps+Placeholder"
-  alt="Google Maps"
-  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-/>
-
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: 20,
-                            height: 20,
-                            backgroundColor: 'red',
-                            borderRadius: '50%',
-                            border: '4px solid white',
-                            boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-                        }}
+                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                        fullWidth
+                        label="Phường / Xã"
+                        name="ward"
+                        value={formData.ward}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Số nhà, tên đường"
+                        name="specificAddress"
+                        value={formData.specificAddress}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
                     />
                 </Box>
 
@@ -143,11 +150,11 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
                 <Divider sx={{ my: 2 }} />
 
                 <Typography variant="caption" color="text.secondary">
-                    * Bạn có thể chọn loại địa chỉ để tiện quản lý.
+                    * Vui lòng nhập địa chỉ chính xác để giao hàng thuận tiện hơn.
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="secondary">
+                <Button onClick={onClose} color="inherit">
                     Trở Lại
                 </Button>
                 <Button

@@ -2,6 +2,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import {
   Box,
   Button,
+  Container,
   Drawer,
   Pagination,
   SelectChangeEvent,
@@ -253,7 +254,7 @@ const ShopPage: React.FC = () => {
   );
 
   return (
-    <Box p={{ xs: 2, sm: 3 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" textAlign="center" mb={3} fontWeight="bold">
         Tất cả sản phẩm
       </Typography>
@@ -276,13 +277,11 @@ const ShopPage: React.FC = () => {
       {!isMobile && (
         <Box
           sx={{
-            p: 4,
-            maxWidth: '90%',
-            margin: '0 5%',
-            mb: 2,
-            backgroundColor: '#eee',
+            p: 3,
+            mb: 4,
+            backgroundColor: '#f5f5f5',
             borderRadius: 2,
-            border: '1px solid #e82e2e',
+            border: '1px solid #e0e0e0',
           }}
         >
           <FilterContent />
@@ -329,16 +328,14 @@ const ShopPage: React.FC = () => {
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
             lg: 'repeat(4, 1fr)',
-            xl: 'repeat(5, 1fr)',
           }}
-          gap={2}
-          justifyItems="center"
+          gap={3}
         >
-          {[...Array(12)].map((_, index) => (
-            <Box key={index} minWidth="180px" width="100%">
-              <Skeleton variant="rectangular" width="100%" height={250} sx={{ borderRadius: 2 }} />
-              <Skeleton width="80%" sx={{ mt: 1 }} />
-              <Skeleton width="60%" />
+          {[...Array(8)].map((_, index) => (
+            <Box key={index}>
+              <Skeleton variant="rectangular" height={280} sx={{ borderRadius: 2 }} />
+              <Skeleton width="80%" height={30} sx={{ mt: 1 }} />
+              <Skeleton width="50%" height={24} />
             </Box>
           ))}
         </Box>
@@ -350,17 +347,12 @@ const ShopPage: React.FC = () => {
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
             lg: 'repeat(4, 1fr)',
-            xl: 'repeat(5, 1fr)',
           }}
-          gap={2}
-          justifyItems="center"
-          justifyContent="start"
+          gap={3}
         >
           {paginatedProducts.length > 0 ? (
             paginatedProducts.map((product) => (
-              <Box key={product.id} minWidth="180px" sx={{ mb: 4 }}>
-                <ProductCard product={product} />
-              </Box>
+              <ProductCard key={product.id} product={product} />
             ))
           ) : (
             <Box textAlign="center" width="100%" py={8} gridColumn="1 / -1">
@@ -368,7 +360,7 @@ const ShopPage: React.FC = () => {
                 Không tìm thấy sản phẩm phù hợp
               </Typography>
               {getActiveFilterCount() > 0 && (
-                <Button variant="outlined" onClick={clearAllFilters}>
+                <Button variant="outlined" onClick={clearAllFilters} color="error">
                   Xóa bộ lọc
                 </Button>
               )}
@@ -391,7 +383,7 @@ const ShopPage: React.FC = () => {
           />
         </Box>
       )}
-    </Box>
+    </Container>
   );
 };
 

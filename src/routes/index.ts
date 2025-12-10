@@ -20,8 +20,8 @@ import SeepayPaymentPage from '../components/Client/Pay/SeepayPayment';
 import ShopeePayPayment from '../components/Client/Pay/ShopeePayPayment';
 import AdminApp from '../pages/admin/AdminApp';
 import ProfilePage from '../pages/auth/ProfilePage';
+import BlogPage from '../pages/client/BlogPage';
 import CheckoutPage from '../pages/client/Checkout';
-import ComingSoonPage from '../pages/client/ComingSoonPage';
 import ContactPage from '../pages/client/ContactPage';
 import OrderHistoryPage from '../pages/client/OrderHistoryPage';
 // import AdminApp from '../pages/admin/AdminApp';
@@ -53,7 +53,7 @@ export const clientRoutes: RouteItem[] = [
     { path: '/payment/cod', element: React.createElement(CODPaymentPage), auth: 'client' },
 
 
-    { path: '/blog', element: React.createElement(ComingSoonPage), auth: 'client' },
+    { path: '/blog', element: React.createElement(BlogPage), auth: 'client' },
     { path: '/contact', element: React.createElement(ContactPage), auth: 'client' },
 ];
 

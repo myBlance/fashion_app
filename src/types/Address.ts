@@ -4,4 +4,5 @@ export interface Address {
     phone: string;
     address: string;
     isDefault: boolean;
+    type?: 'home' | 'work';
 }

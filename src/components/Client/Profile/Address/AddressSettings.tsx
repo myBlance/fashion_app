@@ -175,6 +175,7 @@ const AddressSettings: React.FC = () => {
                     phone: updatedAddress.phone,
                     address: updatedAddress.address,
                     isDefault: updatedAddress.isDefault,
+                    type: updatedAddress.type,
                 },
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -202,6 +203,12 @@ const AddressSettings: React.FC = () => {
             if (err.response?.status === 401) {
                 showToast('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.', 'error');
                 localStorage.removeItem('token');
+            } else if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+                // ✅ Xử lý lỗi array validator
+                const errorMsg = err.response.data.errors.map((e: any) => e.msg).join(', ');
+                showToast(`Lỗi: ${errorMsg}`, 'error');
+            } else if (err.response?.data?.message) {
+                showToast(`Lỗi: ${err.response.data.message}`, 'error');
             } else {
                 showToast('Không thể cập nhật địa chỉ', 'error');
             }
@@ -214,9 +221,17 @@ const AddressSettings: React.FC = () => {
             return;
         }
         try {
+            const payload = {
+                name: newAddress.name,
+                phone: newAddress.phone,
+                address: newAddress.address,
+                type: newAddress.type,
+                isDefault: newAddress.isDefault,
+            };
+
             const res = await axios.post(
                 `${import.meta.env.VITE_API_BASE_URL}/api/users/addresses`,
-                newAddress,
+                payload,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -240,6 +255,15 @@ const AddressSettings: React.FC = () => {
             if (err.response?.status === 401) {
                 showToast('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.', 'error');
                 localStorage.removeItem('token');
+            } else if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+                // ✅ Xử lý lỗi từ express-validator (mảng errors)
+                const errorMsg = err.response.data.errors.map((e: any) => e.msg).join(', ');
+                console.error('Backend validation errors:', err.response.data.errors);
+                showToast(`Lỗi: ${errorMsg}`, 'error');
+            } else if (err.response?.data?.message) {
+                // ✅ Hiển thị thông báo lỗi chung
+                console.error('Backend error message:', err.response.data);
+                showToast(`Lỗi: ${err.response.data.message}`, 'error');
             } else {
                 showToast('Không thể thêm địa chỉ', 'error');
             }

@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
     Box,
-    Typography,
-    RadioGroup,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
     FormControlLabel,
     Radio,
-    Divider,
+    RadioGroup,
+    TextField,
+    Typography,
 } from '@mui/material';
+import React, { useState } from 'react';
 
 interface EditAddressModalProps {
     open: boolean;
@@ -34,10 +34,32 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
     address,
     onSave,
 }) => {
+    // Hàm parse địa chỉ cũ (nếu có)
+    const parseAddress = (fullAddr: string) => {
+        if (!fullAddr) return { city: '', district: '', ward: '', specificAddress: '' };
+
+        const parts = fullAddr.split(',').map(p => p.trim());
+        if (parts.length >= 4) {
+            return {
+                specificAddress: parts.slice(0, parts.length - 3).join(', '),
+                ward: parts[parts.length - 3],
+                district: parts[parts.length - 2],
+                city: parts[parts.length - 1],
+            };
+        }
+        // Fallback nếu format không đúng
+        return { city: '', district: '', ward: '', specificAddress: fullAddr };
+    };
+
+    const initialAddressParts = parseAddress(address.address);
+
     const [formData, setFormData] = useState({
         name: address.name,
         phone: address.phone,
-        address: address.address,
+        city: initialAddressParts.city,
+        district: initialAddressParts.district,
+        ward: initialAddressParts.ward,
+        specificAddress: initialAddressParts.specificAddress,
         isDefault: address.isDefault || false,
         type: address.type || 'home',
     });
@@ -52,25 +74,33 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
     };
 
     const handleSave = () => {
-  if (!address._id) {
-    console.error('❌ Missing _id in address', address);
-    alert('Không thể lưu: thiếu ID địa chỉ.');
-    return;
-  }
+        if (!address._id) {
+            console.error('❌ Missing _id in address', address);
+            alert('Không thể lưu: thiếu ID địa chỉ.');
+            return;
+        }
 
-  onSave({
-    ...formData,
-    _id: address._id,
-  });
-};
+        if (!formData.name || !formData.phone || !formData.city || !formData.district || !formData.ward || !formData.specificAddress) {
+            alert('Vui lòng điền đầy đủ thông tin');
+            return;
+        }
+
+        const fullAddress = `${formData.specificAddress}, ${formData.ward}, ${formData.district}, ${formData.city}`;
+
+        onSave({
+            ...formData,
+            address: fullAddress,
+            _id: address._id,
+        });
+    };
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>
-                Cập nhật địa chỉ (dùng thông tin trước sắp nhập)
+                Cập nhật địa chỉ
             </DialogTitle>
             <DialogContent>
-                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2, mb: 2, mt: 1 }}>
                     <TextField
                         fullWidth
                         label="Họ và tên"
@@ -78,6 +108,7 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
                         value={formData.name}
                         onChange={handleChange}
                         variant="outlined"
+                        size="small"
                     />
                     <TextField
                         fullWidth
@@ -86,51 +117,49 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
                         value={formData.phone}
                         onChange={handleChange}
                         variant="outlined"
+                        size="small"
                     />
                 </Box>
 
-                <TextField
-                    fullWidth
-                    label="Địa chỉ chi tiết"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    variant="outlined"
-                    multiline
-                    rows={3}
-                    sx={{ mb: 2 }}
-                />
-
-                {/* Bản đồ giả lập */}
-                <Box
-                    sx={{
-                        width: '100%',
-                        height: 150,
-                        backgroundColor: '#f0f0f0',
-                        borderRadius: '8px',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        mb: 2,
-                    }}
-                >
-                    <img
-                        src="https://via.placeholder.com/600x150?text=Google+Maps+Placeholder"
-                        alt="Google Maps"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                        fullWidth
+                        label="Tỉnh / Thành phố"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
                     />
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: 20,
-                            height: 20,
-                            backgroundColor: 'red',
-                            borderRadius: '50%',
-                            border: '4px solid white',
-                            boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-                        }}
+                    <TextField
+                        fullWidth
+                        label="Quận / Huyện"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
+                    />
+                </Box>
+
+                <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                        fullWidth
+                        label="Phường / Xã"
+                        name="ward"
+                        value={formData.ward}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Số nhà, tên đường"
+                        name="specificAddress"
+                        value={formData.specificAddress}
+                        onChange={handleChange}
+                        variant="outlined"
+                        size="small"
                     />
                 </Box>
 
@@ -151,11 +180,11 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
                 <Divider sx={{ my: 2 }} />
 
                 <Typography variant="caption" color="text.secondary">
-                    * Bạn có thể chọn loại địa chỉ để tiện quản lý.
+                    * Vui lòng nhập địa chỉ chính xác để giao hàng thuận tiện hơn.
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="secondary">
+                <Button onClick={onClose} color="inherit">
                     Trở Lại
                 </Button>
                 <Button

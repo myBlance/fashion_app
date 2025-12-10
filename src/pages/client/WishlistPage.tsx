@@ -1,5 +1,8 @@
-import { Box, Typography } from '@mui/material';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { Box, Button, Container, Skeleton, Typography } from '@mui/material';
 import React, { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 // ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
 import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
@@ -12,6 +15,8 @@ import { Product } from "../../types/Product";
 const WishlistPage: React.FC = () => {
     const { userId } = useAuth();
     const dispatch = useAppDispatch(); // ✅ Dùng useAppDispatch
+    const navigate = useNavigate();
+
     // ✅ Dùng useAppSelector
     const { items: wishlistIds, loading: wishlistLoading, error: wishlistError } = useAppSelector(
         (state) => state.wishlist
@@ -75,20 +80,17 @@ const WishlistPage: React.FC = () => {
     }, [wishlistIdsStr, wishlistLoading, wishlistError]);
 
     return (
-        <Box p={4}>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
             <DynamicBreadcrumbs />
 
-            {(loading || wishlistLoading) && <Typography variant="body1">Đang tải sản phẩm...</Typography>}
+            <Box mb={4} mt={2}>
+                <Typography variant="h4" fontWeight="bold" color="#d32f2f" textAlign={{ xs: 'center', md: 'left' }}>
+                    Sản phẩm yêu thích
+                </Typography>
+                <Box sx={{ width: 60, height: 4, bgcolor: '#d32f2f', mt: 1, mx: { xs: 'auto', md: 0 }, borderRadius: 1 }} />
+            </Box>
 
-            {!loading && !wishlistLoading && error && (
-                <Typography variant="body1" color="error">{error}</Typography>
-            )}
-
-            {!loading && !wishlistLoading && !error && products.length === 0 && (
-                <Typography variant="body1">Bạn chưa có sản phẩm yêu thích nào.</Typography>
-            )}
-
-            {!loading && !wishlistLoading && !error && products.length > 0 && (
+            {(loading || wishlistLoading) && (
                 <Box
                     display="grid"
                     gridTemplateColumns={{
@@ -97,14 +99,59 @@ const WishlistPage: React.FC = () => {
                         md: 'repeat(3, 1fr)',
                         lg: 'repeat(4, 1fr)',
                     }}
-                    gap={2}
+                    gap={3}
+                >
+                    {[...Array(4)].map((_, index) => (
+                        <Box key={index}>
+                            <Skeleton variant="rectangular" height={280} sx={{ borderRadius: 2 }} />
+                            <Skeleton width="80%" height={30} sx={{ mt: 1 }} />
+                            <Skeleton width="50%" height={24} />
+                        </Box>
+                    ))}
+                </Box>
+            )}
+
+            {!loading && !wishlistLoading && error && (
+                <Typography variant="body1" color="error" textAlign="center">{error}</Typography>
+            )}
+
+            {!loading && !wishlistLoading && !error && products.length === 0 && (
+                <Box textAlign="center" py={8}>
+                    <FavoriteBorderIcon sx={{ fontSize: 80, color: '#e0e0e0', mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                        Danh sách yêu thích của bạn đang trống
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" mb={3}>
+                        Hãy thêm những sản phẩm bạn yêu thích vào đây để xem lại sau nhé!
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => navigate('/shop')}
+                        sx={{ px: 4, py: 1.2, borderRadius: 2 }}
+                    >
+                        Tiếp tục mua sắm
+                    </Button>
+                </Box>
+            )}
+
+            {!loading && !wishlistLoading && !error && products.length > 0 && (
+                <Box
+                    display="grid"
+                    gridTemplateColumns={{
+                        xs: 'repeat(2, 1fr)', // Changed to 2 columns on mobile for better visibility
+                        sm: 'repeat(2, 1fr)',
+                        md: 'repeat(3, 1fr)',
+                        lg: 'repeat(4, 1fr)',
+                    }}
+                    gap={3}
                 >
                     {products.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </Box>
             )}
-        </Box>
+        </Container>
     );
 };
 

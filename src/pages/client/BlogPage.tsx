@@ -15,6 +15,7 @@ import {
     Typography
 } from '@mui/material';
 import React from 'react';
+import '../../styles/BlogPage.css';
 
 // Mock Data
 const featuredPost = {
@@ -76,22 +77,20 @@ const popularPosts = [
 
 const BlogPage: React.FC = () => {
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-
-
+        <Container maxWidth="lg" className="blog-page-container">
             <Box display="flex" flexWrap="wrap" gap={4}>
                 {/* Main Content Column */}
                 <Box sx={{ flex: { xs: '1 1 100%', md: '3' } }}>
                     {/* Featured Banner */}
-                    <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 0, overflow: 'hidden', mb: 6 }}>
-                        <Box bgcolor="#b71c1c" p={2} textAlign="center">
+                    <Paper elevation={0} className="blog-featured-banner">
+                        <Box className="blog-featured-title-box">
                             <Typography variant="h5" color="white" fontWeight="bold" textTransform="uppercase">
                                 Tin mới nhất
                             </Typography>
                         </Box>
-                        <Box p={3} display="flex" alignItems="center">
+                        <Box className="blog-featured-content">
                             {/* Simulated Slider Arrows */}
-                            <Box component="span" sx={{ cursor: 'pointer', color: '#ccc', mr: 2 }}><ArrowBackIosIcon /></Box>
+                            <Box component="span" className="blog-slider-arrow left"><ArrowBackIosIcon /></Box>
 
                             <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={4} alignItems="center">
                                 <Box sx={{ width: { xs: '100%', md: '41.6%' } }}>
@@ -99,7 +98,7 @@ const BlogPage: React.FC = () => {
                                         component="img"
                                         src={featuredPost.image}
                                         alt={featuredPost.title}
-                                        sx={{ width: '100%', borderRadius: 2, maxHeight: 250, objectFit: 'cover' }}
+                                        className="blog-featured-image"
                                         onError={(e: any) => { e.target.src = 'https://placehold.co/600x400'; }}
                                     />
                                 </Box>
@@ -116,7 +115,7 @@ const BlogPage: React.FC = () => {
                                 </Box>
                             </Box>
 
-                            <Box component="span" sx={{ cursor: 'pointer', color: '#b71c1c', ml: 2 }}><ArrowForwardIosIcon /></Box>
+                            <Box component="span" className="blog-slider-arrow right"><ArrowForwardIosIcon /></Box>
                         </Box>
                     </Paper>
 
@@ -128,39 +127,29 @@ const BlogPage: React.FC = () => {
                     <Box display="grid" gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }} gap={3}>
                         {blogPosts.map((post) => (
                             <Box key={post.id}>
-                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 'none', border: 'none' }}>
-                                    <Box sx={{ overflow: 'hidden', borderRadius: 2 }}>
+                                <Card className="blog-post-card">
+                                    <Box className="blog-post-image-box">
                                         <CardMedia
                                             component="img"
                                             height="200"
                                             image={post.image}
                                             alt={post.title}
                                             onError={(e: any) => { e.target.src = 'https://placehold.co/600x400'; }}
-                                            sx={{ transition: 'transform 0.3s', '&:hover': { transform: 'scale(1.05)' } }}
+                                            className="blog-post-card-media"
                                         />
                                     </Box>
                                     <CardContent sx={{ px: 0, flexGrow: 1 }}>
                                         <Box width={40} height={2} bgcolor="#eee" mb={1}></Box> {/* Decorative Line */}
-                                        <Typography gutterBottom variant="h6" component="div" fontSize="1rem" fontWeight="bold" sx={{
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 2, // Limit to 2 lines
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden'
-                                        }}>
+                                        <Typography gutterBottom variant="h6" component="div" className="blog-post-title">
                                             {post.title}
                                         </Typography>
                                         <Typography variant="caption" color="error" display="block" mb={1}>
                                             {post.date}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary" sx={{
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 3, // Limit to 3 lines
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden'
-                                        }}>
+                                        <Typography variant="body2" color="text.secondary" className="blog-post-desc">
                                             {post.description}
                                         </Typography>
-                                        <Button size="small" sx={{ color: '#b71c1c', mt: 1, padding: 0, '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } }}>
+                                        <Button size="small" className="blog-read-more-btn">
                                             Đọc tiếp &gt;
                                         </Button>
                                     </CardContent>
@@ -174,15 +163,15 @@ const BlogPage: React.FC = () => {
                 <Box sx={{ flex: { xs: '1 1 100%', md: '1' } }}>
                     {/* Categories */}
                     <Box mb={4}>
-                        <Box bgcolor="#b71c1c" p={1.5} borderRadius="4px 4px 0 0">
+                        <Box className="blog-sidebar-category-header">
                             <Typography variant="h6" color="white" fontWeight="bold">
                                 Danh mục tin tức
                             </Typography>
                         </Box>
-                        <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: '0 0 4px 4px', p: 0 }}>
+                        <Paper elevation={0} className="blog-sidebar-list-paper">
                             <List disablePadding>
                                 {categories.map((cat, index) => (
-                                    <ListItem key={index} divider={index !== categories.length - 1} sx={{ '&:hover': { color: '#b71c1c', cursor: 'pointer' } }}>
+                                    <ListItem key={index} divider={index !== categories.length - 1} className="blog-sidebar-list-item">
                                         <ListItemText primary={cat} primaryTypographyProps={{ fontSize: '0.95rem' }} />
                                         {cat === 'Sản phẩm' && <Typography variant="caption">+</Typography>}
                                     </ListItem>
@@ -200,10 +189,7 @@ const BlogPage: React.FC = () => {
                             {popularPosts.map((post, index) => (
                                 <Box key={post.id} display="flex" gap={2}>
                                     {/* Number Badge */}
-                                    <Box sx={{
-                                        minWidth: 24, height: 24, borderRadius: '50%', bgcolor: index === 0 ? '#fdd835' : '#eee', color: index === 0 ? 'white' : '#666',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem', zIndex: 1, mt: 1
-                                    }}>
+                                    <Box className="blog-sidebar-popular-badge" sx={{ bgcolor: index === 0 ? '#fdd835' : '#eee', color: index === 0 ? 'white' : '#666' }}>
                                         {index + 1}
                                     </Box>
 
@@ -213,13 +199,7 @@ const BlogPage: React.FC = () => {
                                         />
                                     </Box>
                                     <Box>
-                                        <Typography variant="body2" fontWeight="bold" sx={{
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 2,
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden',
-                                            lineHeight: 1.3
-                                        }}>
+                                        <Typography variant="body2" fontWeight="bold" className="blog-popular-title">
                                             {post.title}
                                         </Typography>
                                         <Typography variant="caption" color="error">

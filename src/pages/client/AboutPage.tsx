@@ -12,19 +12,19 @@ const sections = [
     title: 'Uy Tín và Chất Lượng',
     content:
       'Dola Style tự hào là địa chỉ tin cậy của hàng ngàn khách hàng. Chúng tôi cam kết mang đến cho khách hàng những sản phẩm chất lượng tốt nhất, từ thiết kế tinh tế cho đến khâu đóng gói và giao hàng chuyên nghiệp.',
-    image: '/assets/images/about_1.webp',
+    image: '/assets/images/about_2.webp',
   },
   {
     title: 'Chính Sách',
     content:
       'Dola Style luôn đặt sự hài lòng và lợi ích của khách hàng lên hàng đầu. Chúng tôi không chỉ cung cấp những sản phẩm chất lượng mà còn xây dựng các chính sách hỗ trợ linh hoạt và chuyên nghiệp.',
-    image: '/assets/images/about_1.webp',
+    image: '/assets/images/about_3.webp',
   },
   {
     title: 'Đánh Giá từ Khách Hàng',
     content:
       '“Thời trang tại Dola Style không chỉ là mặc, mà là cảm nhận về sự tinh tế và đẳng cấp.” – Ngọc Trinh\n“Dola Style không chỉ đáng tin cậy mà còn rất tận tâm trong tư vấn và hỗ trợ khách hàng.” – Hồng Vân',
-    image: '/assets/images/about_1.webp',
+    image: '/assets/images/about_4.webp',
   },
   {
     title: 'Chính sách tại Dola Style',

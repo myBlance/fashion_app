@@ -1,0 +1,24 @@
+/* src/styles/Checkout.css */
+
+.checkout-page-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.checkout-empty {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.checkout-back-link {
+    color: #000;
+    text-decoration: underline;
+}
+
+.checkout-back-link:hover {
+    color: #333;
+    text-decoration: none;
+}

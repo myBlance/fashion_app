@@ -1,38 +1,21 @@
 import React from 'react';
+import '../../styles/ComingSoonPage.css';
 
 const ComingSoonPage: React.FC = () => {
   return (
-    <div
-      style={{
-        minHeight: '70vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        padding: '40px 20px',
-        color: '#333',
-      }}
-    >
+    <div className="coming-soon-container">
       <img
-        src="/assets/images/comingsoon.png" 
+        src="/assets/images/comingsoon.png"
         alt="Under Construction"
-        style={{ width: '300px', marginBottom: '20px' }}
+        className="coming-soon-image"
       />
-      <h1 style={{ fontSize: '32px', marginBottom: '10px' }}>Tính năng đang được phát triển</h1>
-      <p style={{ fontSize: '18px', color: '#666' }}>
+      <h1 className="coming-soon-title">Tính năng đang được phát triển</h1>
+      <p className="coming-soon-text">
         Trang này sẽ sớm được cập nhật. Vui lòng quay lại sau!
       </p>
       <a
         href="/"
-        style={{
-          marginTop: '30px',
-          padding: '10px 20px',
-          backgroundColor: '#000',
-          color: '#fff',
-          textDecoration: 'none',
-          borderRadius: '5px',
-        }}
+        className="coming-soon-link"
       >
         Quay lại trang chủ
       </a>

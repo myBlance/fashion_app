@@ -1,0 +1,49 @@
+/* src/styles/Dashboard.css */
+
+.dashboard-card {
+    border-radius: 20px !important;
+    height: 100%;
+}
+
+.dashboard-card-content {
+    padding: 16px;
+}
+
+@media (min-width: 600px) {
+    .dashboard-card {
+        margin-right: -24px !important;
+    }
+
+    .dashboard-card-content {
+        padding: 16px;
+    }
+}
+
+.stat-card-paper {
+    padding: 24px;
+    height: 100%;
+}
+
+.chart-paper {
+    padding: 16px;
+}
+
+@media (min-width: 600px) {
+    .chart-paper {
+        padding: 24px;
+    }
+}
+
+.table-product-image {
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.stat-card-title {
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 0.35em !important;
+}
+
+.stat-card-value {
+    font-weight: bold !important;
+}

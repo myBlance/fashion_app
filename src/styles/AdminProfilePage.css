@@ -1,0 +1,73 @@
+/* src/styles/AdminProfilePage.css */
+
+.admin-profile-card {
+    border-radius: 20px !important;
+    margin-right: -24px !important;
+    height: 100%;
+}
+
+.admin-profile-content {
+    padding: 16px;
+}
+
+.admin-profile-title {
+    font-weight: bold !important;
+    margin-bottom: 24px !important;
+    margin-top: 16px !important;
+}
+
+.admin-profile-tabs {
+    margin-bottom: 24px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.admin-profile-paper {
+    padding: 32px;
+    max-width: 600px;
+}
+
+.admin-avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.admin-avatar-box {
+    position: relative;
+}
+
+.admin-avatar {
+    width: 120px;
+    height: 120px;
+    cursor: pointer;
+    border: 4px solid #1976d2;
+    /* primary.main equivalent */
+    transition: transform 0.2s;
+}
+
+.admin-avatar:hover {
+    transform: scale(1.05);
+}
+
+.admin-camera-icon-box {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #1976d2;
+    /* primary.main equivalent */
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.admin-camera-icon {
+    color: white;
+    font-size: 20px !important;
+}
+
+.admin-loading-card {
+    border-radius: 20px !important;
+    margin-right: -24px !important;
+    padding: 32px;
+}

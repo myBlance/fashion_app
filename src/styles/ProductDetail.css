@@ -12,8 +12,9 @@
   display: flex;
   /* QUAN TRỌNG: align-items flex-start để cột ngắn không bị kéo dài bằng cột dài.
      Điều này tạo không gian cho thuộc tính sticky hoạt động. */
-  align-items: flex-start; 
-  gap: 50px; /* Khoảng cách giữa 2 cột rộng rãi */
+  align-items: flex-start;
+  gap: 50px;
+  /* Khoảng cách giữa 2 cột rộng rãi */
   margin-top: 20px;
   position: relative;
 }
@@ -21,21 +22,22 @@
 /* --- CỘT TRÁI: ẢNH (GALLERY - STICKY) --- */
 .gallery-container {
   /* Chiếm khoảng 55% không gian */
-  flex: 1.2; 
+  flex: 1.2;
   min-width: 500px;
   display: flex;
   gap: 15px;
-  
+
   /* Kích hoạt hiệu ứng dính (Sticky) */
-  position: -webkit-sticky; /* Cho Safari */
+  position: -webkit-sticky;
+  /* Cho Safari */
   position: sticky;
-  
+
   /* Cách mép trên 90px (để không bị header che nếu header dính) */
-  top: 90px; 
-  
+  top: 90px;
+
   /* Chiều cao vừa đủ nội dung */
   height: fit-content;
-  
+
   z-index: 5;
 }
 
@@ -46,24 +48,27 @@
   gap: 12px;
   width: 80px;
   /* Cho phép cuộn nếu quá nhiều ảnh nhỏ */
-  max-height: 70vh; 
+  max-height: 70vh;
   overflow-y: auto;
-  padding-right: 4px; 
+  padding-right: 4px;
 }
 
 /* Tùy chỉnh thanh cuộn cho đẹp */
 .thumbnails-list::-webkit-scrollbar {
   width: 4px;
 }
+
 .thumbnails-list::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
+
 .thumbnails-list::-webkit-scrollbar-thumb {
-  background: #ccc; 
+  background: #ccc;
   border-radius: 4px;
 }
+
 .thumbnails-list::-webkit-scrollbar-thumb:hover {
-  background: #aaa; 
+  background: #aaa;
 }
 
 .thumbnail {
@@ -74,7 +79,8 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  flex-shrink: 0; /* Ngăn ảnh bị bóp méo */
+  flex-shrink: 0;
+  /* Ngăn ảnh bị bóp méo */
   background-color: #fff;
 }
 
@@ -93,14 +99,14 @@
   border-radius: 12px;
   overflow: hidden;
   background-color: #fff;
-  border: 1px solid #f0f0f0; 
+  border: 1px solid #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   /* Giới hạn chiều cao ảnh lớn */
   height: auto;
-  max-height: 80vh; 
+  max-height: 80vh;
 }
 
 .main-image {
@@ -115,7 +121,7 @@
   top: 15px;
   right: 15px;
   background-color: rgba(255, 255, 255, 0.9) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
 }
 
@@ -127,7 +133,7 @@
 /* --- CỘT PHẢI: THÔNG TIN (SCROLLABLE) --- */
 .info-container {
   /* Chiếm phần còn lại (khoảng 45%) */
-  flex: 1; 
+  flex: 1;
   display: flex;
   flex-direction: column;
   padding-top: 5px;
@@ -160,8 +166,15 @@
   color: #555;
 }
 
-.status.available { color: #28a745; font-weight: 600; }
-.status.unavailable { color: #dc3545; font-weight: 600; }
+.status.available {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status.unavailable {
+  color: #dc3545;
+  font-weight: 600;
+}
 
 /* Giá tiền */
 .price-section {
@@ -240,7 +253,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Kích cỡ */
@@ -374,14 +387,17 @@
   .product-detail-wrapper {
     flex-direction: column;
     gap: 30px;
-    align-items: stretch; /* Quay lại stretch để full width */
+    align-items: stretch;
+    /* Quay lại stretch để full width */
   }
 
   .gallery-container {
-    position: static; /* Tắt sticky trên tablet */
+    position: static;
+    /* Tắt sticky trên tablet */
     min-width: auto;
     flex: none;
-    flex-direction: column-reverse; /* Đưa thumbnail xuống dưới ảnh chính */
+    flex-direction: column-reverse;
+    /* Đưa thumbnail xuống dưới ảnh chính */
   }
 
   .thumbnails-list {
@@ -402,7 +418,7 @@
   .main-image-wrapper {
     max-height: 450px;
   }
-  
+
   .info-container {
     flex: none;
   }
@@ -417,7 +433,7 @@
   .main-image-wrapper {
     max-height: 350px;
   }
-  
+
   .product-title {
     font-size: 22px;
   }
@@ -437,6 +453,10 @@
 
   /* Thêm khoảng trống dưới cùng để nội dung không bị nút che */
   .product-detail-wrapper {
-    margin-bottom: 120px; 
+    margin-bottom: 120px;
   }
+}
+
+.product-bottom-section {
+  margin-top: 40px;
 }

@@ -1,4 +1,5 @@
 export interface Review {
+  id?: string; // React Admin uses 'id'
   _id: string;
   orderId: string;
   productId: string;

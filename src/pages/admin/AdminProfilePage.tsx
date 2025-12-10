@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { CustomAppBar } from "../../components/Admin/CustomAppBar";
+import '../../styles/AdminProfilePage.css';
 
 interface AdminProfile {
     username: string;
@@ -139,29 +140,25 @@ const AdminProfilePage: React.FC = () => {
 
     if (loading) {
         return (
-            <Card sx={{ borderRadius: '20px', mr: '-24px', p: 4 }}>
+            <Card className="admin-loading-card">
                 <Typography align="center">Đang tải thông tin...</Typography>
             </Card>
         );
     }
 
     return (
-        <Card sx={{ borderRadius: '20px', mr: '-24px', height: '100%' }}>
-            <Box sx={{ padding: 2 }}>
+        <Card className="admin-profile-card">
+            <Box className="admin-profile-content">
                 <CustomAppBar />
 
-                <Typography variant="h4" fontWeight="bold" mb={3} mt={2}>
+                <Typography variant="h4" className="admin-profile-title">
                     Cài đặt Admin
                 </Typography>
 
                 <Tabs
                     value={tab}
                     onChange={(_, newTab) => setTab(newTab)}
-                    sx={{
-                        mb: 3,
-                        borderBottom: 1,
-                        borderColor: 'divider'
-                    }}
+                    className="admin-profile-tabs"
                 >
                     <Tab
                         icon={<PersonOutline />}
@@ -176,38 +173,20 @@ const AdminProfilePage: React.FC = () => {
                 </Tabs>
 
                 {tab === 0 && (
-                    <Paper elevation={2} sx={{ p: 4, maxWidth: 600 }}>
-                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 4 }}>
-                            <Box sx={{ position: 'relative' }}>
+                    <Paper elevation={2} className="admin-profile-paper">
+                        <Box className="admin-avatar-container">
+                            <Box className="admin-avatar-box">
                                 <Avatar
                                     src={profile.avatarUrl || "https://i.pravatar.cc/150?img=5"}
                                     alt={profile.name || profile.username}
-                                    sx={{
-                                        width: 120,
-                                        height: 120,
-                                        cursor: "pointer",
-                                        border: '4px solid',
-                                        borderColor: 'primary.main',
-                                        transition: 'transform 0.2s',
-                                        '&:hover': {
-                                            transform: 'scale(1.05)'
-                                        }
-                                    }}
+                                    className="admin-avatar"
                                     onClick={handleAvatarClick}
                                 />
                                 <Box
-                                    sx={{
-                                        position: 'absolute',
-                                        bottom: 0,
-                                        right: 0,
-                                        bgcolor: 'primary.main',
-                                        borderRadius: '50%',
-                                        p: 1,
-                                        cursor: 'pointer'
-                                    }}
+                                    className="admin-camera-icon-box"
                                     onClick={handleAvatarClick}
                                 >
-                                    <PhotoCamera sx={{ color: 'white', fontSize: 20 }} />
+                                    <PhotoCamera className="admin-camera-icon" />
                                 </Box>
                             </Box>
                             <input
@@ -265,7 +244,7 @@ const AdminProfilePage: React.FC = () => {
                 )}
 
                 {tab === 1 && (
-                    <Paper elevation={2} sx={{ p: 4, maxWidth: 600 }}>
+                    <Paper elevation={2} className="admin-profile-paper">
                         <Typography variant="h6" mb={3}>Đổi mật khẩu</Typography>
 
                         <TextField

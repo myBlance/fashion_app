@@ -21,13 +21,13 @@ import {
   useDataProvider,
   useNotify,
   useRefresh,
+  useSidebarState,
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs'; // Điều chỉnh đường dẫn nếu cần
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar'; // Điều chỉnh đường dẫn nếu cần
-import { useSidebarState } from 'react-admin';
-import { voucherFilter } from './VoucherFilter';
 import { Voucher } from '../../../types/Voucher';
+import { voucherFilter } from './VoucherFilter';
 
 // Action toolbar
 const ListActions = () => (
@@ -101,7 +101,7 @@ export const VoucherList = () => {
         <Box sx={{ overflow: 'auto', maxHeight: 'calc(100vh - 100px)', width: open ? '1228px' : '1419px' }}>
           <DatagridConfigurable
             bulkActionButtons={false}
-            rowClick="edit" 
+            rowClick="edit"
             sx={(theme) => ({
               '& .RaDatagrid-headerCell': {
                 backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : '#1e1e1e',
@@ -195,7 +195,7 @@ export const VoucherList = () => {
                     <IconButton
                       size="small"
                       color="primary"
-                      onClick={() => navigate(`/admin/vouchers/show?clone=${record.id}`)}
+                      onClick={() => navigate(`/admin/vouchers/${record.id}`)}
                     >
                       <Visibility fontSize="small" />
                     </IconButton>

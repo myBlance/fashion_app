@@ -1,23 +1,24 @@
-import { 
-        Toolbar, 
-        IconButton, 
-        useMediaQuery, 
-        Theme 
-} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { 
-    HideOnScroll, 
-    LoadingIndicator, 
-    LocalesMenuButton, 
-    SidebarToggleButton, 
-    ToggleThemeButton, 
-    useThemesContext 
-} from "react-admin";
-import { 
-    FC, 
-    ReactNode, 
-    memo 
+import {
+    IconButton,
+    Theme,
+    Toolbar,
+    useMediaQuery
+} from "@mui/material";
+import {
+    FC,
+    ReactNode,
+    memo
 } from "react";
+import {
+    HideOnScroll,
+    LoadingIndicator,
+    LocalesMenuButton,
+    SidebarToggleButton,
+    ToggleThemeButton,
+    useThemesContext
+} from "react-admin";
+import '../../styles/CustomAppBar.css';
 
 
 interface CustomAppBarProps {
@@ -29,12 +30,12 @@ interface CustomAppBarProps {
 export const CustomAppBar: FC<CustomAppBarProps> = memo(({ onToggleSidebar, }) => {
     const isXSmall = useMediaQuery<Theme>(theme => theme.breakpoints.down("sm"));
     const { darkTheme } = useThemesContext();
-    
+
     return (
         <HideOnScroll >
-            <Toolbar disableGutters variant={isXSmall ? "regular" : "dense"} sx={{borderBottom: "2px solid #ddd", height: "64px"}}>
+            <Toolbar disableGutters variant={isXSmall ? "regular" : "dense"} className="custom-app-bar-toolbar">
                 {onToggleSidebar ? (
-                    <IconButton onClick={onToggleSidebar} sx={{ color: "#000", marginRight: 2 }}>
+                    <IconButton onClick={onToggleSidebar} className="custom-app-bar-icon-btn">
                         <MenuIcon />
                     </IconButton>
                 ) : (
@@ -45,8 +46,8 @@ export const CustomAppBar: FC<CustomAppBarProps> = memo(({ onToggleSidebar, }) =
                 {/* <TitlePortal /> */}
 
                 {/* Các chức năng bổ sung */}
-                <div style={{ flexGrow: 1 }}></div>
-                
+                <div className="custom-app-bar-spacer"></div>
+
                 {darkTheme && <ToggleThemeButton />}
                 <LoadingIndicator />
                 <LocalesMenuButton languages={[
@@ -54,7 +55,7 @@ export const CustomAppBar: FC<CustomAppBarProps> = memo(({ onToggleSidebar, }) =
                     { locale: 'vi', name: 'VI ' },
                 ]} />
 
-                
+
             </Toolbar>
         </HideOnScroll>
     );

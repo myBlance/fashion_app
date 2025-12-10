@@ -265,7 +265,7 @@ const ProductDetail: React.FC = () => {
         </div>
       </div>
 
-      <Box sx={{ marginTop: '40px' }}>
+      <Box className="product-bottom-section">
         <ProductDetailTabs
           productId={product._id}
           description={product.description || ''}

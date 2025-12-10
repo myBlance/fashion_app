@@ -1,0 +1,15 @@
+/* src/styles/CustomAppBar.css */
+
+.custom-app-bar-toolbar {
+    border-bottom: 2px solid #ddd;
+    height: 64px;
+}
+
+.custom-app-bar-icon-btn {
+    color: #000 !important;
+    margin-right: 16px !important;
+}
+
+.custom-app-bar-spacer {
+    flex-grow: 1;
+}

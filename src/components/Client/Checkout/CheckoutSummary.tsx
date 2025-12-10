@@ -290,33 +290,18 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
 
         {/* ✅ Hiển thị voucher đã chọn với thông tin giảm giá */}
         {selectedVoucher && (
-          <div className="selected-voucher" style={{
-            marginTop: '12px',
-            padding: '12px',
-            background: isVoucherValid ? '#fff8e1' : '#ffebee',
-            border: `1px solid ${isVoucherValid ? '#ffd54f' : '#f44336'}`,
-            borderRadius: '6px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
+          <div className={`selected-voucher ${isVoucherValid ? 'valid' : 'invalid'}`}>
             <div>
               <strong>{selectedVoucher.code}</strong> - {getVoucherDisplayText(selectedVoucher)}
               {!isVoucherValid && (
-                <span style={{ color: '#d32f2f', fontWeight: 'bold', marginLeft: '8px' }}>
+                <span className="voucher-warning">
                   (Không đủ điều kiện)
                 </span>
               )}
             </div>
             <button
               onClick={() => setSelectedVoucher(null)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#d32f2f',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-              }}
+              className="delete-voucher-btn"
             >
               Xóa
             </button>
@@ -380,24 +365,11 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
               onChange={() => setSelectedPaymentMethod('shopeepay')}
             />
             <label htmlFor="shopeepay">
-              <img src="/assets/images/shopeepay.png" alt="ShopeePay" className="payment-icon" />
+              <img src="/assets/images/shopee.png" alt="ShopeePay" className="payment-icon" />
               Ví ShopeePay
             </label>
           </div>
-          <div className="payment-method">
-            <input
-              type="radio"
-              id="credit-card"
-              name="payment"
-              value="credit-card"
-              checked={selectedPaymentMethod === 'credit-card'}
-              onChange={() => setSelectedPaymentMethod('credit-card')}
-            />
-            <label htmlFor="credit-card">
-              <img src="/assets/images/credit-card.png" alt="Thẻ tín dụng/giới hạn" className="payment-icon" />
-              Thẻ tín dụng/Ghi nợ
-            </label>
-          </div>
+
           <div className="payment-method">
             <input
               type="radio"
@@ -408,7 +380,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
               onChange={() => setSelectedPaymentMethod('seepay')}
             />
             <label htmlFor="seepay">
-              <img src="/assets/images/seepay.png" alt="SeePay" className="payment-icon" />
+              <img src="/assets/images/sepay-820x820-blue-icon.webp" alt="SeePay" className="payment-icon" />
               SeePay (Quét QR)
             </label>
           </div>
@@ -422,7 +394,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
               onChange={() => setSelectedPaymentMethod('cash-on-delivery')}
             />
             <label htmlFor="cash-on-delivery">
-              <img src="/assets/images/cod.png" alt="Thanh toán khi nhận hàng" className="payment-icon" />
+              <img src="/assets/images/COD.png" alt="Thanh toán khi nhận hàng" className="payment-icon" />
               Thanh toán khi nhận hàng
             </label>
           </div>
@@ -437,13 +409,13 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         {selectedVoucher && isVoucherValid && (
           <div className="total-row">
             <span>Giảm giá ({selectedVoucher.code})</span>
-            <span style={{ color: 'green' }}>-{discountAmount.toLocaleString()}₫</span>
+            <span className="discount-valid">-{discountAmount.toLocaleString()}₫</span>
           </div>
         )}
         {selectedVoucher && !isVoucherValid && (
           <div className="total-row">
             <span>Giảm giá ({selectedVoucher.code})</span>
-            <span style={{ color: '#d32f2f' }}>Không áp dụng</span>
+            <span className="discount-invalid">Không áp dụng</span>
           </div>
         )}
         <div className="total-row">

@@ -10,110 +10,75 @@ import {
     TextField,
     Typography
 } from '@mui/material';
+import '../../styles/ContactPage.css';
 
 const ContactPage = () => {
     return (
-        <Container maxWidth="lg" sx={{ py: 5 }}>
+        <Container maxWidth="lg" className="contact-page-container">
             <Box display="flex" flexWrap="wrap" gap={4} mb={5}>
                 {/* Left Column: Store Info */}
-                <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 16px)' } }}>
-                    <Typography variant="h4" color="#d32f2f" fontWeight="bold" gutterBottom>
+                <Box className="contact-info-column">
+                    <Typography variant="h4" className="contact-title">
                         Cửa hàng Dola Style
                     </Typography>
-                    <Typography variant="body1" paragraph color="text.secondary" >
+                    <Typography variant="body1" paragraph className="contact-description">
                         Dola Style không chỉ là một cửa hàng thời trang nữ đơn thuần, mà còn là điểm đến lý tưởng cho những cô gái đam mê thời trang, yêu thích sự sang trọng và đẳng cấp. Với một sứ mệnh tôn vinh vẻ đẹp và phong cách riêng biệt của mỗi người phụ nữ, Dola Style đã trở thành biểu tượng của sự uy tín và chất lượng trong ngành thời trang.
                     </Typography>
 
                     <Box display="flex" flexWrap="wrap" gap={3} mt={2}>
-                        <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 12px)' } }}>
+                        <Box className="contact-item-box">
                             <Box display="flex" alignItems="flex-start" gap={2}>
-                                <Box sx={{
-                                    minWidth: 40,
-                                    height: 40,
-                                    borderRadius: '50%',
-                                    border: '1px solid #d32f2f',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#d32f2f'
-                                }}>
+                                <Box className="contact-icon-circle">
                                     <LocationOnIcon />
                                 </Box>
                                 <Box>
-                                    <Typography variant="subtitle1" fontWeight="bold">Địa chỉ</Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="subtitle1" className="contact-label">Địa chỉ</Typography>
+                                    <Typography variant="body2" className="contact-text">
                                         70 Lữ Gia, Phường 15, Quận 11, TP.HCM
                                     </Typography>
                                 </Box>
                             </Box>
                         </Box>
 
-                        <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 12px)' } }}>
+                        <Box className="contact-item-box">
                             <Box display="flex" alignItems="flex-start" gap={2}>
-                                <Box sx={{
-                                    minWidth: 40,
-                                    height: 40,
-                                    borderRadius: '50%',
-                                    border: '1px solid #d32f2f',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#d32f2f'
-                                }}>
+                                <Box className="contact-icon-circle">
                                     <AccessTimeIcon />
                                 </Box>
                                 <Box>
-                                    <Typography variant="subtitle1" fontWeight="bold">Thời gian làm việc</Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="subtitle1" className="contact-label">Thời gian làm việc</Typography>
+                                    <Typography variant="body2" className="contact-text">
                                         8h - 22h
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" className="contact-text">
                                         Từ thứ 2 đến chủ nhật
                                     </Typography>
                                 </Box>
                             </Box>
                         </Box>
 
-                        <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 12px)' } }}>
+                        <Box className="contact-item-box">
                             <Box display="flex" alignItems="flex-start" gap={2}>
-                                <Box sx={{
-                                    minWidth: 40,
-                                    height: 40,
-                                    borderRadius: '50%',
-                                    border: '1px solid #d32f2f',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#d32f2f'
-                                }}>
+                                <Box className="contact-icon-circle">
                                     <PhoneIcon />
                                 </Box>
                                 <Box>
-                                    <Typography variant="subtitle1" fontWeight="bold">Hotline</Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="subtitle1" className="contact-label">Hotline</Typography>
+                                    <Typography variant="body2" className="contact-text">
                                         1900 6750
                                     </Typography>
                                 </Box>
                             </Box>
                         </Box>
 
-                        <Box sx={{ width: { xs: '100%', sm: 'calc(50% - 12px)' } }}>
+                        <Box className="contact-item-box">
                             <Box display="flex" alignItems="flex-start" gap={2}>
-                                <Box sx={{
-                                    minWidth: 40,
-                                    height: 40,
-                                    borderRadius: '50%',
-                                    border: '1px solid #d32f2f',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: '#d32f2f'
-                                }}>
+                                <Box className="contact-icon-circle">
                                     <EmailIcon />
                                 </Box>
                                 <Box>
-                                    <Typography variant="subtitle1" fontWeight="bold">Email</Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="subtitle1" className="contact-label">Email</Typography>
+                                    <Typography variant="body2" className="contact-text">
                                         support@sapo.vn
                                     </Typography>
                                 </Box>
@@ -123,11 +88,11 @@ const ContactPage = () => {
                 </Box>
 
                 {/* Right Column: Contact Form */}
-                <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 16px)' } }}>
-                    <Typography variant="h4" color="#d32f2f" fontWeight="bold" gutterBottom>
+                <Box className="contact-info-column">
+                    <Typography variant="h4" className="contact-title">
                         Liên hệ với chúng tôi
                     </Typography>
-                    <Typography variant="body1" paragraph color="text.secondary">
+                    <Typography variant="body1" paragraph className="contact-description">
                         Nếu bạn có thắc mắc gì, có thể gửi yêu cầu cho chúng tôi, và chúng tôi sẽ liên lạc lại với bạn sớm nhất có thể.
                     </Typography>
 
@@ -166,13 +131,7 @@ const ContactPage = () => {
                         <Button
                             variant="contained"
                             fullWidth
-                            sx={{
-                                mt: 2,
-                                bgcolor: '#b71c1c',
-                                '&:hover': { bgcolor: '#d32f2f' },
-                                py: 1.5,
-                                fontWeight: 'bold'
-                            }}
+                            className="contact-submit-btn"
                         >
                             Gửi thông tin
                         </Button>
@@ -181,13 +140,13 @@ const ContactPage = () => {
             </Box>
 
             {/* Google Maps Section */}
-            <Box mt={5}>
-                <Paper elevation={1} sx={{ p: 1, borderRadius: 2 }}>
+            <Box className="google-map-container">
+                <Paper elevation={1} className="google-map-paper">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.863981044334!2d105.81156881476332!3d21.03812779283556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab3428d02c77%3A0x6bba31d4715f3cb9!2zUGjhuqduIG3hu4FtIHF14bqjbiBsw70gYsOhbiBow6BuZyAtIFNhcG8gUE9T!5e0!3m2!1svi!2s!4v1647424600000!5m2!1svi!2s"
                         width="100%"
                         height="450"
-                        style={{ border: 0, borderRadius: '8px' }}
+                        className="google-map-iframe"
                         allowFullScreen={true}
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"

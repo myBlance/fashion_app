@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout } from 'react-admin';
 
-import { MoreVert, ShoppingCart, Store, Loyalty } from '@mui/icons-material';
+import { Loyalty, MoreVert, ShoppingCart, Store, Reviews } from '@mui/icons-material';
 import {
     Avatar,
     Box,
@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/MyMenu.css';
 
 // Define your API base URL here or import it from your config
 
@@ -54,42 +55,32 @@ const UserMenu = () => {
         axios.get(`${API_BASE_URL}/api/users/profile`, {
             headers: { Authorization: `Bearer ${token}` },
         })
-        .then((res) => {
-            const data = res.data.data;
-            setProfile({
-                name: data.name || 'ADMIN',
-                avatarUrl: data.avatarUrl || '/user-avatar.png',
-            });
-        })
-        .catch((err) => {
-            console.error('Lỗi khi lấy thông tin người dùng:', err);
-            setProfile({ name: 'ADMIN', avatarUrl: '/user-avatar.png' });
-        })
-        .finally(() => setLoading(false));
+            .then((res) => {
+                const data = res.data.data;
+                setProfile({
+                    name: data.name || 'ADMIN',
+                    avatarUrl: data.avatarUrl || '/user-avatar.png',
+                });
+            })
+            .catch((err) => {
+                console.error('Lỗi khi lấy thông tin người dùng:', err);
+                setProfile({ name: 'ADMIN', avatarUrl: '/user-avatar.png' });
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     return (
         <>
-            <Box
-                sx={{
-                    borderTop: '1px solid #fff',
-                    p: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 2,
-                    mb: 2,
-                }}
-            >
+            <Box className="user-menu-box">
                 <Box display="flex" alignItems="center" gap={2}>
                     <Avatar alt={profile?.name || 'User'} src={profile?.avatarUrl || '/user-avatar.png'} />
-                    <Typography variant="body1" sx={{ color: '#fff' }}>
+                    <Typography variant="body1" className="user-menu-name">
                         {loading ? 'Đang tải...' : profile?.name || 'ADMIN'}
                     </Typography>
                 </Box>
 
                 <IconButton onClick={handleMenuClick}>
-                    <MoreVert sx={{ color: '#fff' }} />
+                    <MoreVert className="user-menu-icon" />
                 </IconButton>
             </Box>
 
@@ -102,92 +93,41 @@ const UserMenu = () => {
 };
 
 const MyMenu: React.FC<MenuProps> = (props) => (
-    <Box 
-        display="flex" 
-        flexDirection="column" 
-        height="100%" 
-        sx={{ backgroundColor: '#000'}}
-    >
+    <Box className="my-menu-container">
         {/* Logo trên cùng */}
-        <Box
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                p: 2,
-                borderBottom: '1px solid rgba(0,0,0,0.12)',
-                
-            }}
-        >
-            <h1 style={{ color: '#ff7a7a', margin: 0, fontSize: '32px', fontFamily:'fantasy' }}>
+        <Box className="my-menu-logo-box">
+            <h1 className="my-menu-logo">
                 DolaStyle
             </h1>
         </Box>
 
         {/* Menu chính */}
-        <Box sx={{ flexGrow: 1, overflowY: 'auto' , position: "sticky"}}>
+        <Box className="my-menu-items-box">
             <Menu {...props}>
-                <Menu.DashboardItem 
-                    sx={{ color: "#fff",
-                        "& .MuiListItemIcon-root": { color: "#fff"  },
-                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                        "&.RaMenuItemLink-active": {
-                            backgroundColor: "#3873d1",  
-                            color: "#fff",               
-                        }
-                    }} 
+                <Menu.DashboardItem className="my-menu-item" />
+                <Menu.Item
+                    to="/admin/orders"
+                    primaryText="Order"
+                    leftIcon={<ShoppingCart />}
+                    className="my-menu-item"
                 />
-                <Menu.Item 
-                    to="/admin/orders" 
-                    primaryText="Order" 
-                    leftIcon={<ShoppingCart />} 
-                    sx={{ color: "#fff",
-                        "& .MuiListItemIcon-root": { color: "#fff"  },
-                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                        "&.RaMenuItemLink-active": {
-                            backgroundColor: "#3873d1",  
-                            color: "#fff",               
-                        }
-                    }} 
-                />
-                <Menu.Item 
+                <Menu.Item
                     to="/admin/products"
-                    primaryText="Product" 
-                    leftIcon={<Store />} 
-                    sx={{ color: "#fff",
-                        "& .MuiListItemIcon-root": { color: "#fff"  },
-                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                        "&.RaMenuItemLink-active": {
-                            backgroundColor: "#3873d1",  
-                            color: "#fff",               
-                        }
-                    }} 
+                    primaryText="Product"
+                    leftIcon={<Store />}
+                    className="my-menu-item"
                 />
-                <Menu.Item 
+                <Menu.Item
                     to="/admin/vouchers"
-                    primaryText="Voucher" 
-                    leftIcon={<Loyalty />} 
-                    sx={{ color: "#fff",
-                        "& .MuiListItemIcon-root": { color: "#fff"  },
-                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                        "&.RaMenuItemLink-active": {
-                            backgroundColor: "#3873d1",  
-                            color: "#fff",               
-                        }
-                    }} 
+                    primaryText="Voucher"
+                    leftIcon={<Loyalty />}
+                    className="my-menu-item"
                 />
-                <Menu.Item 
+                <Menu.Item
                     to="/admin/reviews"
-                    primaryText="Review" 
-                    leftIcon={<Loyalty />} 
-                    sx={{ color: "#fff",
-                        "& .MuiListItemIcon-root": { color: "#fff"  },
-                        "&:hover": { backgroundColor: "#3873d1"},borderRadius:3,
-                        "&.RaMenuItemLink-active": {
-                            backgroundColor: "#3873d1",  
-                            color: "#fff",               
-                        }
-                    }} 
+                    primaryText="Review"
+                    leftIcon={<Reviews />}
+                    className="my-menu-item"
                 />
                 {/* Thêm mục menu khác tại đây */}
             </Menu>

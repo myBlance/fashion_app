@@ -4,7 +4,7 @@
   background: #fff;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -328,7 +328,7 @@
   background-color: #fff8f2;
 }
 
-.address-item > div {
+.address-item>div {
   flex: 1;
 }
 
@@ -366,25 +366,32 @@
 
 .close-modal-btn:hover {
   background-color: #c0392b;
-}/* src/styles/CheckoutSummary.css */
+}
+
+/* src/styles/CheckoutSummary.css */
 
 /* --- 1. Cấu trúc chung & Reset --- */
 .checkout-summary {
   background: #fff;
-  border-radius: 12px; /* Bo tròn mềm mại hơn */
+  border-radius: 12px;
+  /* Bo tròn mềm mại hơn */
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Đổ bóng sâu hơn tạo chiều sâu */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  /* Đổ bóng sâu hơn tạo chiều sâu */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   color: #333;
-  max-width: 800px; /* Giới hạn chiều rộng để không bị bè ra trên màn hình to */
-  margin: 0 auto;   /* Căn giữa */
+  max-width: 800px;
+  /* Giới hạn chiều rộng để không bị bè ra trên màn hình to */
+  margin: 0 auto;
+  /* Căn giữa */
 }
 
 /* --- 2. Các Section (Khối nội dung) --- */
 .section {
   margin-bottom: 28px;
   padding-bottom: 24px;
-  border-bottom: 1px dashed #e0e0e0; /* Đường kẻ nét đứt tinh tế hơn */
+  border-bottom: 1px dashed #e0e0e0;
+  /* Đường kẻ nét đứt tinh tế hơn */
 }
 
 .section:last-child {
@@ -435,7 +442,8 @@
 .address-info {
   padding: 16px;
   background: #f8f9fa;
-  border-left: 4px solid #ff5722; /* Điểm nhấn màu cam */
+  border-left: 4px solid #ff5722;
+  /* Điểm nhấn màu cam */
   border-radius: 4px;
   font-size: 15px;
   line-height: 1.5;
@@ -510,7 +518,8 @@
 
 /* --- 5. Voucher --- */
 .voucher-section {
-  background: #fff8e1; /* Màu nền nhẹ cho voucher */
+  background: #fff8e1;
+  /* Màu nền nhẹ cho voucher */
   padding: 16px;
   border-radius: 8px;
   border: 1px solid #ffe082;
@@ -548,18 +557,21 @@
 }
 
 /* --- 6. Vận chuyển & Thanh toán (Style dạng Card) --- */
-.shipping-options, .payment-methods {
+.shipping-options,
+.payment-methods {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
 /* Style chung cho các ô lựa chọn */
-.shipping-option, .payment-method {
+.shipping-option,
+.payment-method {
   display: flex;
   align-items: center;
   padding: 16px;
-  border: 2px solid #eee; /* Viền mặc định */
+  border: 2px solid #eee;
+  /* Viền mặc định */
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -568,7 +580,8 @@
 }
 
 /* Hiệu ứng khi hover */
-.shipping-option:hover, .payment-method:hover {
+.shipping-option:hover,
+.payment-method:hover {
   border-color: #ffccbc;
   background: #fffbf9;
 }
@@ -584,7 +597,8 @@
 .payment-method input[type="radio"] {
   accent-color: #ff5722;
   margin-right: 12px;
-  transform: scale(1.2); /* Phóng to radio button một chút */
+  transform: scale(1.2);
+  /* Phóng to radio button một chút */
 }
 
 .shipping-option label,
@@ -610,7 +624,8 @@
 .shipping-price {
   font-weight: 700;
   color: #333;
-  margin-left: auto; /* Đẩy giá sang phải cùng */
+  margin-left: auto;
+  /* Đẩy giá sang phải cùng */
 }
 
 .payment-icon {
@@ -687,8 +702,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Tối hơn chút */
-  backdrop-filter: blur(2px); /* Làm mờ nền phía sau */
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Tối hơn chút */
+  backdrop-filter: blur(2px);
+  /* Làm mờ nền phía sau */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -703,13 +720,20 @@
   max-width: 550px;
   max-height: 85vh;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease-out;
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .address-item {
@@ -770,14 +794,15 @@
 @media (max-width: 768px) {
   .checkout-summary {
     padding: 16px;
-    border-radius: 0; /* Full màn hình mobile thì không cần bo góc */
+    border-radius: 0;
+    /* Full màn hình mobile thì không cần bo góc */
     box-shadow: none;
   }
 
   .product-item {
     align-items: flex-start;
   }
-  
+
   .product-item img {
     width: 60px;
     height: 60px;
@@ -792,19 +817,21 @@
     min-width: auto;
     margin-left: 8px;
   }
-  
-  .shipping-option, .payment-method {
+
+  .shipping-option,
+  .payment-method {
     padding: 12px;
   }
-  
-  .shipping-option label, .payment-method label {
+
+  .shipping-option label,
+  .payment-method label {
     font-size: 14px;
   }
-  
+
   .total-row.total-final {
     font-size: 18px;
   }
-  
+
   .total-row.total-final strong:last-child {
     font-size: 20px;
   }
@@ -822,4 +849,46 @@
     z-index: 100;
   }
   */
+}
+
+/* --- 11. Voucher Styles (Extracted from Inline) --- */
+.selected-voucher {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-voucher.valid {
+  background: #fff8e1;
+  border: 1px solid #ffd54f;
+}
+
+.selected-voucher.invalid {
+  background: #ffebee;
+  border: 1px solid #f44336;
+}
+
+.voucher-warning {
+  color: #d32f2f;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.delete-voucher-btn {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.discount-valid {
+  color: green;
+}
+
+.discount-invalid {
+  color: #d32f2f;
 }

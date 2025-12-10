@@ -1,17 +1,4 @@
-import {
-  DatagridConfigurable,
-  DateField,
-  FilterButton,
-  FunctionField,
-  List,
-  NumberField,
-  Pagination,
-  TextField,
-  TopToolbar,
-  useRefresh,
-  useNotify,
-} from 'react-admin';
-import { useNavigate } from 'react-router-dom';
+import { Delete as DeleteIcon, Edit, Visibility } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -20,8 +7,23 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { Edit, Visibility, Delete as DeleteIcon } from '@mui/icons-material';
-import { useSidebarState } from 'react-admin';
+import {
+  DatagridConfigurable,
+  DateField,
+  FilterButton,
+  FunctionField,
+  List,
+  NumberField,
+  Pagination,
+  SelectInput,
+  TextField,
+  TextInput,
+  TopToolbar,
+  useNotify,
+  useRefresh,
+  useSidebarState,
+} from 'react-admin';
+import { useNavigate } from 'react-router-dom';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { Review } from '../../../types/Review';
@@ -71,7 +73,23 @@ export const ReviewList = () => {
 
       <List
         resource="reviews"
-        filters={[]}
+        filters={[
+          <SelectInput
+            source="rating"
+            label="Số sao"
+            choices={[
+              { id: 5, name: '5 Sao' },
+              { id: 4, name: '4 Sao' },
+              { id: 3, name: '3 Sao' },
+              { id: 2, name: '2 Sao' },
+              { id: 1, name: '1 Sao' },
+            ]}
+            alwaysOn
+          />,
+          <TextInput source="orderId" label="Mã đơn hàng" />,
+          <TextInput source="productId" label="ID Sản phẩm" />,
+          <TextInput source="userId" label="ID Người dùng" />,
+        ]}
         exporter={false}
         pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
         perPage={10}
@@ -194,7 +212,7 @@ export const ReviewList = () => {
                     <IconButton
                       size="small"
                       color="primary"
-                      onClick={() => navigate(`/admin/reviews/show?clone=${record._id}`)}
+                      onClick={() => navigate(`/admin/reviews/${record.id}/show`)}
                     >
                       <Visibility fontSize="small" />
                     </IconButton>
@@ -204,7 +222,7 @@ export const ReviewList = () => {
                     <IconButton
                       size="small"
                       color="info"
-                      onClick={() => navigate(`/admin/reviews/${record._id}`)}
+                      onClick={() => navigate(`/admin/reviews/${record.id}`)}
                     >
                       <Edit fontSize="small" />
                     </IconButton>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import CheckoutSummary from '../../components/Client/Checkout/CheckoutSummary';
+import '../../styles/Checkout.css';
 
 // Định nghĩa kiểu cho item
 type CartItem = {
@@ -31,10 +32,10 @@ const CheckoutPage: React.FC = () => {
   // Kiểm tra nếu không có item nào
   if (cartItems.length === 0) {
     return (
-      <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+      <div className="checkout-empty">
         <h2>Không có sản phẩm nào để thanh toán.</h2>
         <p>Vui lòng quay lại trang sản phẩm hoặc giỏ hàng.</p>
-        <a href="/cart" style={{ color: '#000', textDecoration: 'underline' }}>Quay lại giỏ hàng</a>
+        <a href="/cart" className="checkout-back-link">Quay lại giỏ hàng</a>
       </div>
     );
   }
@@ -59,7 +60,7 @@ const CheckoutPage: React.FC = () => {
   );
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="checkout-page-container">
       <h2>Thanh Toán {isBuyNow && '(Mua Ngay)'}</h2>
       <CheckoutSummary
         cartItems={processedCartItems}

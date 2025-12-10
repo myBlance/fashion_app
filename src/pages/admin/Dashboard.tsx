@@ -24,6 +24,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CustomAppBar } from '../../components/Admin/CustomAppBar';
+import '../../styles/Dashboard.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -46,11 +47,11 @@ interface DashboardStats {
 }
 
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color: string }> = ({ title, value, icon, color }) => (
-  <Paper elevation={2} sx={{ p: 3, borderLeft: `4px solid ${color}`, height: '100%' }}>
+  <Paper elevation={2} className="stat-card-paper" sx={{ borderLeft: `4px solid ${color}` }}>
     <Box display="flex" justifyContent="space-between" alignItems="center">
       <Box>
-        <Typography variant="body2" color="text.secondary" gutterBottom>{title}</Typography>
-        <Typography variant="h4" fontWeight="bold">{value}</Typography>
+        <Typography variant="body2" className="stat-card-title">{title}</Typography>
+        <Typography variant="h4" className="stat-card-value">{value}</Typography>
       </Box>
       <Box sx={{ color, opacity: 0.8 }}>{icon}</Box>
     </Box>
@@ -137,8 +138,8 @@ const Dashboard: React.FC = () => {
   const COLORS = ['#ff9800', '#4caf50', '#2196f3', '#f44336', '#9c27b0', '#00bcd4'];
 
   return (
-    <Card sx={{ borderRadius: '20px', mr: { xs: '0', sm: '-24px' }, height: '100%' }}>
-      <Box sx={{ padding: { xs: 1, sm: 2 } }}>
+    <Card className="dashboard-card">
+      <Box className="dashboard-card-content">
         <CustomAppBar />
         <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight="bold" mb={{ xs: 2, sm: 3 }} mt={2}>
           Dashboard
@@ -184,7 +185,7 @@ const Dashboard: React.FC = () => {
         <Box display="flex" gap={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }} flexWrap="wrap">
           {/* Revenue Chart */}
           <Box flex="2" minWidth={{ xs: '100%', md: '300px' }}>
-            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+            <Paper elevation={2} className="chart-paper">
               <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Doanh thu 7 ngày qua</Typography>
               <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <LineChart data={revenueChartData}>
@@ -201,7 +202,7 @@ const Dashboard: React.FC = () => {
 
           {/* Pie Chart */}
           <Box flex="1" minWidth={{ xs: '100%', md: '280px' }}>
-            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+            <Paper elevation={2} className="chart-paper">
               <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Trạng thái đơn hàng</Typography>
               <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <PieChart>
@@ -231,7 +232,7 @@ const Dashboard: React.FC = () => {
         <Box display="flex" gap={{ xs: 2, sm: 3 }} flexWrap="wrap">
           {/* Top Products */}
           <Box flex="1" minWidth={{ xs: '100%', md: '350px' }}>
-            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+            <Paper elevation={2} className="chart-paper">
               <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Top 5 sản phẩm bán chạy</Typography>
               <TableContainer sx={{ overflowX: 'auto' }}>
                 <Table size="small">
@@ -246,7 +247,7 @@ const Dashboard: React.FC = () => {
                       <TableRow key={product.productId}>
                         <TableCell>
                           <Box display="flex" alignItems="center" gap={1}>
-                            <img src={product.image} alt={product.name} style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40, objectFit: 'cover', borderRadius: 4 }} />
+                            <img src={product.image} alt={product.name} className="table-product-image" style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40 }} />
                             <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{product.name}</Typography>
                           </Box>
                         </TableCell>
@@ -263,7 +264,7 @@ const Dashboard: React.FC = () => {
 
           {/* Recent Orders */}
           <Box flex="1" minWidth={{ xs: '100%', md: '350px' }}>
-            <Paper elevation={2} sx={{ p: { xs: 2, sm: 3 } }}>
+            <Paper elevation={2} className="chart-paper">
               <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Đơn hàng gần đây</Typography>
               <TableContainer sx={{ overflowX: 'auto' }}>
                 <Table size="small">

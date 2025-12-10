@@ -1,0 +1,65 @@
+/* src/styles/MyMenu.css */
+
+.my-menu-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #000;
+}
+
+.my-menu-logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.my-menu-logo {
+    color: #ff7a7a;
+    margin: 0;
+    font-size: 32px;
+    font-family: fantasy;
+}
+
+.my-menu-items-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    position: sticky;
+}
+
+.my-menu-item {
+    color: #fff !important;
+    border-radius: 12px !important;
+}
+
+.my-menu-item .MuiListItemIcon-root {
+    color: #fff !important;
+}
+
+.my-menu-item:hover {
+    background-color: #3873d1 !important;
+}
+
+.my-menu-item.RaMenuItemLink-active {
+    background-color: #3873d1 !important;
+    color: #fff !important;
+}
+
+.user-menu-box {
+    border-top: 1px solid #fff;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.user-menu-name {
+    color: #fff !important;
+}
+
+.user-menu-icon {
+    color: #fff !important;
+}

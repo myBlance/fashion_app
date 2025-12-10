@@ -1,50 +1,52 @@
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import StorefrontIcon from '@mui/icons-material/Storefront'; // icon khác cho products
 import { Admin, CustomRoutes, Resource } from 'react-admin';
-import Dashboard from './Dashboard';
-import { OrderList } from './order/OrderList';
-import { ProductList } from './product/ProductList';
-import { ProductEdit } from './product/ProductEdit';
-import { AdminLayout } from '../../layouts/AdminLayout';
-import { ProductCreate } from './product/ProductCreate';
-import AdminProfilePage from './AdminProfilePage';
 import { Route } from 'react-router-dom';
 import dataProvider from '../../data/dataProvider';
-import { VoucherList } from './voucher/VoucherList';
+import { AdminLayout } from '../../layouts/AdminLayout';
+import AdminProfilePage from './AdminProfilePage';
+import Dashboard from './Dashboard';
+import { OrderEdit } from './order/OrderEdit';
+import { OrderList } from './order/OrderList';
+import { ProductCreate } from './product/ProductCreate';
+import { ProductEdit } from './product/ProductEdit';
+import { ProductList } from './product/ProductList';
+import { ReviewList } from './review/ReviewList';
+import { ReviewShow } from './review/ReviewShow';
 import { VoucherCreate } from './voucher/VoucherCreate';
 import { VoucherEdit } from './voucher/VoucherEdit';
-import { OrderEdit } from './order/OrderEdit';
-import { ReviewList } from './review/ReviewList';
+import { VoucherList } from './voucher/VoucherList';
 const AdminApp = () => (
-    <Admin 
+    <Admin
         basename="/admin"
-        dataProvider={dataProvider} 
-        dashboard={Dashboard} 
+        dataProvider={dataProvider}
+        dashboard={Dashboard}
         layout={AdminLayout}
     >
         {/* Không cần Resource cho dashboard */}
-        <Resource 
-            name="orders" 
-            list={OrderList} 
+        <Resource
+            name="orders"
+            list={OrderList}
             edit={OrderEdit}
             icon={ShoppingCartIcon}
         />
-        <Resource 
-            name="products" 
-            list={ProductList} 
+        <Resource
+            name="products"
+            list={ProductList}
             edit={ProductEdit}
             create={ProductCreate}
-            icon={StorefrontIcon} 
+            icon={StorefrontIcon}
         />
-        <Resource 
-            name ='vouchers'
-            list = {VoucherList}
-            edit = {VoucherEdit}
-            create = {VoucherCreate}
+        <Resource
+            name='vouchers'
+            list={VoucherList}
+            edit={VoucherEdit}
+            create={VoucherCreate}
         />
-        <Resource 
-            name="reviews" 
-            list = {ReviewList}
+        <Resource
+            name="reviews"
+            list={ReviewList}
+            show={ReviewShow}
         />
 
         <CustomRoutes>

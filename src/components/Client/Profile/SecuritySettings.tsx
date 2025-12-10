@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
 import {
-    Typography,
-    TextField,
     Button,
+    TextField,
+    Typography,
 } from '@mui/material';
+import React, { useState } from 'react';
+import { useToast } from '../../../contexts/ToastContext';
 
 interface SecuritySettingsProps {
-    onChangePassword: () => void;
+    onChangePassword: (data: any) => void;
     message: string;
 }
 
@@ -14,13 +15,19 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChangePassword, m
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const { showToast } = useToast();
 
     const handleSubmit = () => {
-        if (newPassword !== confirmPassword) {
-            alert("Mật khẩu xác nhận không khớp");
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showToast("Vui lòng nhập đầy đủ thông tin", "warning");
             return;
         }
-        onChangePassword();
+
+        if (newPassword !== confirmPassword) {
+            showToast("Mật khẩu xác nhận không khớp", "error");
+            return;
+        }
+        onChangePassword({ currentPassword, newPassword });
     };
 
     return (

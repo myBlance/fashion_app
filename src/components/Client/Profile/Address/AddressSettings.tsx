@@ -1,10 +1,11 @@
 import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import EditAddressModal from './EditAddressModal';
+import { useToast } from '../../../../contexts/ToastContext';
+import { Address } from '../../../../types/Address';
 import AddAddressModal from './AddAddressModal';
 import AddressList from './AddressList';
-import { Address } from '../../../../types/Address';
+import EditAddressModal from './EditAddressModal';
 
 const AddressSettings: React.FC = () => {
     const [addresses, setAddresses] = useState<Address[]>([]);
@@ -13,6 +14,7 @@ const AddressSettings: React.FC = () => {
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const { showToast } = useToast();
 
     const token = localStorage.getItem('token');
 
@@ -65,7 +67,7 @@ const AddressSettings: React.FC = () => {
 
     const handleAddNew = () => {
         if (!token) {
-            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm địa chỉ.');
+            showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm địa chỉ.', 'warning');
             return;
         }
         setIsAddModalOpen(true);
@@ -73,21 +75,21 @@ const AddressSettings: React.FC = () => {
 
     const handleUpdate = (id: string) => {
         if (!token) {
-            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để cập nhật địa chỉ.');
+            showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để cập nhật địa chỉ.', 'warning');
             return;
         }
 
         // ✅ Kiểm tra id hợp lệ
         if (!id || id === 'undefined') {
             console.error('[handleUpdate] Invalid address ID:', id);
-            alert('ID địa chỉ không hợp lệ.');
+            showToast('ID địa chỉ không hợp lệ.', 'error');
             return;
         }
 
         const addr = addresses.find(a => a._id === id);
         if (!addr) {
             console.error('[handleUpdate] Address not found for ID:', id);
-            alert('Không tìm thấy địa chỉ.');
+            showToast('Không tìm thấy địa chỉ.', 'error');
             return;
         }
 
@@ -97,7 +99,7 @@ const AddressSettings: React.FC = () => {
 
     const handleDelete = async (id: string) => {
         if (!token) {
-            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để xóa địa chỉ.');
+            showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để xóa địa chỉ.', 'warning');
             return;
         }
         if (!window.confirm("Bạn có chắc muốn xóa địa chỉ này?")) return;
@@ -108,20 +110,21 @@ const AddressSettings: React.FC = () => {
             });
 
             setAddresses(prev => prev.filter(addr => addr._id !== id));
+            showToast("Xóa địa chỉ thành công", "success");
         } catch (err: any) {
             console.error('Lỗi khi xóa địa chỉ:', err);
             if (err.response?.status === 401) {
-                alert('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.');
+                showToast('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.', 'error');
                 localStorage.removeItem('token');
             } else {
-                alert('Không thể xóa địa chỉ');
+                showToast('Không thể xóa địa chỉ', 'error');
             }
         }
     };
 
     const handleSetDefault = async (id: string) => {
         if (!token) {
-            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để cập nhật địa chỉ.');
+            showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để cập nhật địa chỉ.', 'warning');
             return;
         }
         try {
@@ -139,27 +142,28 @@ const AddressSettings: React.FC = () => {
                     isDefault: addr._id === id,
                 }))
             );
+            showToast("Đặt làm địa chỉ mặc định thành công", "success");
         } catch (err: any) {
             console.error('Lỗi khi cập nhật địa chỉ mặc định:', err);
             if (err.response?.status === 401) {
-                alert('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.');
+                showToast('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.', 'error');
                 localStorage.removeItem('token');
             } else {
-                alert('Không thể cập nhật địa chỉ mặc định');
+                showToast('Không thể cập nhật địa chỉ mặc định', 'error');
             }
         }
     };
 
     const handleSaveAddress = async (updatedAddress: any) => {
         if (!token) {
-            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để cập nhật địa chỉ.');
+            showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để cập nhật địa chỉ.', 'warning');
             return;
         }
 
         // ✅ Kiểm tra _id hợp lệ trước khi gửi
         if (!updatedAddress?._id || updatedAddress._id === 'undefined') {
             console.error('❌ Missing or invalid _id in updatedAddress:', updatedAddress);
-            alert('Lỗi: ID địa chỉ không hợp lệ.');
+            showToast('Lỗi: ID địa chỉ không hợp lệ.', 'error');
             return;
         }
 
@@ -183,7 +187,7 @@ const AddressSettings: React.FC = () => {
             // ✅ Kiểm tra lại _id từ backend
             if (!savedAddr?._id) {
                 console.error('❌ Backend không trả về _id hợp lệ:', savedAddr);
-                alert('Lỗi: Không nhận được dữ liệu địa chỉ hợp lệ từ máy chủ.');
+                showToast('Lỗi: Không nhận được dữ liệu địa chỉ hợp lệ từ máy chủ.', 'error');
                 return;
             }
 
@@ -192,20 +196,21 @@ const AddressSettings: React.FC = () => {
             );
 
             setIsEditModalOpen(false);
+            showToast("Cập nhật thành công", "success");
         } catch (err: any) {
             console.error('Lỗi khi cập nhật địa chỉ:', err);
             if (err.response?.status === 401) {
-                alert('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.');
+                showToast('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.', 'error');
                 localStorage.removeItem('token');
             } else {
-                alert('Không thể cập nhật địa chỉ');
+                showToast('Không thể cập nhật địa chỉ', 'error');
             }
         }
     };
 
     const handleAddAddress = async (newAddress: any) => {
         if (!token) {
-            alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm địa chỉ.');
+            showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để thêm địa chỉ.', 'warning');
             return;
         }
         try {
@@ -222,20 +227,21 @@ const AddressSettings: React.FC = () => {
             // ✅ Kiểm tra _id từ backend
             if (!addedAddr?._id) {
                 console.error('❌ Backend không trả về _id cho địa chỉ mới:', addedAddr);
-                alert('Lỗi: Không nhận được ID địa chỉ từ máy chủ.');
+                showToast('Lỗi: Không nhận được ID địa chỉ từ máy chủ.', 'error');
                 return;
             }
 
             setAddresses(prev => [...prev, addedAddr]);
 
             setIsAddModalOpen(false);
+            showToast("Thêm địa chỉ thành công", "success");
         } catch (err: any) {
             console.error('Lỗi khi thêm địa chỉ:', err);
             if (err.response?.status === 401) {
-                alert('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.');
+                showToast('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.', 'error');
                 localStorage.removeItem('token');
             } else {
-                alert('Không thể thêm địa chỉ');
+                showToast('Không thể thêm địa chỉ', 'error');
             }
         }
     };

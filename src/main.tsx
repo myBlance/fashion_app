@@ -1,23 +1,24 @@
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { store } from './store';
-import { AuthProvider } from './contexts/AuthContext'; // Kiểm tra file này
 import App from './App';
+import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import './index.css';
+import { store } from './store';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 root.render(
-
-    <Provider store={store}>
-      <BrowserRouter>
-        <AuthProvider>
+  <Provider store={store}>
+    <BrowserRouter>
+      <AuthProvider>
+        <ToastProvider>
           <App />
-        </AuthProvider>
-      </BrowserRouter>
-    </Provider>
-
+        </ToastProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </Provider>
 );

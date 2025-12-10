@@ -2,6 +2,7 @@ import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useToast } from '../../../contexts/ToastContext';
 import { WishlistService } from '../../../services/wishlistService';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { toggleWishlist } from '../../../store/wishlistSlice';
@@ -17,6 +18,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { userId } = useAuth();
+  const { showToast } = useToast();
   const wishlist = useAppSelector((state) => state.wishlist.items);
 
   const [hovered, setHovered] = useState(false);
@@ -38,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleToggleWishlist = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!userId) {
-      alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích');
+      showToast('Vui lòng đăng nhập để thêm sản phẩm yêu thích', 'warning');
       return;
     }
     if (loadingFavorite) return;

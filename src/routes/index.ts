@@ -1,5 +1,4 @@
-import { ReactElement } from 'react';
-import React from 'react';
+import React, { ReactElement } from 'react';
 
 import Home from './../pages/client/Home';
 
@@ -7,22 +6,23 @@ import Home from './../pages/client/Home';
 // import Register from '../pages/auth/Register';
 
 // import OrderPage from '../pages/admin/Orders';
-import ProductDetail from '../pages/client/ProductDetail';
-import CartPage from '../pages/client/CartPage';
-import WishlistPage from '../pages/client/WishlistPage';
-import ShopPage from '../pages/client/ShopPage';
-import AboutPage from '../pages/client/AboutPage';
 import AuthTabs from '../pages/auth/AuthTabs';
+import AboutPage from '../pages/client/AboutPage';
+import CartPage from '../pages/client/CartPage';
+import ProductDetail from '../pages/client/ProductDetail';
+import ShopPage from '../pages/client/ShopPage';
+import WishlistPage from '../pages/client/WishlistPage';
 
 // import OrderList from '../pages/admin/OrderList';
 // import ProductList from '../pages/admin/ProductList';
+import CODPaymentPage from '../components/Client/Pay/CODPaymentPage';
+import SeepayPaymentPage from '../components/Client/Pay/SeepayPayment';
+import ShopeePayPayment from '../components/Client/Pay/ShopeePayPayment';
 import AdminApp from '../pages/admin/AdminApp';
 import ProfilePage from '../pages/auth/ProfilePage';
-import ComingSoonPage from '../pages/client/ComingSoonPage';
 import CheckoutPage from '../pages/client/Checkout';
-import ShopeePayPayment from '../components/Client/Pay/ShopeePayPayment';
-import SeepayPaymentPage from '../components/Client/Pay/SeepayPayment';
-import CODPaymentPage from '../components/Client/Pay/CODPaymentPage';
+import ComingSoonPage from '../pages/client/ComingSoonPage';
+import ContactPage from '../pages/client/ContactPage';
 import OrderHistoryPage from '../pages/client/OrderHistoryPage';
 // import AdminApp from '../pages/admin/AdminApp';
 // import Products from '../pages/admin/Products';
@@ -39,7 +39,7 @@ type RouteItem = {
 
 export const clientRoutes: RouteItem[] = [
     { path: '/', element: React.createElement(Home), auth: 'client' },
-    { path: '/product/:id', element: React.createElement(ProductDetail) , auth: 'client' },
+    { path: '/product/:id', element: React.createElement(ProductDetail), auth: 'client' },
     { path: '/shop', element: React.createElement(ShopPage), auth: 'client' },
     { path: '/orders', element: React.createElement(OrderHistoryPage), auth: 'client' },
     { path: '/cart', element: React.createElement(CartPage), auth: 'client' },
@@ -54,7 +54,7 @@ export const clientRoutes: RouteItem[] = [
 
 
     { path: '/blog', element: React.createElement(ComingSoonPage), auth: 'client' },
-    { path: '/contact', element: React.createElement(ComingSoonPage), auth: 'client' },
+    { path: '/contact', element: React.createElement(ContactPage), auth: 'client' },
 ];
 
 export const adminRoutes: RouteItem[] = [

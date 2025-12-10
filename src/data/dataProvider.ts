@@ -1,25 +1,25 @@
+import { stringify } from "query-string";
 import {
+  CreateParams,
+  CreateResult,
+  DeleteManyParams,
+  DeleteManyResult,
+  DeleteParams,
+  DeleteResult,
   fetchUtils,
   GetListParams,
   GetListResult,
-  GetOneParams,
-  GetOneResult,
-  UpdateParams,
-  CreateParams,
-  DeleteParams,
   GetManyParams,
-  GetManyResult,
   GetManyReferenceParams,
   GetManyReferenceResult,
+  GetManyResult,
+  GetOneParams,
+  GetOneResult,
   UpdateManyParams,
   UpdateManyResult,
-  DeleteManyParams,
-  DeleteManyResult,
-  CreateResult,
+  UpdateParams,
   UpdateResult,
-  DeleteResult,
 } from "react-admin";
-import { stringify } from "query-string";
 
 const baseUrl = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
@@ -207,7 +207,6 @@ const dataProvider = {
   async delete(resource: string, params: DeleteParams): Promise<DeleteResult> {
     const url = `${baseUrl}/${resource}/${params.id}`;
     const response = await httpClient(url, { method: "DELETE" });
-
     const item = response.json.data || response.json;
     return { data: item };
   },

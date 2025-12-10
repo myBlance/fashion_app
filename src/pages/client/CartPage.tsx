@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { CartService } from '../../services/cartService';
 import { RootState } from '../../store';
 import { decreaseQuantity, increaseQuantity, loadGuestCart, removeFromCart, setCartItems } from '../../store/cartSlice';
@@ -16,6 +17,7 @@ const CartPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -86,13 +88,19 @@ const CartPage: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    if (cartItems.length === 0) return alert('Giỏ hàng trống!');
+    if (cartItems.length === 0) {
+      showToast('Giỏ hàng trống!', 'warning');
+      return;
+    }
     const selectedCartItems = cartItems.filter(item => {
       const id = `${item.productId}-${item.color}-${item.size}`;
       return selectedItems[id] ?? false;
     });
 
-    if (selectedCartItems.length === 0) return alert('Vui lòng chọn sản phẩm để thanh toán.');
+    if (selectedCartItems.length === 0) {
+      showToast('Vui lòng chọn sản phẩm để thanh toán.', 'warning');
+      return;
+    }
     navigate('/checkout', { state: { selectedCartItems } });
   };
 

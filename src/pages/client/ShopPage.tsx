@@ -365,7 +365,7 @@ const ShopPage: React.FC = () => {
           ) : (
             <Box textAlign="center" width="100%" py={8} gridColumn="1 / -1">
               <Typography variant="h6" color="text.secondary" mb={2}>
-                Không tìm thấy sản phẩm nào
+                Không tìm thấy sản phẩm phù hợp
               </Typography>
               {getActiveFilterCount() > 0 && (
                 <Button variant="outlined" onClick={clearAllFilters}>

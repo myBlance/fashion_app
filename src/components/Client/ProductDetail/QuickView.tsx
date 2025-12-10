@@ -2,6 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useToast } from '../../../contexts/ToastContext';
 import { CartService } from "../../../services/cartService";
 import { addToCart } from "../../../store/cartSlice";
 import '../../../styles/QuickView.css';
@@ -17,6 +18,7 @@ interface QuickViewProps {
 
 const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCart }) => {
   const dispatch = useDispatch();
+  const { showToast } = useToast();
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -78,13 +80,13 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
       } else {
         dispatch(addToCart(newItem as CartItem));
       }
-      alert("Đã thêm vào giỏ!");
+      showToast("Đã thêm vào giỏ!", "success");
       if (onAddToCart) {
         onAddToCart(product.colors[actualColorIndex], selectedSize, quantity);
       }
     } catch (err) {
       console.error("Lỗi khi thêm vào giỏ:", err);
-      alert("Thêm vào giỏ thất bại. Vui lòng thử lại.");
+      showToast("Thêm vào giỏ thất bại. Vui lòng thử lại.", "error");
     }
   };
 

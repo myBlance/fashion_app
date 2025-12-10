@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Button, CircularProgress, TextField } from '@mui/material';
-import '../../styles/Authtabs.css';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import InputAdornment from '@mui/material/InputAdornment';
+import { Button, CircularProgress, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import axios from 'axios';
-import React from 'react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
+import '../../styles/Authtabs.css';
 
 
 const LoginPage = () => {
@@ -17,65 +17,45 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const { loginAs } = useAuth();
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     const [loading, setLoading] = React.useState(false);
-  
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setTimeout(() => {
-        setLoading(false);
-    }, 10000);
+            setLoading(false);
+        }, 10000); // Helper timeout
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {
                 username,
                 password
-            },
-        );
+            });
 
-    const { token, role, userId } = res.data; // server phải trả userId
+            const { token, role, userId } = res.data;
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
+            localStorage.setItem('token', token);
+            localStorage.setItem('role', role);
 
-      if (role === 'admin') {
-        loginAs('admin');
-        navigate('/admin');
-      } else if (role === 'client') {
-        loginAs('client', userId); // đồng bộ giỏ hàng
-        navigate('/');
-      } else {
-        alert('Vai trò không hợp lệ');
-      }
-    } catch (error) {
-      alert('Sai tài khoản hoặc mật khẩu');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-// const LoginPage = () => {
-//     const [username, setUsername] = useState('');
-//     const [password, setPassword] = useState('');
-//     const [loading, setLoading] = React.useState(false);
-//     const { loginAs } = useAuth();
-//     const navigate = useNavigate();
-
-//     const handleLogin = (e: React.FormEvent) => {
-//         e.preventDefault();
-//         if (username === 'admin' && password === '1') {
-//             loginAs('admin');
-//             sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
-//             navigate('/admin');
-//         } else if (username === 'client' && password === '1') {
-//             loginAs('client');
-//             sessionStorage.setItem('user', JSON.stringify({ username, role: 'admin' }));
-//             navigate('/');
-//         } else {
-//             alert('Sai tài khoản hoặc mật khẩu');
-//         }
-//     };
+            if (role === 'admin') {
+                loginAs('admin');
+                navigate('/admin');
+                showToast('Đăng nhập quản trị viên thành công', 'success');
+            } else if (role === 'client') {
+                loginAs('client', userId);
+                navigate('/');
+                showToast('Đăng nhập thành công', 'success');
+            } else {
+                showToast('Vai trò không hợp lệ', 'error');
+            }
+        } catch (error) {
+            showToast('Tài khoản hoặc mật khẩu không chính xác', 'error');
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -106,7 +86,7 @@ const LoginPage = () => {
                             transition: 'background-color 0s', // không đổi màu khi hover
                             '&:hover': {
                                 backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên màu khi hover
-                            },'&.Mui-focused': {
+                            }, '&.Mui-focused': {
                                 backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên khi focus
                             },
                             '&:before': {
@@ -125,7 +105,7 @@ const LoginPage = () => {
                                 WebkitBoxShadow: '0 0 0 1000px rgba(0,0,0,0) inset !important',
                                 WebkitTextFillColor: '#000000 !important',
                                 transition: 'background-color 0s 600000s, color 0s 600000s',
-                                borderRadius:'40px',
+                                borderRadius: '40px',
                             },
                         },
                         '& .MuiInputLabel-root': {
@@ -138,7 +118,7 @@ const LoginPage = () => {
                     }}
                 />
                 <TextField
-                    id="filled-multiline-flexible"          
+                    id="filled-multiline-flexible"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Mật khẩu"
@@ -159,7 +139,7 @@ const LoginPage = () => {
                             transition: 'background-color 0s', // không đổi màu khi hover
                             '&:hover': {
                                 backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên màu khi hover
-                            },'&.Mui-focused': {
+                            }, '&.Mui-focused': {
                                 backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên khi focus
                             },
                             '&:before': {
@@ -178,7 +158,7 @@ const LoginPage = () => {
                                 WebkitBoxShadow: '0 0 0 1000px rgba(0,0,0,0) inset !important',
                                 WebkitTextFillColor: '#000000 !important',
                                 transition: 'background-color 0s 600000s, color 0s 600000s',
-                                borderRadius:'40px',
+                                borderRadius: '40px',
                             },
                         },
                         '& .MuiInputLabel-root': {
@@ -195,8 +175,8 @@ const LoginPage = () => {
                                 <IconButton
                                     onClick={handleTogglePassword}
                                     edge="end"
-                                    sx={{ 
-                                        color: '#000000', 
+                                    sx={{
+                                        color: '#000000',
                                     }}
                                 >
                                     {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -215,10 +195,9 @@ const LoginPage = () => {
                     {loading ? <CircularProgress size={24} color="inherit" /> : 'Đăng nhập'}
                 </Button>
                 <div className="login-links">
-                    <a href="/forgot-password">Quên mật khẩu?</a>
-                    <p>client: client - 1</p><p>admin: admin - 1</p>
+                    <Link to="/forgot-password">Quên mật khẩu?</Link>
                     <span>
-                        Chưa có tài khoản? <a href="/auth?tab=register">Đăng ký</a>
+                        Chưa có tài khoản? <Link to="/auth?tab=register">Đăng ký</Link>
                     </span>
                 </div>
             </form>

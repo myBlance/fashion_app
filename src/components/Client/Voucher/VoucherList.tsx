@@ -1,9 +1,11 @@
 // src/components/Client/Voucher/VoucherList.tsx
 import { Alert, Box, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../../../contexts/ToastContext';
 import { UserVoucher, VoucherService } from '../../../services/voucherService';
 import { Voucher } from '../../../types/Voucher';
 import VoucherCard from './VoucherCard';
+
 interface VoucherListProps {
   totalAmount?: number;
 }
@@ -13,6 +15,7 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
   const [claimedVoucherCodes, setClaimedVoucherCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchVouchers = async () => {
@@ -76,27 +79,27 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
   const handleClaim = async (code: string) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Bạn cần đăng nhập để lưu voucher.');
+      showToast('Bạn cần đăng nhập để lưu voucher.', 'warning');
       return;
     }
     try {
       const res = await VoucherService.claimVoucher(code, token);
       if (res.success) {
-        alert(res.message);
+        showToast(res.message, 'success');
         // ✅ Cập nhật lại danh sách đã lưu sau khi claim thành công
         setClaimedVoucherCodes(prev => [...prev, code]);
       } else {
-        alert(`Lỗi: ${res.message}`);
+        showToast(`Lỗi: ${res.message}`, 'error');
       }
     } catch (err) {
       console.error('Lỗi khi claim voucher:', err);
-      alert('Không thể lưu voucher. Vui lòng thử lại.');
+      showToast('Không thể lưu voucher. Vui lòng thử lại.', 'error');
     }
   };
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code);
-    alert(`Đã sao chép mã: ${code}`);
+    showToast(`Đã sao chép mã: ${code}`, 'success');
   };
 
   if (loading) {

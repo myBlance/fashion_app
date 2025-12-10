@@ -1,5 +1,5 @@
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
-import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Paper, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import React from 'react';
 import { sortOptions } from '../../../constants/filterOptions';
 
@@ -10,19 +10,40 @@ interface SortControlsProps {
 
 const SortControls: React.FC<SortControlsProps> = ({ sort, onChange }) => {
     return (
-        <Box mb={3} display="flex" flexDirection="column" alignItems="center">
-            {/* Icon + Text trên cùng 1 dòng */}
-            <Box display="flex" alignItems="center" gap={1} mb={1}>
-                <SortByAlphaIcon sx={{ color: '#000000', fontSize: { xs: 18, sm: 24 } }} />
+        <Paper
+            elevation={0}
+            sx={{
+                mb: 3,
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                backgroundColor: 'transparent',
+            }}
+        >
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+                <Box
+                    sx={{
+                        p: 0.5,
+                        borderRadius: '50%',
+                        backgroundColor: '#ffebee',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <SortByAlphaIcon sx={{ color: '#d32f2f', fontSize: { xs: 20, sm: 24 } }} />
+                </Box>
                 <Typography
                     variant="subtitle1"
                     fontWeight="bold"
-                    color="#000000"
-                    sx={{ fontSize: { xs: '14px', sm: '16px' } }}
+                    color="#333"
+                    sx={{ fontSize: { xs: '15px', sm: '18px' } }}
                 >
-                    Xếp theo
+                    Sắp xếp theo
                 </Typography>
             </Box>
+
             <ToggleButtonGroup
                 value={sort}
                 exclusive
@@ -30,8 +51,20 @@ const SortControls: React.FC<SortControlsProps> = ({ sort, onChange }) => {
                 size="small"
                 sx={{
                     flexWrap: 'wrap',
-                    gap: { xs: '4px', sm: '0' },
+                    gap: 1,
                     justifyContent: 'center',
+                    '& .MuiToggleButtonGroup-grouped': {
+                        border: 0,
+                        '&.Mui-disabled': {
+                            border: 0,
+                        },
+                        '&:not(:first-of-type)': {
+                            borderRadius: '20px',
+                        },
+                        '&:first-of-type': {
+                            borderRadius: '20px',
+                        },
+                    },
                 }}
             >
                 {sortOptions.map((option) => (
@@ -39,16 +72,28 @@ const SortControls: React.FC<SortControlsProps> = ({ sort, onChange }) => {
                         key={option.value}
                         value={option.value}
                         sx={{
-                            color: '#000',
-                            fontSize: { xs: '11px', sm: '13px' },
-                            padding: { xs: '4px 8px', sm: '6px 12px' },
-                            '&.Mui-selected': {
-                                backgroundColor: '#fd5f5f',
-                                border: '1px solid #fd5f5f',
-                                color: '#fff',
+                            color: '#555',
+                            fontSize: { xs: '12px', sm: '14px' },
+                            padding: { xs: '6px 16px', sm: '8px 20px' },
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            borderRadius: '20px',
+                            border: '1px solid #e0e0e0',
+                            backgroundColor: '#fff',
+                            transition: 'all 0.2s',
+                            '&:hover': {
+                                backgroundColor: '#fafafa',
+                                borderColor: '#d32f2f',
+                                color: '#d32f2f',
                             },
-                            '&.Mui-selected:hover': {
-                                backgroundColor: '#e83d3d',
+                            '&.Mui-selected': {
+                                backgroundColor: '#d32f2f',
+                                color: '#fff',
+                                borderColor: '#d32f2f',
+                                boxShadow: '0 2px 8px rgba(211, 47, 47, 0.25)',
+                                '&:hover': {
+                                    backgroundColor: '#b71c1c',
+                                },
                             },
                         }}
                     >
@@ -56,7 +101,7 @@ const SortControls: React.FC<SortControlsProps> = ({ sort, onChange }) => {
                     </ToggleButton>
                 ))}
             </ToggleButtonGroup>
-        </Box>
+        </Paper>
     );
 };
 

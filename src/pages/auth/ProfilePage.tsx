@@ -1,16 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
 import {
     Box,
-    Typography,
-    Container,
     CircularProgress,
-    Alert,
-    Snackbar,
+    Container,
     Paper,
-    useTheme,
-    useMediaQuery
+    Typography,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 
 // Import các component con (Giữ nguyên đường dẫn của bạn)
 import AddressSettings from "../../components/Client/Profile/Address/AddressSettings";
@@ -19,6 +17,7 @@ import ProfileContent from "../../components/Client/Profile/ProfileContent";
 import ProfileTabs from "../../components/Client/Profile/ProfileTabs"; // Component chúng ta vừa sửa
 import SecuritySettings from "../../components/Client/Profile/SecuritySettings";
 import UserSavedVouchers from "../../components/Client/Profile/UserSavedVouchers";
+import { useToast } from "../../contexts/ToastContext";
 import OrderHistoryPage from "../client/OrderHistoryPage";
 
 interface UserProfile {
@@ -49,21 +48,12 @@ const ProfilePage: React.FC = () => {
     });
 
     const [loading, setLoading] = useState(true);
-    
-    // State cho thông báo (Snackbar)
-    const [toastOpen, setToastOpen] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
-    const [toastType, setToastType] = useState<"success" | "error">("success");
+
+    // Sử dụng Global Toast thay vì local state
+    const { showToast } = useToast();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const token = localStorage.getItem("token");
-
-    // --- Helper hiển thị thông báo ---
-    const showToast = (msg: string, type: "success" | "error") => {
-        setToastMessage(msg);
-        setToastType(type);
-        setToastOpen(true);
-    };
 
     // --- Fetch Data ---
     useEffect(() => {
@@ -148,12 +138,26 @@ const ProfilePage: React.FC = () => {
         }
     };
 
-    const handleChangePassword = async () => {
+    const handleChangePassword = async (passwordData: any) => {
+        if (!token) return showToast('Vui lòng đăng nhập', 'error');
+
         try {
-             // ... logic axios change password
-             showToast("Đổi mật khẩu thành công", 'success');
+            const res = await axios.put(
+                `${import.meta.env.VITE_API_BASE_URL}/api/users/change-password`,
+                passwordData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            showToast(res.data.message || "Đổi mật khẩu thành công", 'success');
         } catch (err: any) {
-             showToast("Đổi mật khẩu thất bại", 'error');
+            console.error("Change password error:", err);
+            const errorMsg = err.response?.data?.message || "Đổi mật khẩu thất bại";
+
+            // TC-06 Standardization: If server implies wrong password, ensure we show the correct text
+            if (errorMsg.toLowerCase().includes("mật khẩu cũ") || errorMsg.toLowerCase().includes("incorrect")) {
+                showToast("Mật khẩu hiện tại không chính xác", 'error');
+            } else {
+                showToast(errorMsg, 'error');
+            }
         }
     };
 
@@ -180,23 +184,23 @@ const ProfilePage: React.FC = () => {
                 content = (
                     <SecuritySettings
                         onChangePassword={handleChangePassword}
-                        message="" 
+                        message=""
                     />
                 );
                 break;
             case 4: content = <Typography>Thiết lập Thông Báo (Đang phát triển)</Typography>; break;
             case 5: content = <Typography>Thiết lập Riêng Tư (Đang phát triển)</Typography>; break;
             case 6: content = <Typography>Thông tin Cá Nhân (Đang phát triển)</Typography>; break;
-            case 7: content = <OrderHistoryPage/>; break; 
+            case 7: content = <OrderHistoryPage />; break;
             case 8: content = <UserSavedVouchers />; break;
             default: content = <Typography>Đang phát triển...</Typography>;
         }
 
         return (
-            <Paper 
-                elevation={isMobile ? 0 : 1} 
-                sx={{ 
-                    p: isMobile ? 0 : 3, 
+            <Paper
+                elevation={isMobile ? 0 : 1}
+                sx={{
+                    p: isMobile ? 0 : 3,
                     borderRadius: 2,
                     minHeight: 400,
                     backgroundColor: isMobile ? 'transparent' : '#fff',
@@ -219,9 +223,9 @@ const ProfilePage: React.FC = () => {
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             {/* Layout chính */}
-            <Box 
-                sx={{ 
-                    display: 'flex', 
+            <Box
+                sx={{
+                    display: 'flex',
                     flexDirection: isMobile ? 'column' : 'row', // Chuyển hướng cột/hàng
                     gap: 3,
                     alignItems: 'flex-start' // Quan trọng để sidebar không bị kéo giãn chiều cao
@@ -242,18 +246,6 @@ const ProfilePage: React.FC = () => {
                     {renderTabContent()}
                 </Box>
             </Box>
-
-            {/* Thông báo Toast */}
-            <Snackbar 
-                open={toastOpen} 
-                autoHideDuration={4000} 
-                onClose={() => setToastOpen(false)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert onClose={() => setToastOpen(false)} severity={toastType} sx={{ width: '100%' }} variant="filled">
-                    {toastMessage}
-                </Alert>
-            </Snackbar>
         </Container>
     );
 };

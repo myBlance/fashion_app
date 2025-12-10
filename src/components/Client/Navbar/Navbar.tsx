@@ -297,13 +297,40 @@ const Navbar: React.FC = () => {
         <div className="navbar-top-right">
           {role === 'client' ? (
             <>
-              <Button onClick={logout}>Đăng xuất</Button>
-              <Button><Link to="/profile">Tài khoản</Link></Button>
+              <Button
+                variant="outlined"
+                className="btn-auth btn-logout"
+                onClick={logout}
+              >
+                Đăng xuất
+              </Button>
+              <Button
+                component={Link}
+                to="/profile"
+                variant="contained"
+                className="btn-auth btn-profile"
+              >
+                Tài khoản
+              </Button>
             </>
           ) : (
             <>
-              <Button><Link to="/auth?tab=login">Đăng nhập</Link></Button>
-              <Button><Link to="/auth?tab=register">Đăng ký</Link></Button>
+              <Button
+                component={Link}
+                to="/auth?tab=login"
+                variant="outlined"
+                className="btn-auth btn-login"
+              >
+                Đăng nhập
+              </Button>
+              <Button
+                component={Link}
+                to="/auth?tab=register"
+                variant="contained"
+                className="btn-auth btn-register"
+              >
+                Đăng ký
+              </Button>
             </>
           )}
         </div>

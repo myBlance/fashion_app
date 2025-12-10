@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { TextField, Button } from '@mui/material';
-import '../../styles/Authtabs.css';
+import { Button, TextField } from '@mui/material';
 import axios from 'axios';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../contexts/ToastContext';
+import '../../styles/Authtabs.css';
 
 const RegisterPage = () => {
   const [firstName, setFirstName] = useState('');
@@ -11,39 +12,43 @@ const RegisterPage = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const  navigate  = useNavigate();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
-const handleRegister = async () => {
-  if (!firstName || !lastName || !email || !phone || !password || !confirm) {
-    alert('Vui lòng nhập đầy đủ thông tin.');
-    return;
-  }
-
-  if (password !== confirm) {
-    alert('Mật khẩu xác nhận không khớp.');
-    return;
-  }
-
-  try {
-    const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
-      firstName,
-      lastName,
-      email,
-      phone,
-      password,
-      confirm,
-    });
-    navigate ('/auth?tab=login'); 
-    alert(res.data.message || 'Đăng ký thành công!');
-  } catch (err: any) {
-    if (err.response) {
-      alert(err.response.data.message || 'Đăng ký thất bại');
-    } else {
-      alert('Lỗi kết nối máy chủ');
+  const handleRegister = async () => {
+    if (!firstName || !lastName || !email || !phone || !password || !confirm) {
+      showToast('Vui lòng nhập đầy đủ thông tin.', 'warning');
+      return;
     }
-    console.error(err);
-  }
-};
+
+    if (password !== confirm) {
+      showToast('Mật khẩu xác nhận không khớp.', 'warning');
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        confirm,
+      });
+      showToast(res.data.message || 'Đăng ký thành công', 'success');
+      // Delay navigation slightly to let toast show
+      setTimeout(() => {
+        navigate('/auth?tab=login');
+      }, 1500);
+    } catch (err: any) {
+      if (err.response) {
+        showToast(err.response.data.message || 'Đăng ký thất bại', 'error');
+      } else {
+        showToast('Lỗi kết nối máy chủ', 'error');
+      }
+      console.error(err);
+    }
+  };
 
   return (
     <div className='tab-container'>

@@ -1,8 +1,9 @@
 // src/pages/client/SeepayPaymentPage.tsx
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { useToast } from '../../../contexts/ToastContext';
 import '../../../styles/SeepayPayment.css';
 import { CartItem } from '../../../types/CartItem';
 
@@ -19,6 +20,7 @@ const SeepayPaymentPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPaid, setIsPaid] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -227,11 +229,11 @@ const SeepayPaymentPage: React.FC = () => {
                 if (res.data.status === 'paid') {
                   setIsPaid(true);
                 } else {
-                  alert('Chưa thanh toán. Vui lòng quét QR để tiếp tục.');
+                  showToast('Chưa thanh toán. Vui lòng quét QR để tiếp tục.', 'info');
                 }
               } catch (err) {
                 console.error("Lỗi khi kiểm tra lại:", err);
-                alert('Không thể kiểm tra trạng thái thanh toán. Vui lòng thử lại.');
+                showToast('Không thể kiểm tra trạng thái thanh toán. Vui lòng thử lại.', 'error');
               }
             }
           }}

@@ -11,6 +11,7 @@ import React, { useRef, useState } from 'react';
 import {
     CheckboxGroupInput,
     Create,
+    minValue,
     NumberInput,
     required,
     SelectInput,
@@ -224,10 +225,10 @@ export const ProductCreate = () => {
 
                     <Box display="flex" flexWrap="wrap" mb={4}>
                         <Box sx={fieldStyle}>
-                            <NumberInput source="price" label="Giá bán" fullWidth variant="outlined" />
+                            <NumberInput source="price" label="Giá bán" fullWidth variant="outlined" validate={[required(), minValue(0, 'Giá sản phẩm không hợp lệ')]} />
                         </Box>
                         <Box sx={fieldStyle}>
-                            <NumberInput source="originalPrice" label="Giá gốc" fullWidth variant="outlined" />
+                            <NumberInput source="originalPrice" label="Giá gốc" fullWidth variant="outlined" validate={[required(), minValue(0, 'Giá sản phẩm không hợp lệ')]} />
                         </Box>
                         <Box sx={fieldStyle}>
                             <NumberInput source="sold" label="Đã bán" fullWidth variant="outlined" />

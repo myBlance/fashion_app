@@ -36,6 +36,7 @@ import axios from 'axios';
 import React, { Component, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProductRating } from '../../components/Client/Review/ProductRating';
+import { useToast } from '../../contexts/ToastContext';
 
 // --- Interfaces ---
 interface Product {
@@ -282,6 +283,7 @@ const OrderHistoryPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const { showToast } = useToast();
 
   // Pagination State
   const [page, setPage] = useState(1);
@@ -329,11 +331,11 @@ const OrderHistoryPage: React.FC = () => {
     setMarkDeliveredLoading(true);
     try {
       await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/mark-delivered`, {}, { headers: { Authorization: `Bearer ${token}` } });
-      alert('Cập nhật thành công!');
+      showToast('Cập nhật thành công!', 'success');
       fetchOrders();
       setSelectedOrder(null);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Lỗi cập nhật.');
+      showToast(err.response?.data?.message || 'Lỗi cập nhật.', 'error');
     } finally {
       setMarkDeliveredLoading(false);
     }
@@ -346,11 +348,11 @@ const OrderHistoryPage: React.FC = () => {
     setCancelLoading(true);
     try {
       await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${order.id}/cancel`, {}, { headers: { Authorization: `Bearer ${token}` } });
-      alert('Đơn hàng đã được hủy.');
+      showToast('Đơn hàng đã được hủy.', 'success');
       fetchOrders();
       setSelectedOrder(null);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Lỗi hủy đơn.');
+      showToast(err.response?.data?.message || 'Lỗi hủy đơn.', 'error');
     } finally {
       setCancelLoading(false);
     }

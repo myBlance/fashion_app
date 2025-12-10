@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../../styles/CheckoutSummary.css';
 
+import { useToast } from '../../../contexts/ToastContext';
 import { Address } from '../../../types/Address';
 import { Voucher } from '../../../types/Voucher';
 import VoucherModal from '../Voucher/VoucherModal';
@@ -30,6 +31,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const token = localStorage.getItem('token');
 
@@ -108,12 +110,12 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
-      alert('Vui lòng chọn địa chỉ nhận hàng.');
+      showToast('Vui lòng nhập địa chỉ giao hàng', 'warning');
       return;
     }
 
     if (selectedVoucher && !isVoucherValid) {
-      alert(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${(selectedVoucher.minOrderValue || 0).toLocaleString()}đ).`);
+      showToast(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${(selectedVoucher.minOrderValue || 0).toLocaleString()}đ).`, 'warning');
       return;
     }
 
@@ -126,14 +128,14 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         userId = res.data.data._id;
       } catch (err) {
         console.error('Lỗi khi lấy thông tin người dùng:', err);
-        alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        showToast('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 'error');
         navigate('/login');
         return;
       }
     }
 
     if (!userId) {
-      alert('Vui lòng đăng nhập để đặt hàng.');
+      showToast('Vui lòng đăng nhập để đặt hàng.', 'warning');
       navigate('/login');
       return;
     }
@@ -166,7 +168,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         },
       });
     } else {
-      alert('Phương thức thanh toán chưa được hỗ trợ');
+      showToast('Phương thức thanh toán chưa được hỗ trợ', 'info');
     }
   };
 

@@ -8,6 +8,7 @@ import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDeta
 import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
 import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { CartService } from "../../services/cartService";
 import { getProductById } from "../../services/productService";
 import { addToCart } from "../../store/cartSlice";
@@ -22,6 +23,7 @@ const ProductDetail: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userId: authUserId, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -101,10 +103,10 @@ const ProductDetail: React.FC = () => {
         // If user is not logged in, just save to Redux (which auto-saves to localStorage)
         dispatch(addToCart(newItem as CartItem));
       }
-      alert("Đã thêm vào giỏ!");
+      showToast("Đã thêm vào giỏ!", "success");
     } catch (err) {
       console.error("Lỗi khi thêm vào giỏ:", err);
-      alert("Thêm vào giỏ thất bại. Vui lòng thử lại.");
+      showToast("Thêm vào giỏ thất bại. Vui lòng thử lại.", "error");
     }
   };
 
@@ -114,7 +116,7 @@ const ProductDetail: React.FC = () => {
 
     // ✅ Kiểm tra đăng nhập
     if (!userId) {
-      alert("Vui lòng đăng nhập để mua hàng");
+      showToast("Vui lòng đăng nhập để mua hàng", "warning");
       navigate('/auth?tab=login');
       return;
     }

@@ -24,12 +24,7 @@ import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { colorChoices, sizeChoices, styleChoices, typeChoices } from '../../../constants/filterOptions';
 
-const fieldStyle = {
-    flex: '1 1 150px',
-    width: 150,
-    marginRight: 5,
-    marginBottom: 2,
-};
+
 
 export const ProductCreate = () => {
     const notify = useNotify();
@@ -120,195 +115,190 @@ export const ProductCreate = () => {
             </Box>
 
             <Create title="Thêm sản phẩm mới">
-                <SimpleForm onSubmit={handleSubmit}>
-                    {/* === THÔNG TIN CƠ BẢN === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Thông tin cơ bản</Typography>
-                        <Divider />
-                    </Box>
+                <SimpleForm onSubmit={handleSubmit} sx={{ maxWidth: '1200px', margin: '0 auto', pb: 5 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
 
-                    <Box display="flex" flexWrap="wrap" mb={2}>
-                        <Box sx={fieldStyle}>
-                            <TextInput source="name" label="Tên sản phẩm" validate={required()} fullWidth variant="outlined" />
-                        </Box>
-                        <Box sx={fieldStyle}>
-                            <TextInput source="brand" label="Thương hiệu" fullWidth variant="outlined" />
-                        </Box>
-                        <Box sx={fieldStyle}>
-                            <SelectInput source="style" label="Phong cách" choices={styleChoices} fullWidth variant="outlined" />
-                        </Box>
-                        <Box sx={{ ...fieldStyle, marginRight: 0 }}>
-                            <SelectInput source="type" label="Danh mục" choices={typeChoices} fullWidth variant="outlined" />
-                        </Box>
-                    </Box>
-
-                    {/* === MÔ TẢ SẢN PHẨM === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Mô tả sản phẩm</Typography>
-                        <Divider />
-                    </Box>
-
-                    <Box mb={2}>
-                        <TextInput
-                            source="description"
-                            label="Mô tả ngắn"
-                            multiline
-                            minRows={3}
-                            fullWidth
-                            variant="outlined"
-                            helperText="Nhập mô tả ngắn gọn về sản phẩm"
-                        />
-                    </Box>
-
-                    {/* === CHI TIẾT SẢN PHẨM === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Chi tiết sản phẩm</Typography>
-                        <Divider />
-                    </Box>
-
-                    <Box mb={2}>
-                        {/* ✅ Thay bằng textarea MUI */}
-                        <TextInput
-                            source="details"
-                            label="Chi tiết sản phẩm"
-                            multiline
-                            minRows={4}
-                            fullWidth
-                            variant="outlined"
-                            helperText="Nhập chi tiết sản phẩm (dưới dạng văn bản)"
-                        />
-                    </Box>
-
-                    {/* === THUỘC TÍNH SẢN PHẨM === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Thuộc tính sản phẩm</Typography>
-                        <Divider />
-                    </Box>
-
-                    <Box display="flex" gap={20} mb={2}>
-                        <CheckboxGroupInput
-                            source="colors"
-                            label="Màu sắc"
-                            choices={colorChoices}
-                            optionValue="id"
-                            optionText={(choice) => (
-                                <Box display="flex" alignItems="center">
-                                    <Box
-                                        sx={{
-                                            width: 20,
-                                            height: 20,
-                                            borderRadius: '50%',
-                                            backgroundColor: choice.id,
-                                            border: '1px solid #ccc',
-                                            marginRight: 1,
-                                        }}
-                                    />
-                                    {choice.name}
+                        {/* === THÔNG TIN CƠ BẢN & MÔ TẢ === */}
+                        <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'visible', bgcolor: '#fff' }}>
+                            <Box sx={{ p: 3 }}>
+                                <Box mb={2}>
+                                    <Typography variant="h6">Thông tin sản phẩm</Typography>
+                                    <Divider />
                                 </Box>
-                            )}
-                            sx={{ '& .MuiFormGroup-root': { flexDirection: 'column' } }}
-                        />
-
-                        <CheckboxGroupInput
-                            source="sizes"
-                            label="Kích cỡ"
-                            choices={sizeChoices}
-                            sx={{ '& .MuiFormGroup-root': { flexDirection: 'column' } }}
-                        />
-                    </Box>
-
-                    {/* === GIÁ & TỒN KHO === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Giá & Tồn kho</Typography>
-                        <Divider />
-                    </Box>
-
-                    <Box display="flex" flexWrap="wrap" mb={4}>
-                        <Box sx={fieldStyle}>
-                            <NumberInput source="price" label="Giá bán" fullWidth variant="outlined" validate={[required(), minValue(0, 'Giá sản phẩm không hợp lệ')]} />
-                        </Box>
-                        <Box sx={fieldStyle}>
-                            <NumberInput source="originalPrice" label="Giá gốc" fullWidth variant="outlined" validate={[required(), minValue(0, 'Giá sản phẩm không hợp lệ')]} />
-                        </Box>
-                        <Box sx={fieldStyle}>
-                            <NumberInput source="sold" label="Đã bán" fullWidth variant="outlined" />
-                        </Box>
-                        <Box sx={{ ...fieldStyle, marginRight: 0 }}>
-                            <NumberInput source="total" label="Tổng số lượng" fullWidth variant="outlined" />
-                        </Box>
-                    </Box>
-
-                    {/* === TRẠNG THÁI === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Trạng thái</Typography>
-                        <Divider />
-                    </Box>
-
-                    <Box mb={3} sx={{ width: '200px' }}>
-                        <SelectInput
-                            source="status"
-                            label="Trạng thái"
-                            variant="outlined"
-                            choices={[
-                                { id: 'selling', name: 'Đang bán' },
-                                { id: 'stopped', name: 'Ngừng bán' },
-                                { id: 'sold_out', name: 'Hết hàng' },
-                            ]}
-                            fullWidth
-                        />
-                    </Box>
-
-                    {/* === ẢNH === */}
-                    <Box mb={2}>
-                        <Typography variant="h6">Ảnh sản phẩm</Typography>
-                        <Divider sx={{ mb: 2 }} />
-
-                        {/* Ảnh đại diện */}
-                        <Box display="flex" alignItems="center" mb={2}>
-                            <Avatar
-                                src={thumbnailPreview || 'https://via.placeholder.com/80x80?text=Thumbnail'}
-                                sx={{ width: 80, height: 80, mr: 2, cursor: 'pointer' }}
-                                onClick={() => thumbnailInputRef.current?.click()}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                style={{ display: 'none' }}
-                                ref={thumbnailInputRef}
-                                onChange={handleThumbnailSelect}
-                            />
-                            <Typography>Ảnh đại diện</Typography>
-                        </Box>
-
-                        {/* Ảnh phụ */}
-                        <Box>
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={() => imagesInputRef.current?.click()}
-                                sx={{ mb: 2 }}
-                            >
-                                Thêm ảnh khác
-                            </Button>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                style={{ display: 'none' }}
-                                ref={imagesInputRef}
-                                onChange={handleImagesSelect}
-                            />
-                            <Box display="flex" gap={2} flexWrap="wrap">
-                                {imagesPreview.map((src, idx) => (
-                                    <Avatar key={idx} src={src} sx={{ width: 70, height: 70 }} />
-                                ))}
+                                <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                    <Box sx={{ flex: 2, minWidth: '300px' }}>
+                                        <TextInput source="name" validate={required()} fullWidth variant="outlined" label="Tên sản phẩm" placeholder="Nhập tên sản phẩm..." />
+                                    </Box>
+                                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                                        <TextInput source="brand" fullWidth variant="outlined" label="Thương hiệu" placeholder="Thương hiệu..." />
+                                    </Box>
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', mt: 2 }}>
+                                    <Box sx={{ flex: 1 }}>
+                                        <SelectInput source="type" choices={typeChoices} fullWidth variant="outlined" label="Danh mục" />
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <SelectInput source="style" choices={styleChoices} fullWidth variant="outlined" label="Phong cách" />
+                                    </Box>
+                                </Box>
+                                <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    <TextInput source="description" multiline minRows={2} fullWidth variant="outlined" label="Mô tả ngắn" />
+                                    <TextInput source="details" multiline minRows={4} fullWidth variant="outlined" label="Chi tiết sản phẩm" />
+                                </Box>
                             </Box>
-                        </Box>
-                    </Box>
+                        </Card>
 
-                    <Typography variant="caption" color="text.secondary" mt={2}>
-                        * Ngày tạo và các trường tự động sẽ không chỉnh sửa được.
-                    </Typography>
+                        {/* === GIÁ & TỒN KHO === */}
+                        <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+                            <Box sx={{ p: 3 }}>
+                                <Box mb={2}>
+                                    <Typography variant="h6">Giá & Kho hàng</Typography>
+                                    <Divider />
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                    <Box sx={{ flex: 1 }}>
+                                        <NumberInput source="price" fullWidth variant="outlined" validate={[required(), minValue(0)]} label="Giá Bán" />
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <NumberInput source="originalPrice" fullWidth variant="outlined" validate={[required(), minValue(0)]} label="Giá Gốc" />
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <NumberInput source="total" fullWidth variant="outlined" label="Tổng kho" />
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <NumberInput source="sold" fullWidth variant="outlined" label="Đã bán" />
+                                    </Box>
+                                </Box>
+                                <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                                    <Box sx={{ width: '250px' }}>
+                                        <SelectInput
+                                            source="status"
+                                            label="Trạng thái"
+                                            variant="outlined"
+                                            choices={[
+                                                { id: 'selling', name: 'Đang bán' },
+                                                { id: 'stopped', name: 'Ngừng bán' },
+                                                { id: 'sold_out', name: 'Hết hàng' },
+                                            ]}
+                                            fullWidth
+                                        />
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Card>
+
+                        {/* === THUỘC TÍNH (Màu/Size) === */}
+                        <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+                            <Box sx={{ p: 3 }}>
+                                <Box mb={2}>
+                                    <Typography variant="h6">Phân loại hàng</Typography>
+                                    <Divider />
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 5 }}>
+                                    <Box sx={{ flex: 1 }}>
+                                        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold', color: '#555' }}>MÀU SẮC</Typography>
+                                        <CheckboxGroupInput
+                                            source="colors"
+                                            choices={colorChoices}
+                                            optionValue="id"
+                                            optionText={(choice) => (
+                                                <Box display="flex" alignItems="center">
+                                                    <Box sx={{ width: 16, height: 16, borderRadius: '50%', bgcolor: choice.id, border: '1px solid #ddd', mr: 1 }} />
+                                                    {choice.name}
+                                                </Box>
+                                            )}
+                                            sx={{
+                                                '& .MuiFormGroup-root': {
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                                                    gap: 1.5
+                                                },
+                                                '& .MuiFormControlLabel-root': {
+                                                    mr: 0,
+                                                    border: '1px solid #eee',
+                                                    borderRadius: 1,
+                                                    p: 1,
+                                                    '&:hover': { bgcolor: '#f5f5f5' }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                    <Divider orientation="vertical" flexItem />
+                                    <Box sx={{ flex: 1 }}>
+                                        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold', color: '#555' }}>KÍCH CỠ</Typography>
+                                        <CheckboxGroupInput
+                                            source="sizes"
+                                            choices={sizeChoices}
+                                            sx={{
+                                                '& .MuiFormGroup-root': {
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+                                                    gap: 1.5
+                                                },
+                                                '& .MuiFormControlLabel-root': {
+                                                    mr: 0,
+                                                    border: '1px solid #eee',
+                                                    borderRadius: 1,
+                                                    p: 1,
+                                                    '&:hover': { bgcolor: '#f5f5f5' }
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Card>
+
+                        {/* === HÌNH ẢNH === */}
+                        <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+                            <Box sx={{ p: 3 }}>
+                                <Box mb={2}>
+                                    <Typography variant="h6">Hình ảnh sản phẩm</Typography>
+                                    <Divider />
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 4 }}>
+                                    <Box sx={{ textAlign: 'center' }}>
+                                        <Avatar
+                                            src={thumbnailPreview || 'https://via.placeholder.com/150x150?text=Upload'}
+                                            sx={{ width: 120, height: 120, mb: 2, cursor: 'pointer', border: '2px dashed #ccc' }}
+                                            onClick={() => thumbnailInputRef.current?.click()}
+                                            variant="rounded"
+                                        />
+                                        <input type="file" accept="image/*" hidden ref={thumbnailInputRef} onChange={handleThumbnailSelect} />
+                                        <Button size="small" variant="outlined" onClick={() => thumbnailInputRef.current?.click()}>
+                                            Ảnh bìa
+                                        </Button>
+                                    </Box>
+                                    <Divider orientation="vertical" flexItem />
+                                    <Box sx={{ flex: 1 }}>
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                                            {imagesPreview.map((src, idx) => (
+                                                <Avatar key={idx} src={src} variant="rounded" sx={{ width: 100, height: 100, border: '1px solid #eee' }} />
+                                            ))}
+                                            <Box
+                                                sx={{
+                                                    width: 100, height: 100,
+                                                    border: '2px dashed #ccc', borderRadius: 2,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    color: 'text.secondary',
+                                                    '&:hover': { bgcolor: '#f5f5f5' }
+                                                }}
+                                                onClick={() => imagesInputRef.current?.click()}
+                                            >
+                                                + Thêm
+                                            </Box>
+                                        </Box>
+                                        <input type="file" accept="image/*" multiple hidden ref={imagesInputRef} onChange={handleImagesSelect} />
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Card>
+
+                        <Typography variant="caption" color="text.secondary" mt={2}>
+                            * Ngày tạo và các trường tự động sẽ không chỉnh sửa được.
+                        </Typography>
+                    </Box>
                 </SimpleForm>
             </Create>
         </Card>

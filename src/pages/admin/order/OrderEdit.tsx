@@ -4,11 +4,10 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
   Divider,
   Stack,
-  Typography,
+  Typography
 } from '@mui/material';
 import {
   DateField,
@@ -21,6 +20,8 @@ import {
   required,
   useRecordContext,
 } from 'react-admin';
+import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { Order } from '../../../types/Order';
 // === Component trạng thái đơn hàng ===
 const CurrentStatus = () => {
@@ -67,15 +68,17 @@ const UserInfo = () => {
   const record = useRecordContext<Order>();
   if (!record) return null;
   return (
-    <Card variant="outlined" sx={{ mb: 2, borderRadius: 3 }}>
-      <CardContent>
-        <Typography variant="h6" fontWeight={600} gutterBottom>
-          👤 Thông tin người dùng
-        </Typography>
-        <Divider sx={{ mb: 1 }} />
-        <Typography><strong>Tên đăng nhập:</strong> {record.user?.username}</Typography>
-        <Typography><strong>Email:</strong> {record.user?.email}</Typography>
-      </CardContent>
+    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+      <Box sx={{ p: 3 }}>
+        <Box mb={2}>
+          <Typography variant="h6">👤 Thông tin người dùng</Typography>
+          <Divider />
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography><strong>Tên đăng nhập:</strong> {record.user?.username}</Typography>
+          <Typography><strong>Email:</strong> {record.user?.email}</Typography>
+        </Box>
+      </Box>
     </Card>
   );
 };
@@ -86,16 +89,18 @@ const ShippingAddress = () => {
   if (!record) return null;
   const addr = record.shippingAddress;
   return (
-    <Card variant="outlined" sx={{ mb: 2, borderRadius: 3 }}>
-      <CardContent>
-        <Typography variant="h6" fontWeight={600} gutterBottom>
-          📦 Địa chỉ giao hàng
-        </Typography>
-        <Divider sx={{ mb: 1 }} />
-        <Typography><strong>Họ tên:</strong> {addr.fullName}</Typography>
-        <Typography><strong>SĐT:</strong> {addr.phone}</Typography>
-        <Typography><strong>Địa chỉ:</strong> {addr.addressLine}</Typography>
-      </CardContent>
+    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+      <Box sx={{ p: 3 }}>
+        <Box mb={2}>
+          <Typography variant="h6">📦 Địa chỉ giao hàng</Typography>
+          <Divider />
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography><strong>Họ tên:</strong> {addr.fullName}</Typography>
+          <Typography><strong>SĐT:</strong> {addr.phone}</Typography>
+          <Typography><strong>Địa chỉ:</strong> {addr.addressLine}</Typography>
+        </Box>
+      </Box>
     </Card>
   );
 };
@@ -106,21 +111,22 @@ const ProductList = () => {
   if (!record) return null;
   const products = record.products || [];
   return (
-    <Card variant="outlined" sx={{ mb: 2, borderRadius: 3 }}>
-      <CardContent>
-        <Typography variant="h6" fontWeight={600} gutterBottom>
-          🛍️ Sản phẩm trong đơn
-        </Typography>
-        <Divider sx={{ mb: 1 }} />
+    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+      <Box sx={{ p: 3 }}>
+        <Box mb={2}>
+          <Typography variant="h6">🛍️ Sản phẩm trong đơn</Typography>
+          <Divider />
+        </Box>
         {products.length > 0 ? (
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             {products.map((p, idx) => (
               <Box
                 key={idx}
                 sx={{
-                  p: 1.5,
+                  p: 2,
                   borderRadius: 2,
-                  bgcolor: 'grey.50',
+                  bgcolor: '#f8f9fa',
+                  border: '1px solid #eee',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 2,
@@ -130,7 +136,7 @@ const ProductList = () => {
                   src={p.product?.image}
                   alt={p.product?.name}
                   variant="rounded"
-                  sx={{ width: 56, height: 56 }}
+                  sx={{ width: 64, height: 64, border: '1px solid #ddd' }}
                 />
                 <Box sx={{ flexGrow: 1 }}>
                   <Typography variant="subtitle1" fontWeight={600}>
@@ -140,18 +146,24 @@ const ProductList = () => {
                     SL: {p.quantity} — {(p.product?.price || 0).toLocaleString()}₫
                   </Typography>
                   {(p.selectedColor || p.selectedSize) && (
-                    <Typography variant="body2" color="textSecondary">
-                      {p.selectedColor && `Màu: ${p.selectedColor}`} {p.selectedSize && `| Size: ${p.selectedSize}`}
+                    <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
+                      <Chip label={`Màu: ${p.selectedColor || 'N/A'}`} size="small" sx={{ mr: 1, height: 24 }} />
+                      <Chip label={`Size: ${p.selectedSize || 'N/A'}`} size="small" sx={{ height: 24 }} />
                     </Typography>
                   )}
                 </Box>
+                <Typography variant="h6" color="primary.main" fontWeight={600}>
+                  {((p.product?.price || 0) * p.quantity).toLocaleString()}₫
+                </Typography>
               </Box>
             ))}
           </Stack>
         ) : (
-          <Typography color="textSecondary">Không có sản phẩm</Typography>
+          <Typography color="textSecondary" sx={{ fontStyle: 'italic', textAlign: 'center', py: 2 }}>
+            Không có sản phẩm trong đơn hàng này
+          </Typography>
         )}
-      </CardContent>
+      </Box>
     </Card>
   );
 };
@@ -171,8 +183,9 @@ const CustomToolbar = (props: any) => (
       display: 'flex',
       justifyContent: 'space-between',
       borderTop: '1px solid #e0e0e0',
-      mt: 3,
-      pt: 2,
+      bg: 'white',
+      p: 2,
+      mt: 2
     }}
   >
     <Button
@@ -181,14 +194,14 @@ const CustomToolbar = (props: any) => (
       startIcon={<CloseIcon />}
       onClick={() => window.history.back()}
     >
-      Đóng
+      Quay lại
     </Button>
     <SaveButton
       label="Lưu thay đổi"
       variant="contained"
       color="primary"
       alwaysEnable
-      sx={{ px: 3, py: 1 }}
+      sx={{ px: 4 }}
     />
   </Toolbar>
 );
@@ -196,71 +209,80 @@ const CustomToolbar = (props: any) => (
 // === OrderEdit ===
 export const OrderEdit = (props: any) => {
   return (
-    <Edit {...props} mutationMode="pessimistic" actions={false} title="Cập nhật đơn hàng">
-      <SimpleForm
-        record={props.record}
-        toolbar={<CustomToolbar />}
-        sx={{
-          maxWidth: 800,
-          margin: 'auto',
-          bgcolor: 'background.paper',
-          p: 3,
-          borderRadius: 3,
-          boxShadow: 2,
-        }}
-      >
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
-          Thông tin đơn hàng
-        </Typography>
+    <Card sx={{ borderRadius: '20px', mr: '-24px', height: '100%', boxShadow: 'none', overflow: 'visible' }}>
+      <Box sx={{ padding: 2 }}>
+        <CustomAppBar />
+        <CustomBreadcrumbs />
+      </Box>
 
-        <TextInput source="id" label="Mã đơn hàng" disabled fullWidth />
-        <CurrentStatus />
-
-        <SelectInput
-          source="status"
-          label="Trạng thái mới"
-          choices={[
-            { id: 'pending', name: 'Chờ xác nhận' },
-            { id: 'confirmed', name: 'Đã xác nhận' },
-            { id: 'paid', name: 'Đã thanh toán' },
-            { id: 'processing', name: 'Đang xử lý' },
-            { id: 'shipped', name: 'Đang giao' },
-            { id: 'delivered', name: 'Đã giao' },
-            { id: 'cancelled', name: 'Đã hủy' },
-          ]}
-          validate={required()}
-          fullWidth
-        />
-
-        <UserInfo />
-        <ShippingAddress />
-        <ProductList />
-
-        <Box
+      <Edit {...props} mutationMode="pessimistic" actions={false} title="Cập nhật đơn hàng" sx={{ '& .RaEdit-main': { bgcolor: 'transparent', boxShadow: 'none' } }}>
+        <SimpleForm
+          record={props.record}
+          toolbar={<CustomToolbar />}
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            p: 2,
-            borderRadius: 2,
-            bgcolor: 'grey.100',
+            maxWidth: 1000,
+            margin: '0 auto',
+            pb: 5
           }}
         >
-          <Typography variant="body1">
-            <strong>Tổng tiền:</strong>
-          </Typography>
-          <Typography variant="h6" color="primary" fontWeight={700}>
-            <TotalPrice />
-          </Typography>
-        </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
 
-        <Divider sx={{ my: 2 }} />
+            {/* === THÔNG TIN CHUNG === */}
+            <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+              <Box sx={{ p: 3 }}>
+                <Box mb={2}>
+                  <Typography variant="h6">Thông tin chung</Typography>
+                  <Divider />
+                </Box>
 
-        <Stack direction="row" spacing={4}>
-          <DateField source="createdAt" label="Ngày tạo" />
-          <DateField source="updatedAt" label="Cập nhật cuối" />
-        </Stack>
-      </SimpleForm>
-    </Edit>
+                <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                  <Box sx={{ flex: 1 }}>
+                    <TextInput source="id" label="Mã đơn hàng" disabled fullWidth variant="outlined" />
+                  </Box>
+                  <Box sx={{ flex: 1 }}>
+                    <SelectInput
+                      source="status"
+                      label="Trạng thái đơn hàng"
+                      choices={[
+                        { id: 'pending', name: 'Chờ xác nhận' },
+                        { id: 'confirmed', name: 'Đã xác nhận' },
+                        { id: 'paid', name: 'Đã thanh toán' },
+                        { id: 'processing', name: 'Đang xử lý' },
+                        { id: 'shipped', name: 'Đang giao' },
+                        { id: 'delivered', name: 'Đã giao' },
+                        { id: 'cancelled', name: 'Đã hủy' },
+                      ]}
+                      validate={required()}
+                      fullWidth
+                      variant="outlined"
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1, pt: 1 }}>
+                    <CurrentStatus />
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
+                  <Typography variant="subtitle1" fontWeight={600}>Khách thanh toán:</Typography>
+                  <Typography variant="h5" color="error.main" fontWeight={700}>
+                    <TotalPrice />
+                  </Typography>
+                </Box>
+              </Box>
+            </Card>
+
+            <UserInfo />
+            <ShippingAddress />
+            <ProductList />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 3, px: 1 }}>
+              <DateField source="createdAt" label="Ngày tạo" showTime />
+              <DateField source="updatedAt" label="Cập nhật cuối" showTime />
+            </Box>
+
+          </Box>
+        </SimpleForm>
+      </Edit>
+    </Card>
   );
 };

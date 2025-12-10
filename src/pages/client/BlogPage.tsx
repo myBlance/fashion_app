@@ -21,7 +21,7 @@ const featuredPost = {
     title: '"Nữ nhân viên mát-xa" trong phim Trấn Thành ngoài đời xinh như hoa, không hở bạo vẫn đẹp hút hồn',
     date: '21/02/2024',
     description: 'Vào vai "Diễm mát-xa", Anh Phạm ở đời thường được đánh giá xinh đẹp và rực rỡ hơn hẳn so với khi lên phim. Phim điện ảnh Mai của Trấn Thành hiện là chủ đề được bàn tán rôm rả. Ngoài hai nhân vật chính là Phương Anh Đào...',
-    image: '/assets/images/blog_featured.webp', // Replace with available image or placeholder
+    image: '/assets/images/1708274021-351-thumbnail-width64.webp',
 };
 
 const blogPosts = [
@@ -29,28 +29,28 @@ const blogPosts = [
         id: 1,
         title: '7 món thời trang không bao giờ là cũ, chị em mặc quanh năm vẫn đẹp sang',
         date: '21/02/2024',
-        image: '/assets/images/blog_1.webp',
+        image: '/assets/images/1707844303-687-thumbnail-width64.webp',
         description: 'Những món đồ cơ bản không bao giờ là cũ như áo thun trắng, quần jean ống đứng, tất dài, giày lười, thắt lưng... sẽ có sức sống lâu bền...',
     },
     {
         id: 2,
         title: '"Nữ nhân viên mát-xa" trong phim Trấn Thành ngoài đời xinh như hoa, không...',
         date: '21/02/2024',
-        image: '/assets/images/blog_featured.webp',
+        image: '/assets/images/1708270020-489-local.webp',
         description: 'Vào vai "Diễm mát-xa", Anh Phạm ở đời thường được đánh giá xinh đẹp và rực rỡ hơn hẳn so với khi lên phim. Phim điện ảnh Mai của Trấn Thành...',
     },
     {
         id: 3,
         title: 'Tuần này mặc gì: Học theo quý cô Anh Quốc công thức phối đồ đẹp kinh điển...',
         date: '21/02/2024',
-        image: '/assets/images/blog_2.webp',
+        image: '/assets/images/1708314149-196-local.webp',
         description: 'Sang trọng, thu hút mà không cần chạy theo bất kỳ trend nào - đây chính là những gì mà tủ đồ của các cô nàng Anh Quốc luôn chú...',
     },
     {
         id: 4,
         title: 'Tủ quần áo con nhộng là gì? Chìa khóa mặc đẹp, tiết kiệm mà phụ nữ hiện...',
         date: '21/02/2024',
-        image: '/assets/images/blog_3.webp',
+        image: '/assets/images/1708315443-287-local.webp',
         description: 'Tủ quần áo con nhộng là gì? ...',
     },
 ];
@@ -67,20 +67,17 @@ const categories = [
 ];
 
 const popularPosts = [
-    { id: 1, title: '7 món thời trang không bao giờ là cũ, chị em mặc quanh năm vẫn đẹp sang', date: '21/02/2024', image: '/assets/images/blog_1.webp' },
-    { id: 2, title: '"Nữ nhân viên mát-xa" trong phim Trấn Thành ngoài đời xinh như hoa...', date: '21/02/2024', image: '/assets/images/blog_featured.webp' },
-    { id: 3, title: 'Tuần này mặc gì: Học theo quý cô Anh Quốc công thức phối đồ đẹp...', date: '21/02/2024', image: '/assets/images/blog_2.webp' },
-    { id: 4, title: 'Tủ quần áo con nhộng là gì? Chìa khóa mặc đẹp, tiết kiệm mà phụ...', date: '21/02/2024', image: '/assets/images/blog_3.webp' },
+    { id: 1, title: '7 món thời trang không bao giờ là cũ, chị em mặc quanh năm vẫn đẹp sang', date: '21/02/2024', image: '/assets/images/1707844303-687-thumbnail-width64.webp' },
+    { id: 2, title: '"Nữ nhân viên mát-xa" trong phim Trấn Thành ngoài đời xinh như hoa...', date: '21/02/2024', image: '/assets/images/1708274021-351-thumbnail-width64.webp' },
+    { id: 3, title: 'Tuần này mặc gì: Học theo quý cô Anh Quốc công thức phối đồ đẹp...', date: '21/02/2024', image: '/assets/images/1708314149-196-local.webp' },
+    { id: 4, title: 'Tủ quần áo con nhộng là gì? Chìa khóa mặc đẹp, tiết kiệm mà phụ...', date: '21/02/2024', image: '/assets/images/1708315443-287-local.webp' },
 ];
 
 
 const BlogPage: React.FC = () => {
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            {/* Breadcrumb can go here */}
-            <Typography variant="body2" color="text.secondary" mb={2}>
-                Trang chủ &gt; <Typography component="span" color="error">Tin tức</Typography>
-            </Typography>
+
 
             <Box display="flex" flexWrap="wrap" gap={4}>
                 {/* Main Content Column */}

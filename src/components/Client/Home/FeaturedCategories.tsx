@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const categories = [
@@ -13,45 +13,79 @@ const categories = [
 
 const FeaturedCategories = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleCategoryClick = (categoryName: string) => {
     navigate(`/shop?type=${encodeURIComponent(categoryName)}`);
   };
 
   return (
-    <Box sx={{ my: 5 }}>
-      <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center', }}>
+    <Box sx={{ my: 6, px: { xs: 2, md: 0 } }}>
+      <Typography
+        variant="h3"
+        sx={{
+          fontWeight: 'bold',
+          mb: 5,
+          textAlign: 'center',
+          fontSize: { xs: '1.8rem', md: '2.5rem' },
+          textTransform: 'uppercase',
+          letterSpacing: 2,
+          color: 'text.primary'
+        }}
+      >
         Danh mục nổi bật
       </Typography>
 
       <Box
+        display="grid"
+        gridTemplateColumns={{
+          xs: 'repeat(2, 1fr)',
+          sm: 'repeat(4, 1fr)',
+          md: 'repeat(7, 1fr)'
+        }}
+        gap={3}
         sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 2,
+          justifyContent: 'center',
+          maxWidth: '1200px',
+          mx: 'auto'
         }}
       >
         {categories.map((type, index) => (
           <Box
             key={index}
+            onClick={() => handleCategoryClick(type.name)}
             sx={{
-              flex: '1 1 calc(8% - 16px)',
-              width: 120,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                '& .category-img': {
+                  borderColor: theme.palette.primary.main,
+                  boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                },
+                '& .category-name': {
+                  color: theme.palette.primary.main
+                }
+              }
             }}
           >
-            <Paper
-              elevation={3}
-              onClick={() => handleCategoryClick(type.name)}
+            <Box
+              className="category-img"
               sx={{
-                '&.MuiPaper-root': {
-                  boxShadow: 'none', // loại bỏ shadow
-                },
-                p: 2,
-                textAlign: 'center',
-                cursor: 'pointer',
-                '&:hover': {
-                  color: '#52b2b5'
-                },
+                width: { xs: 80, sm: 100, md: 120 },
+                height: { xs: 80, sm: 100, md: 120 },
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '2px solid #eee',
+                mb: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: '#fff',
+                transition: 'all 0.3s ease'
               }}
             >
               <Box
@@ -59,23 +93,24 @@ const FeaturedCategories = () => {
                 src={type.image}
                 alt={type.name}
                 sx={{
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: '0.3s',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                  },
-                  border: '2px solid #ccc',
-                  borderRadius: 50,
-                  width: 150,
-                  height: 150,
+                  width: '100%',
+                  height: '100%',
                   objectFit: 'cover',
                 }}
               />
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                {type.name}
-              </Typography>
-            </Paper>
+            </Box>
+            <Typography
+              className="category-name"
+              variant="subtitle1"
+              sx={{
+                fontWeight: 600,
+                textAlign: 'center',
+                transition: 'color 0.3s ease',
+                fontSize: { xs: '0.85rem', md: '1rem' }
+              }}
+            >
+              {type.name}
+            </Typography>
           </Box>
         ))}
       </Box>

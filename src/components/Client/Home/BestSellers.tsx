@@ -79,7 +79,7 @@ const BestSellers: React.FC = () => {
   return (
     <Box p={4}>
       <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
-        Bán chạy trong tháng 🏆
+        Bán chạy trong tháng
       </Typography>
       <Typography variant="body2" mb={3} align="center">
         Những sản phẩm được yêu thích và mua nhiều nhất trong tháng qua!

@@ -7,15 +7,11 @@ const CategoryBanner: React.FC = () => {
 
     const categories = [
         {
-            title: 'Skirts',
-            subtitle: 'FALL WINTER 2024',
-            image: '/assets/images/skirts-banner.jpg',
-            link: '/shop?type=Váy',
+            image: '/assets/images/banner_three_1.webp',
+            link: '/shop?type=Đầm',
         },
         {
-            title: 'Shirts',
-            subtitle: 'FALL WINTER 2024',
-            image: '/assets/images/shirts-banner.jpg',
+            image: '/assets/images/tshirtbaner_2.webp',
             link: '/shop?type=Áo',
         },
     ];
@@ -30,11 +26,6 @@ const CategoryBanner: React.FC = () => {
                         onClick={() => navigate(category.link)}
                         style={{ backgroundImage: `url(${category.image})` }}
                     >
-                        <div className="category-banner-overlay" />
-                        <div className="category-banner-content">
-                            <h2 className="category-banner-title">{category.title}</h2>
-                            <p className="category-banner-subtitle">{category.subtitle}</p>
-                        </div>
                     </div>
                 ))}
             </div>

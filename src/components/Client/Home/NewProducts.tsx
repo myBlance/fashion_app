@@ -77,7 +77,7 @@ const NewProducts: React.FC = () => {
   return (
     <Box p={4}>
       <Typography variant="h4" fontWeight="bold" gutterBottom align="center">
-        Sản phẩm mới ✨
+        Sản phẩm mới
       </Typography>
       <Typography variant="body2" mb={3} align="center">
         Cập nhật những mẫu thiết kế mới nhất từ Dola Style!

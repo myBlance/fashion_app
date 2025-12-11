@@ -52,7 +52,7 @@ body {
   line-height: 1.6;
 }
 
-/* Success State Specifics */
+/* Trạng thái thành công */
 .seepay-container.success {
   border-top: 5px solid var(--primary-color);
 }
@@ -129,7 +129,7 @@ body {
   font-weight: 500;
 }
 
-/* Buttons */
+/* Các nút bấm */
 .buttons {
   display: flex;
   flex-direction: column;
@@ -170,7 +170,7 @@ body {
   color: #333;
 }
 
-/* QR Section */
+/* Phần mã QR */
 .qr-section {
   background: white;
   padding: 15px;
@@ -186,7 +186,7 @@ body {
   display: block;
 }
 
-/* Loader */
+/* Hiệu ứng loading */
 .loader-wrapper {
   display: flex;
   flex-direction: column;
@@ -211,7 +211,7 @@ body {
   }
 }
 
-/* Error State */
+/* Trạng thái lỗi */
 .seepay-container.error h2 {
   color: var(--error-color);
 }

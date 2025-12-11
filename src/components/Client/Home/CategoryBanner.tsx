@@ -7,12 +7,12 @@ const CategoryBanner: React.FC = () => {
 
     const categories = [
         {
-            image: '/assets/images/banner_three_1.webp',
+            image: '/assets/images/bc7022b6-9a61-47cc-9636-5e7fee3fb561.jpg',
             link: '/shop?type=Đầm',
         },
         {
-            image: '/assets/images/tshirtbaner_2.webp',
-            link: '/shop?type=Áo',
+            image: '/assets/images/5ff8e1ad-bd52-48da-853f-97e1fc241657.webp',
+            link: '/shop?type=Quần',
         },
     ];
 

@@ -1,0 +1,190 @@
+:root {
+    --primary-color: #ff5722;
+    --primary-hover: #e64a19;
+    --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --text-primary: #2d3436;
+    --text-secondary: #636e72;
+    --border-radius: 16px;
+}
+
+.profile-content-container {
+    font-family: 'Outfit', sans-serif;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    box-shadow: var(--shadow-lg);
+    color: var(--text-primary);
+    height: 100%;
+}
+
+.profile-header h5 {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 24px;
+}
+
+.profile-header p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.profile-divider {
+    margin: 24px 0;
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+.profile-layout {
+    display: flex;
+    gap: 40px;
+}
+
+@media (max-width: 900px) {
+    .profile-layout {
+        flex-direction: column-reverse;
+    }
+}
+
+/* Cột trái: Form thông tin */
+.profile-form {
+    flex: 2;
+}
+
+.form-group {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 0 20px;
+    margin-bottom: 24px;
+    align-items: start;
+}
+
+.form-label {
+    grid-column: 1;
+    display: block;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding-top: 10px;
+    margin-bottom: 0;
+    text-align: left;
+}
+
+/* Chọn container chứa input/nội dung (luôn là phần tử con thứ 2) */
+.form-group>*:nth-child(2) {
+    grid-column: 2;
+    width: 100%;
+}
+
+.form-helper {
+    grid-column: 2;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* Radio group cần được căn chỉnh riêng */
+.profile-radio-group {
+    margin-top: 0;
+}
+
+
+.save-btn {
+    margin-top: 20px;
+    padding: 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);
+    transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 87, 34, 0.35);
+}
+
+/* Responsive cho mobile (dạng lưới) */
+@media (max-width: 600px) {
+    .form-group {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .form-label {
+        grid-column: 1;
+        padding-top: 0;
+        margin-bottom: 4px;
+    }
+
+    .form-group>*:nth-child(2) {
+        grid-column: 1;
+    }
+
+    .form-helper {
+        grid-column: 1;
+    }
+}
+
+/* Cột phải: Ảnh đại diện */
+.avatar-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: 1px dashed rgba(0, 0, 0, 0.1);
+    padding-left: 40px;
+}
+
+@media (max-width: 900px) {
+    .avatar-section {
+        border-left: none;
+        padding-left: 0;
+        margin-bottom: 20px;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        padding-bottom: 30px;
+    }
+}
+
+.avatar-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    border: 4px solid white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.choose-photo-btn {
+    text-transform: none;
+    font-weight: 500;
+    border-radius: 8px;
+    border-color: #ddd;
+    color: var(--text-secondary);
+}
+
+.choose-photo-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(255, 87, 34, 0.05);
+}
+
+.avatar-hint {
+    margin-top: 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.6;
+}

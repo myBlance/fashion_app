@@ -13,6 +13,7 @@ import {
     Typography,
 } from '@mui/material';
 import React, { useRef } from 'react';
+import '../../../styles/ProfileContent.css';
 
 interface ProfileContentProps {
     profile: {
@@ -26,7 +27,6 @@ interface ProfileContentProps {
     };
     onProfileChange: (field: string, value: string) => void;
     onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onAvatarClick: () => void;
     onSave: () => void;
     message: string;
     onEditEmail?: () => void;
@@ -36,7 +36,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
     profile,
     onProfileChange,
     onFileChange,
-    onAvatarClick,
     onSave,
     message,
     onEditEmail,
@@ -44,74 +43,62 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     return (
-        <>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-                Hồ Sơ Của Tôi
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-                Quản lý thông tin hồ sơ để bảo mật tài khoản
-            </Typography>
+        <div className="profile-content-container">
+            <div className="profile-header">
+                <Typography variant="h5">Hồ Sơ Của Tôi</Typography>
+                <Typography variant="body2">
+                    Quản lý thông tin hồ sơ để bảo mật tài khoản
+                </Typography>
+            </div>
 
-            <Divider sx={{ my: 3 }} />
+            <Divider className="profile-divider" />
 
-            {/* Layout 2 cột: Thông tin bên trái, avatar bên phải */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    gap: 4,
-                }}
-            >
+            <div className="profile-layout">
                 {/* Cột trái: Thông tin hồ sơ */}
-                <Box sx={{ flex: 2 }}>
+                <div className="profile-form">
                     {/* Tên đăng nhập */}
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                            Tên đăng nhập
-                        </Typography>
+                    <div className="form-group">
+                        <label className="form-label">Tên đăng nhập</label>
                         <TextField
                             fullWidth
+                            variant="outlined"
+                            size="small"
                             name="username"
                             value={profile.username}
                             onChange={(e) => onProfileChange('username', e.target.value)}
-                            sx={{ mt: 0.5 }}
                         />
-                        <Typography variant="caption" color="text.secondary">
-                            Tên Đăng nhập có thể thay đổi.
-                        </Typography>
-                    </Box>
+                        <div className="form-helper">Tên Đăng nhập có thể thay đổi.</div>
+                    </div>
 
                     {/* Họ tên */}
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                            Tên
-                        </Typography>
+                    <div className="form-group">
+                        <label className="form-label">Tên</label>
                         <TextField
                             fullWidth
+                            variant="outlined"
+                            size="small"
                             name="name"
                             value={profile.name || ""}
                             onChange={(e) => onProfileChange('name', e.target.value)}
-                            sx={{ mt: 0.5 }}
                         />
-                    </Box>
+                    </div>
 
                     {/* Email */}
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                            Email
-                        </Typography>
+                    <div className="form-group">
+                        <label className="form-label">Email</label>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             {profile.email ? (
                                 <TextField
                                     fullWidth
+                                    variant="outlined"
+                                    size="small"
                                     name="email"
                                     value={profile.email}
                                     onChange={(e) => onProfileChange('email', e.target.value)}
-                                    sx={{ mt: 0.5 }}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
-                                                <IconButton onClick={onEditEmail}>
+                                                <IconButton onClick={onEditEmail} size="small">
                                                     <EditIcon fontSize="small" />
                                                 </IconButton>
                                             </InputAdornment>
@@ -121,130 +108,121 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
                             ) : (
                                 <TextField
                                     fullWidth
+                                    variant="outlined"
+                                    size="small"
                                     name="email"
                                     value=""
                                     onChange={(e) => onProfileChange('email', e.target.value)}
                                     placeholder="Chưa có email"
-                                    sx={{ mt: 0.5 }}
                                 />
                             )}
                             {!profile.email && (
                                 <Button
                                     variant="text"
                                     color="primary"
-                                    sx={{ ml: 1, textTransform: 'none', fontSize: '14px' }}
+                                    sx={{ ml: 1, textTransform: 'none', fontSize: '14px', whiteSpace: 'nowrap' }}
                                     onClick={onEditEmail}
                                 >
                                     Thêm
                                 </Button>
                             )}
                         </Box>
-                    </Box>
+                    </div>
 
                     {/* Số điện thoại */}
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                            Số điện thoại
-                        </Typography>
+                    <div className="form-group">
+                        <label className="form-label">Số điện thoại</label>
                         <TextField
                             fullWidth
+                            variant="outlined"
+                            size="small"
                             name="phone"
                             type="tel"
                             value={profile.phone || ""}
                             onChange={(e) => {
                                 const value = e.target.value;
-                                // Chỉ cho phép số và dấu +
                                 if (value === '' || /^\+?[0-9]*$/.test(value)) {
                                     onProfileChange('phone', value);
                                 }
                             }}
                             placeholder="+84 123 456 789"
                             helperText="Ví dụ: +84 987654321"
-                            sx={{ mt: 0.5 }}
                         />
-                    </Box>
+                    </div>
 
                     {/* Giới tính */}
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                            Giới tính
-                        </Typography>
+                    <div className="form-group">
+                        <label className="form-label">Giới tính</label>
                         <RadioGroup
                             row
+                            className="profile-radio-group"
                             name="gender"
                             value={profile.gender || "male"}
                             onChange={(e) => onProfileChange('gender', e.target.value)}
-                            sx={{ mt: 0.5 }}
                         >
-                            <FormControlLabel value="male" control={<Radio />} label="Nam" />
-                            <FormControlLabel value="female" control={<Radio />} label="Nữ" />
-                            <FormControlLabel value="other" control={<Radio />} label="Khác" />
+                            <FormControlLabel value="male" control={<Radio color="warning" size="small" />} label="Nam" />
+                            <FormControlLabel value="female" control={<Radio color="warning" size="small" />} label="Nữ" />
+                            <FormControlLabel value="other" control={<Radio color="warning" size="small" />} label="Khác" />
                         </RadioGroup>
-                    </Box>
+                    </div>
 
                     {/* Ngày sinh */}
-                    <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" fontWeight="bold">
-                            Ngày sinh
-                        </Typography>
+                    <div className="form-group">
+                        <label className="form-label">Ngày sinh</label>
                         <TextField
                             fullWidth
+                            variant="outlined"
+                            size="small"
                             name="birthDate"
                             type="date"
                             value={profile.birthDate ? new Date(profile.birthDate).toISOString().split('T')[0] : ""}
                             onChange={(e) => onProfileChange('birthDate', e.target.value)}
-                            sx={{ mt: 0.5 }}
                             InputLabelProps={{ shrink: true }}
                             helperText={profile.birthDate ? `Ngày sinh: ${new Date(profile.birthDate).toLocaleDateString('vi-VN')}` : "Chọn ngày sinh của bạn"}
                         />
-                    </Box>
+                    </div>
 
                     {/* Nút Lưu */}
                     <Button
                         variant="contained"
-                        color="error"
                         fullWidth
-                        sx={{ py: 1.5, fontSize: '16px', fontWeight: 'bold' }}
+                        className="save-btn"
                         onClick={onSave}
+                        sx={{ bgcolor: '#ff5722', '&:hover': { bgcolor: '#e64a19' } }}
                     >
-                        Lưu
+                        Lưu Thay Đổi
                     </Button>
 
                     {message && (
                         <Typography
                             sx={{
                                 mt: 2,
+                                fontSize: '14px',
                                 color: message.includes("thành công") ? "green" : "red",
-                                textAlign: 'center'
+                                textAlign: 'center',
+                                fontWeight: 500
                             }}
                         >
                             {message}
                         </Typography>
                     )}
-                </Box>
+                </div>
 
                 {/* Cột phải: Ảnh đại diện */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'flex-start',
-                    }}
-                >
-                    <Avatar
-                        src={profile.avatarUrl || "https://i.pravatar.cc/150?img=3"}
-                        alt="Avatar"
-                        sx={{
-                            width: 120,
-                            height: 120,
-                            cursor: 'pointer',
-                            mb: 2,
-                            border: '2px solid #ccc'
-                        }}
-                        onClick={onAvatarClick}
-                    />
+                <div className="avatar-section">
+                    <div className="avatar-wrapper">
+                        <Avatar
+                            className="profile-avatar"
+                            src={profile.avatarUrl || "https://i.pravatar.cc/150?img=3"}
+                            alt="Avatar"
+                            sx={{
+                                width: 140,
+                                height: 140,
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => fileInputRef.current?.click()}
+                        />
+                    </div>
                     <input
                         type="file"
                         accept="image/jpeg,image/png"
@@ -252,16 +230,20 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
                         ref={fileInputRef}
                         onChange={onFileChange}
                     />
-                    <Button variant="outlined" size="small" onClick={onAvatarClick}>
+                    <Button
+                        variant="outlined"
+                        className="choose-photo-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
                         Chọn Ảnh
                     </Button>
-                    <Typography variant="caption" display="block" mt={1} textAlign="center">
-                        Dung lượng tối đa 1 MB<br />
+                    <div className="avatar-hint">
+                        Dung lượng tối đa 5 MB<br />
                         Định dạng: .JPEG, .PNG
-                    </Typography>
-                </Box>
-            </Box>
-        </>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 

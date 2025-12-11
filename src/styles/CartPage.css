@@ -1,4 +1,4 @@
-/* --- RESET & BASE --- */
+/* --- CƠ BẢN --- */
 .cart-page-wrapper {
   background-color: #fff;
   min-height: 100vh;
@@ -48,7 +48,7 @@
   /* Cố định chiều rộng cột phải */
 }
 
-/* --- TABLE STYLES --- */
+/* --- KIỂU BẢNG --- */
 .cart-table {
   width: 100%;
   border-collapse: collapse;
@@ -78,7 +78,7 @@
   border-bottom: none;
 }
 
-/* Cột Product */
+/* Cột Sản phẩm */
 .product-item {
   display: flex;
   gap: 16px;
@@ -121,8 +121,8 @@
   margin-bottom: 2px;
 }
 
-/* Cột Quantity */
-/* Cột Quantity */
+/* Cột Số lượng */
+/* Cột Số lượng */
 .quantity-box {
   display: flex;
   align-items: center;
@@ -175,7 +175,7 @@
   color: var(--color-text-primary);
 }
 
-/* Cột Checkbox & Action */
+/* Cột Chọn & Hành động */
 .custom-checkbox {
   width: 20px;
   height: 20px;
@@ -197,7 +197,7 @@
   color: var(--color-danger);
 }
 
-/* Cột Price & Total */
+/* Cột Đơn giá & Thành tiền */
 .col-price {
   font-weight: 600;
   color: var(--color-text-primary);
@@ -210,7 +210,7 @@
   font-size: 18px;
 }
 
-/* --- SUMMARY SECTION (Cột phải) --- */
+/* --- TỔNG QUAN ĐƠN HÀNG (Cột phải) --- */
 .summary-card {
   background: var(--bg-card);
   padding: 24px;
@@ -279,7 +279,7 @@
   transform: scale(0.98);
 }
 
-/* --- EMPTY CART --- */
+/* --- GIỎ HÀNG TRỐNG --- */
 .empty-cart-container {
   display: flex;
   flex-direction: column;
@@ -319,7 +319,7 @@
   background: var(--color-black);
 }
 
-/* --- RESPONSIVE (MOBILE) --- */
+/* --- RESPONSIVE (DI ĐỘNG) --- */
 @media (max-width: 900px) {
   .cart-layout {
     flex-direction: column;

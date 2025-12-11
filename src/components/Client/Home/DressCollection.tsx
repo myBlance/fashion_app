@@ -20,43 +20,8 @@ const DressCollection: React.FC = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // responsive dynamic values
-  const [productWidth, setProductWidth] = useState(220);
-  const [bannerSize, setBannerSize] = useState({ w: 380, h: 480 });
-  const [visibleCount, setVisibleCount] = useState(3);
-
+  const productWidth = 220;
   const productMarginRight = 16;
-
-  // ⭐ Responsive calculation
-  useEffect(() => {
-    const updateLayout = () => {
-      const width = window.innerWidth;
-
-      if (width < 600) {
-        // Mobile
-        setProductWidth(160);
-        setBannerSize({ w: 280, h: 340 });
-        setVisibleCount(1.2);
-      } else if (width < 900) {
-        // Tablet
-        setProductWidth(200);
-        setBannerSize({ w: 320, h: 400 });
-        setVisibleCount(2);
-      } else {
-        // Desktop
-        setProductWidth(220);
-        setBannerSize({ w: 380, h: 480 });
-        setVisibleCount(3);
-      }
-    };
-
-    updateLayout();
-    window.addEventListener('resize', updateLayout);
-
-    return () => window.removeEventListener('resize', updateLayout);
-  }, []);
-
-  const containerWidth = visibleCount * (productWidth + productMarginRight);
 
   useEffect(() => {
     const loadDressProducts = async () => {
@@ -106,17 +71,19 @@ const DressCollection: React.FC = () => {
   return (
     <Box
       display="flex"
+      flexDirection={{ xs: 'column', md: 'row' }}
       gap={3}
       p={2}
       justifyContent="center"
-      flexWrap={{ xs: 'wrap', sm: 'wrap', md: 'nowrap' }}
+      alignItems={{ xs: 'center', md: 'flex-start' }}
     >
       {/* Banner */}
       <Box
         sx={{
           position: 'relative',
-          width: `${bannerSize.w}px`,
-          height: `${bannerSize.h}px`,
+          width: { xs: '100%', sm: '100%', md: '380px' },
+          maxWidth: { xs: '100%', sm: '500px', md: '380px' },
+          height: { xs: '340px', md: '480px' },
           borderRadius: 2,
           overflow: 'hidden',
           backgroundImage: 'url(/assets/images/dressbaner_3.webp)',
@@ -171,8 +138,12 @@ const DressCollection: React.FC = () => {
         gap={1}
         width={{ xs: '100%', md: 'auto' }}
         justifyContent="center"
+        sx={{ maxWidth: '100%', overflow: 'hidden' }}
       >
-        <IconButton onClick={() => scrollByOneProduct('left')}>
+        <IconButton
+          onClick={() => scrollByOneProduct('left')}
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+        >
           <ChevronLeftIcon />
         </IconButton>
 
@@ -181,24 +152,29 @@ const DressCollection: React.FC = () => {
           display="flex"
           sx={{
             overflowX: 'auto',
-            width: containerWidth,
-            maxWidth: { xs: '90vw', sm: '80vw', md: containerWidth },
+            width: { xs: '100%', md: 'calc(220px * 3 + 32px)' }, // Approximate width for desktop
+            maxWidth: '100%',
             scrollbarWidth: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
+            scrollBehavior: 'smooth',
+            gap: { xs: 1, md: 3 }
           }}
         >
           {products.map((product) => (
             <Box
               key={product.id}
               flex="0 0 auto"
-              sx={{ minWidth: productWidth, mr: 2 }}
+              sx={{ minWidth: 220 }}
             >
               <ProductCard product={product} />
             </Box>
           ))}
         </Box>
 
-        <IconButton onClick={() => scrollByOneProduct('right')}>
+        <IconButton
+          onClick={() => scrollByOneProduct('right')}
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+        >
           <ChevronRightIcon />
         </IconButton>
       </Box>

@@ -2,7 +2,7 @@
    QUICKVIEW MODAL STYLES
    ======================================== */
 
-/* --- OVERLAY --- */
+/* --- LỚP PHỦ --- */
 .quickview-overlay {
     position: fixed;
     top: 0;
@@ -23,7 +23,7 @@
     pointer-events: auto;
 }
 
-/* --- SIDEBAR PANEL --- */
+/* --- PANEL BÊN --- */
 .quickview-panel {
     position: fixed;
     top: 0;
@@ -45,7 +45,7 @@
     transform: translateX(0);
 }
 
-/* --- HEADER --- */
+/* --- PHẦN ĐẦU --- */
 .quickview-header {
     display: flex;
     justify-content: space-between;
@@ -86,7 +86,7 @@
     font-size: 24px;
 }
 
-/* --- CONTENT --- */
+/* --- NỘI DUNG --- */
 .quickview-content {
     padding: 24px;
     overflow-y: auto;
@@ -108,7 +108,7 @@
     border-radius: 10px;
 }
 
-/* --- MAIN IMAGE --- */
+/* --- ẢNH CHÍNH --- */
 .quickview-main-image {
     width: 100%;
     height: 280px;
@@ -119,7 +119,7 @@
     border: 1px solid var(--border-light);
 }
 
-/* --- THUMBNAILS --- */
+/* --- ẢNH NHỎ --- */
 .quickview-thumbnails {
     display: flex;
     gap: 10px;
@@ -159,7 +159,7 @@
     box-shadow: 0 2px 8px rgba(187, 12, 12, 0.3);
 }
 
-/* --- PRODUCT INFO --- */
+/* --- THÔNG TIN SẢN PHẨM --- */
 .quickview-product-name {
     font-size: 20px;
     font-weight: 700;
@@ -187,7 +187,7 @@
     color: var(--color-text-muted);
 }
 
-/* --- PRICE --- */
+/* --- GIÁ --- */
 .quickview-price-wrapper {
     display: flex;
     align-items: baseline;
@@ -210,7 +210,7 @@
     text-decoration: line-through;
 }
 
-/* --- OPTION SECTIONS --- */
+/* --- CÁC TÙY CHỌN --- */
 .quickview-option-section {
     margin-bottom: 20px;
 }
@@ -225,7 +225,7 @@
     letter-spacing: 0.5px;
 }
 
-/* Color Options */
+/* Tùy chọn Màu sắc */
 .quickview-color-options {
     display: flex;
     gap: 10px;
@@ -258,7 +258,7 @@
     box-shadow: 0 4px 12px rgba(187, 12, 12, 0.3);
 }
 
-/* Size Options */
+/* Tùy chọn Kích thước */
 .quickview-size-options {
     display: flex;
     gap: 10px;
@@ -292,7 +292,7 @@
     box-shadow: 0 4px 12px rgba(187, 12, 12, 0.3);
 }
 
-/* Quantity Controls */
+/* Điều chỉnh số lượng */
 .quickview-quantity-controls {
     display: flex;
     align-items: center;
@@ -340,7 +340,7 @@
     user-select: none;
 }
 
-/* --- ADD TO CART BUTTON --- */
+/* --- NÚT THÊM VÀO GIỎ --- */
 .quickview-add-to-cart {
     width: 100%;
     padding: 16px;

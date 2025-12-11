@@ -1,7 +1,8 @@
-import { Alert, Box, CircularProgress, Typography } from '@mui/material';
+import { Alert, CircularProgress, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../../../../contexts/ToastContext';
+import '../../../../styles/ProfileContent.css';
 import { Address } from '../../../../types/Address';
 import AddAddressModal from './AddAddressModal';
 import AddressList from './AddressList';
@@ -274,10 +275,16 @@ const AddressSettings: React.FC = () => {
     if (error) return <Alert severity="error">{error}</Alert>;
 
     return (
-        <Box>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
-                Địa Chỉ
-            </Typography>
+        <div className="profile-content-container">
+            <div className="profile-header">
+                <Typography variant="h5">Địa Chỉ</Typography>
+                <Typography variant="body2">
+                    Quản lý danh sách địa chỉ nhận hàng của bạn
+                </Typography>
+            </div>
+
+            <div className="profile-divider" style={{ margin: '24px 0', borderBottom: '1px solid rgba(0,0,0,0.06)' }}></div>
+
             <AddressList
                 addresses={addresses}
                 onAddNew={handleAddNew}
@@ -302,7 +309,7 @@ const AddressSettings: React.FC = () => {
                 onClose={() => setIsAddModalOpen(false)}
                 onAdd={handleAddAddress}
             />
-        </Box>
+        </div>
     );
 };
 

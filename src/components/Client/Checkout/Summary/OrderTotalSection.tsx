@@ -18,6 +18,7 @@ const OrderTotalSection: React.FC<OrderTotalSectionProps> = ({
     isVoucherValid,
     discountAmount
 }) => {
+    // 1. Render
     return (
         <div className="section total-section">
             <div className="total-row">

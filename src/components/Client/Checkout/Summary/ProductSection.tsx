@@ -15,6 +15,7 @@ interface ProductSectionProps {
 }
 
 const ProductSection: React.FC<ProductSectionProps> = ({ cartItems }) => {
+    // 1. Render
     return (
         <div className="section products-section">
             <div className="section-header">

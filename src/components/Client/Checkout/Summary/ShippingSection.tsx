@@ -6,7 +6,7 @@ interface ShippingSectionProps {
 }
 
 const ShippingSection: React.FC<ShippingSectionProps> = ({ shippingMethod, setShippingMethod }) => {
-    // Logic helpers
+    // 1. Logic & Calculations
     const getFutureDate = (daysToAdd: number) => {
         const date = new Date();
         date.setDate(date.getDate() + daysToAdd);
@@ -20,6 +20,7 @@ const ShippingSection: React.FC<ShippingSectionProps> = ({ shippingMethod, setSh
     const expressDateStart = getFutureDate(2);
     const expressDateEnd = getFutureDate(3);
 
+    // 2. Render
     return (
         <div className="section shipping-section">
             <div className="section-header">

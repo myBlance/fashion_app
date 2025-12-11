@@ -6,6 +6,7 @@ interface PaymentSectionProps {
 }
 
 const PaymentSection: React.FC<PaymentSectionProps> = ({ selectedPaymentMethod, setSelectedPaymentMethod }) => {
+    // 1. Render
     return (
         <div className="section payment-section">
             <div className="section-header">
@@ -23,7 +24,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ selectedPaymentMethod, 
                     />
                     <label htmlFor="shopeepay">
                         <img src="/assets/images/shopee.png" alt="ShopeePay" className="payment-icon" />
-                        Ví ShopeePay
+                        Ví ShopeePay (Đang phát triển)
                     </label>
                 </div>
 
@@ -52,7 +53,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ selectedPaymentMethod, 
                     />
                     <label htmlFor="cash-on-delivery">
                         <img src="/assets/images/COD.png" alt="Thanh toán khi nhận hàng" className="payment-icon" />
-                        Thanh toán khi nhận hàng
+                        Thanh toán khi nhận hàng (COD)
                     </label>
                 </div>
             </div>

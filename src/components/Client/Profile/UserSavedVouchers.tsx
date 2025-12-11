@@ -103,36 +103,24 @@ const UserSavedVouchers: React.FC = () => {
       <h2>Voucher Đã Lưu</h2>
 
       {/* ✅ Khu vực nhập mã voucher */}
-      <div className="claim-voucher-section" style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <div className="claim-voucher-section">
         <input
           type="text"
+          className="claim-input"
           placeholder="Nhập mã voucher"
           value={claimCode}
           onChange={(e) => setClaimCode(e.target.value)}
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', flex: 1, maxWidth: '300px' }}
         />
         <button
+          className="claim-btn"
           onClick={handleClaimVoucher}
           disabled={!claimCode.trim()}
-          style={{
-            padding: '8px 16px',
-            borderRadius: '4px',
-            backgroundColor: '#d32f2f',
-            color: '#fff',
-            border: 'none',
-            cursor: claimCode.trim() ? 'pointer' : 'not-allowed',
-            opacity: claimCode.trim() ? 1 : 0.6
-          }}
         >
           Lưu
         </button>
       </div>
       {claimMessage && (
-        <p style={{
-          color: claimMessage.type === 'success' ? 'green' : 'red',
-          marginBottom: '15px',
-          fontWeight: 'bold'
-        }}>
+        <p className={`claim-message ${claimMessage.type}`}>
           {claimMessage.text}
         </p>
       )}

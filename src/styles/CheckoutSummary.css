@@ -171,10 +171,6 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.shipping-options .shipping-option:last-child {
-  border-bottom: none;
-}
-
 .shipping-option input[type="radio"] {
   accent-color: #ff5722;
   margin-right: 8px;
@@ -189,6 +185,7 @@
   font-size: 12px;
   color: #777;
   margin-top: 2px;
+  margin-left: 10px;
 }
 
 .shipping-price {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+
 import CheckoutSummary from '../../components/Client/Checkout/CheckoutSummary';
+
 import '../../styles/Checkout.css';
 
 // Định nghĩa kiểu cho item
@@ -15,9 +17,11 @@ type CartItem = {
 };
 
 const CheckoutPage: React.FC = () => {
+  // 1. Hooks
   const location = useLocation();
   const { selectedCartItems, buyNowItem, isBuyNow } = location.state || {};
 
+  // 2. Logic & Calculations
   // Xử lý cho cả 2 trường hợp: checkout từ cart và buy now
   let cartItems: CartItem[] = [];
 
@@ -59,6 +63,7 @@ const CheckoutPage: React.FC = () => {
     0
   );
 
+  // 3. Render
   return (
     <div className="checkout-page-container">
       <h2>Thanh Toán {isBuyNow && '(Mua Ngay)'}</h2>

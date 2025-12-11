@@ -85,8 +85,12 @@ const BestSellers: React.FC = () => {
         Những sản phẩm được yêu thích và mua nhiều nhất trong tháng qua!
       </Typography>
 
-      <Box display="flex" alignItems="center" gap={1} justifyContent="center">
-        <IconButton onClick={() => scrollByOneProduct('left')} size="large">
+      <Box display="flex" alignItems="center" gap={1} justifyContent="center" sx={{ maxWidth: '100%', overflow: 'hidden' }}>
+        <IconButton
+          onClick={() => scrollByOneProduct('left')}
+          size="large"
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+        >
           <ChevronLeftIcon />
         </IconButton>
 
@@ -95,10 +99,13 @@ const BestSellers: React.FC = () => {
           display="flex"
           sx={{
             overflowX: 'auto',
-            width: containerWidth,
+            width: '100%',
+            maxWidth: containerWidth,
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
+            scrollBehavior: 'smooth',
+            gap: { xs: 1, md: 3 }
           }}
         >
           {bestSellingProducts.length > 0 ? (
@@ -106,7 +113,7 @@ const BestSellers: React.FC = () => {
               <Box
                 key={product.id}
                 flex="0 0 auto"
-                sx={{ minWidth: productWidth, pl: 1, mr: 1, mb: 2, mt: 2 }}
+                sx={{ minWidth: productWidth, mb: 2, mt: 2 }}
               >
                 {/* ✅ Bỏ `status` sai kiểu */}
                 <ProductCard product={product} />
@@ -119,7 +126,11 @@ const BestSellers: React.FC = () => {
           )}
         </Box>
 
-        <IconButton onClick={() => scrollByOneProduct('right')} size="large">
+        <IconButton
+          onClick={() => scrollByOneProduct('right')}
+          size="large"
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+        >
           <ChevronRightIcon />
         </IconButton>
       </Box>

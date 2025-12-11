@@ -1,8 +1,8 @@
-// src/components/Client/Voucher/VoucherList.tsx
 import { Alert, Box, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../../../contexts/ToastContext';
 import { UserVoucher, VoucherService } from '../../../services/voucherService';
+import '../../../styles/VoucherList.css';
 import { Voucher } from '../../../types/Voucher';
 import VoucherCard from './VoucherCard';
 
@@ -67,8 +67,13 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
           const codes = res.data.map((uv: UserVoucher) => uv.voucher.code);
           setClaimedVoucherCodes(codes);
         }
-      } catch (err) {
-        console.error('Lỗi khi lấy danh sách voucher đã lưu:', err);
+      } catch (err: any) {
+        if (err.response && err.response.status === 401) {
+          // Token expired or invalid, just ignore
+          console.warn('Phiên đăng nhập hết hạn hoặc không hợp lệ.');
+        } else {
+          console.error('Lỗi khi lấy danh sách voucher đã lưu:', err);
+        }
       }
     };
 
@@ -131,42 +136,34 @@ const VoucherList: React.FC<VoucherListProps> = ({ totalAmount }) => {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        gap: 2,
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        padding: 2,
-        backgroundColor: '#f9f9f9',
-      }}
-    >
+    <div className="voucher-list-container">
       {vouchers.map((voucher) => (
-        <VoucherCard
-          key={voucher._id}
-          _id={voucher._id}
-          code={voucher.code}
-          name={voucher.name}
-          description={voucher.description}
-          type={voucher.type}
-          value={voucher.value}
-          shopName={voucher.shopName}
-          minOrderAmount={voucher.minOrderAmount}
-          validFrom={voucher.validFrom}
-          validUntil={voucher.validUntil}
-          maxUses={voucher.maxUses}
-          maxUsesPerUser={voucher.maxUsesPerUser}
-          isActive={voucher.isActive}
-          discountText={voucher.discountText}
-          conditionText={voucher.conditionText}
-          isFreeShip={voucher.isFreeShip}
-          currentTotalAmount={totalAmount}
-          onCopy={() => handleCopy(voucher.code)}
-          onClaim={handleClaim}
-          isClaimed={claimedVoucherCodes.includes(voucher.code)}
-        />
+        <div key={voucher._id} className="voucher-list-item">
+          <VoucherCard
+            _id={voucher._id}
+            code={voucher.code}
+            name={voucher.name}
+            description={voucher.description}
+            type={voucher.type}
+            value={voucher.value}
+            shopName={voucher.shopName}
+            minOrderAmount={voucher.minOrderAmount}
+            validFrom={voucher.validFrom}
+            validUntil={voucher.validUntil}
+            maxUses={voucher.maxUses}
+            maxUsesPerUser={voucher.maxUsesPerUser}
+            isActive={voucher.isActive}
+            discountText={voucher.discountText}
+            conditionText={voucher.conditionText}
+            isFreeShip={voucher.isFreeShip}
+            currentTotalAmount={totalAmount}
+            onCopy={() => handleCopy(voucher.code)}
+            onClaim={handleClaim}
+            isClaimed={claimedVoucherCodes.includes(voucher.code)}
+          />
+        </div>
       ))}
-    </Box>
+    </div>
   );
 };
 

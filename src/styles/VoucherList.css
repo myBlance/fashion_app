@@ -1,0 +1,45 @@
+.voucher-list-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 24px 50px;
+    background-color: #f9f9f9;
+}
+
+@media (max-width: 1200px) {
+    .voucher-list-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .voucher-list-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .voucher-list-container {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 16px;
+        gap: 8px;
+        scrollbar-width: none;
+    }
+
+    .voucher-list-container::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.voucher-list-item {
+    min-width: auto;
+}
+
+@media (max-width: 600px) {
+    .voucher-list-item {
+        min-width: 200px;
+        flex-shrink: 0;
+    }
+}

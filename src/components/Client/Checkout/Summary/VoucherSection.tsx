@@ -9,10 +9,10 @@ interface VoucherSectionProps {
 }
 
 const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSelectVoucher, isVoucherValid }) => {
+    // 1. Hooks & State
     const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
 
-    // Helper inside component or passed as prop? 
-    // The logic was inside CheckoutSummary. Let's copy the helper logic here as it's purely display formatting.
+    // 2. Logic & Calculations
     const getVoucherDisplayText = (voucher: Voucher | null) => {
         if (!voucher) return '';
         if (voucher.type === 'percentage') return `Giảm ${voucher.value}%`;
@@ -20,6 +20,7 @@ const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSele
         return 'Giảm giá';
     };
 
+    // 3. Render
     return (
         <>
             <VoucherModal

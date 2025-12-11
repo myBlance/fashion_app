@@ -13,11 +13,11 @@
   margin: 0 auto;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   margin-top: 40px;
 }
 
-/* --- Loading State --- */
+/* --- Trạng thái đang tải --- */
 .cod-container.loading .spinner {
   width: 50px;
   height: 50px;
@@ -29,11 +29,16 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* --- Success State --- */
+/* --- Trạng thái thành công --- */
 .success-icon {
   width: 80px;
   height: 80px;
@@ -43,8 +48,15 @@
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .cod-container h2 {
@@ -95,7 +107,7 @@
   margin-top: 15px;
 }
 
-/* --- Buttons --- */
+/* --- Các nút bấm --- */
 .buttons {
   display: flex;
   gap: 15px;
@@ -133,7 +145,7 @@
   background: #e64a19;
 }
 
-/* --- Error State --- */
+/* --- Trạng thái lỗi --- */
 .cod-container.error .icon-error {
   font-size: 60px;
   margin-bottom: 20px;

@@ -1,19 +1,20 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../../styles/CheckoutSummary.css';
 
 import { useToast } from '../../../contexts/ToastContext';
 import { Address } from '../../../types/Address';
 import { Voucher } from '../../../types/Voucher';
 
-// Import sub-components
+// Sub-components
 import AddressSection from './Summary/AddressSection';
 import OrderTotalSection from './Summary/OrderTotalSection';
 import PaymentSection from './Summary/PaymentSection';
 import ProductSection from './Summary/ProductSection';
 import ShippingSection from './Summary/ShippingSection';
 import VoucherSection from './Summary/VoucherSection';
+
+import '../../../styles/CheckoutSummary.css';
 
 interface CheckoutSummaryProps {
   cartItems: Array<{
@@ -30,42 +31,18 @@ interface CheckoutSummaryProps {
 }
 
 const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmount }) => {
+  // 1. Hooks & State
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const token = localStorage.getItem('token');
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('shopeepay');
   const [shippingMethod, setShippingMethod] = useState('standard');
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
 
-  const navigate = useNavigate();
-  const { showToast } = useToast();
-  const token = localStorage.getItem('token');
-
-  // Tính phí vận chuyển (Managed here or passed down? Passed down to ShippingSection to display options, used here for calculation)
-  const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
-
-  // Kiểm tra điều kiện áp dụng voucher
-  const isVoucherValid = !!selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
-
-  // Tính giảm giá từ voucher
-  const calculateDiscount = () => {
-    if (!selectedVoucher || !isVoucherValid) return 0;
-
-    if (selectedVoucher.type === 'fixed') {
-      return Math.min(selectedVoucher.value || 0, totalAmount);
-    }
-
-    if (selectedVoucher.type === 'percentage') {
-      const percentage = selectedVoucher.value || 0;
-      const discount = (totalAmount * percentage) / 100;
-      return Math.min(discount, totalAmount);
-    }
-
-    return 0;
-  };
-
-  const discountAmount = calculateDiscount();
-  const finalTotal = totalAmount - discountAmount + shippingFee;
-
+  // 2. Effects
   useEffect(() => {
     const fetchAddresses = async () => {
       if (!token) return;
@@ -92,6 +69,31 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     fetchAddresses();
   }, [token]);
 
+  // 3. Derived State & Calculations
+  const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
+
+  const isVoucherValid = !!selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
+
+  const calculateDiscount = () => {
+    if (!selectedVoucher || !isVoucherValid) return 0;
+
+    if (selectedVoucher.type === 'fixed') {
+      return Math.min(selectedVoucher.value || 0, totalAmount);
+    }
+
+    if (selectedVoucher.type === 'percentage') {
+      const percentage = selectedVoucher.value || 0;
+      const discount = (totalAmount * percentage) / 100;
+      return Math.min(discount, totalAmount);
+    }
+
+    return 0;
+  };
+
+  const discountAmount = calculateDiscount();
+  const finalTotal = totalAmount - discountAmount + shippingFee;
+
+  // 4. Handlers
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
       showToast('Vui lòng nhập địa chỉ giao hàng', 'warning');
@@ -149,6 +151,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     }
   };
 
+  // 5. Render
   return (
     <div className="checkout-summary">
       <AddressSection

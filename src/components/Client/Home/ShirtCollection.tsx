@@ -22,43 +22,8 @@ const ShirtCollection: React.FC = () => {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // responsive dynamic values
-  const [productWidth, setProductWidth] = useState(220);
-  const [bannerSize, setBannerSize] = useState({ w: 380, h: 480 });
-  const [visibleCount, setVisibleCount] = useState(3);
-
+  const productWidth = 220;
   const productMarginRight = 16;
-
-  // ⭐ Responsive calculation
-  useEffect(() => {
-    const updateLayout = () => {
-      const width = window.innerWidth;
-
-      if (width < 600) {
-        // Mobile
-        setProductWidth(220);
-        setBannerSize({ w: '100%' as any, h: 340 });
-        setVisibleCount(1.3);
-      } else if (width < 900) {
-        // Tablet
-        setProductWidth(220);
-        setBannerSize({ w: '100%' as any, h: 400 });
-        setVisibleCount(2.5);
-      } else {
-        // Desktop
-        setProductWidth(220);
-        setBannerSize({ w: 380, h: 480 });
-        setVisibleCount(3);
-      }
-    };
-
-    updateLayout();
-    window.addEventListener('resize', updateLayout);
-
-    return () => window.removeEventListener('resize', updateLayout);
-  }, []);
-
-  const containerWidth = visibleCount * (productWidth + productMarginRight);
 
   // Load products
   useEffect(() => {
@@ -123,9 +88,9 @@ const ShirtCollection: React.FC = () => {
         sx={{
           order: { xs: 1, md: 2 },
           position: 'relative',
-          width: { xs: '100%', sm: '100%', md: `${bannerSize.w}px` },
-          maxWidth: { xs: '100%', sm: '500px', md: `${bannerSize.w}px` },
-          height: `${bannerSize.h}px`,
+          width: { xs: '100%', sm: '100%', md: '380px' },
+          maxWidth: { xs: '100%', sm: '500px', md: '380px' },
+          height: { xs: '340px', md: '480px' },
           borderRadius: 2,
           overflow: 'hidden',
           backgroundImage: 'url(/assets/images/tshirtbaner_1.webp)',
@@ -181,9 +146,12 @@ const ShirtCollection: React.FC = () => {
         gap={1}
         width={{ xs: '100%', md: 'auto' }}
         justifyContent="center"
-        sx={{ order: { xs: 2, md: 1 } }}
+        sx={{ order: { xs: 2, md: 1 }, maxWidth: '100%', overflow: 'hidden' }}
       >
-        <IconButton onClick={() => scrollByOneProduct('left')}>
+        <IconButton
+          onClick={() => scrollByOneProduct('left')}
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+        >
           <ChevronLeftIcon />
         </IconButton>
 
@@ -192,24 +160,29 @@ const ShirtCollection: React.FC = () => {
           display="flex"
           sx={{
             overflowX: 'auto',
-            width: { xs: '100%', md: containerWidth },
-            maxWidth: { xs: '85vw', sm: '90vw', md: containerWidth },
+            width: { xs: '100%', md: 'calc(220px * 3 + 32px)' },
+            maxWidth: '100%',
             scrollbarWidth: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
+            scrollBehavior: 'smooth',
+            gap: { xs: 1, md: 3 }
           }}
         >
           {products.map((product) => (
             <Box
               key={product.id}
               flex="0 0 auto"
-              sx={{ minWidth: { xs: 220, md: productWidth }, mr: 2 }}
+              sx={{ minWidth: 220 }}
             >
               <ProductCard product={product} />
             </Box>
           ))}
         </Box>
 
-        <IconButton onClick={() => scrollByOneProduct('right')}>
+        <IconButton
+          onClick={() => scrollByOneProduct('right')}
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+        >
           <ChevronRightIcon />
         </IconButton>
       </Box>

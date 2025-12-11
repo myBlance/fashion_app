@@ -135,12 +135,13 @@ const HotDeals: React.FC = () => {
         </Typography>
       ) : null}
 
-      <Box display="flex" alignItems="center" gap={1} justifyContent="center">
+      <Box display="flex" alignItems="center" gap={1} justifyContent="center" sx={{ maxWidth: '100%', overflow: 'hidden' }}>
         <IconButton
           onClick={() => scrollByOneProduct('left')}
           aria-label="Cuộn sang trái"
           size="large"
           disabled={!scrollRef.current || scrollRef.current.scrollLeft <= 0}
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
         >
           <ChevronLeftIcon />
         </IconButton>
@@ -155,13 +156,16 @@ const HotDeals: React.FC = () => {
           onClickCapture={handleClickCapture}
           sx={{
             overflowX: 'auto',
-            width: containerWidth,
+            width: '100%', // Responsive width
+            maxWidth: containerWidth,
             cursor: isDown.current ? 'grabbing' : 'grab',
             userSelect: 'none',
             WebkitUserDrag: 'none',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
+            scrollBehavior: 'smooth',
+            gap: { xs: 1, md: 3 } // Responsive gap
           }}
         >
           {hotDeals.map((product) => (
@@ -170,8 +174,7 @@ const HotDeals: React.FC = () => {
               flex="0 0 auto"
               sx={{
                 minWidth: productWidth,
-                pl: 1,
-                mr: 1,
+                // Removed pl: 1, mr: 1 to use gap
                 mb: 2,
                 mt: 2,
               }}
@@ -185,7 +188,7 @@ const HotDeals: React.FC = () => {
           onClick={() => scrollByOneProduct('right')}
           aria-label="Cuộn sang phải"
           size="large"
-          // ⚠️ Tạm không disable vì không biết scroll max (có thể tính nếu cần)
+          sx={{ display: { xs: 'none', md: 'inline-flex' } }}
         >
           <ChevronRightIcon />
         </IconButton>

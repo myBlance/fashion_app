@@ -8,7 +8,7 @@ import {
     useTheme
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Import các component con (Giữ nguyên đường dẫn của bạn)
 import AddressSettings from "../../components/Client/Profile/Address/AddressSettings";
@@ -52,7 +52,6 @@ const ProfilePage: React.FC = () => {
     // Sử dụng Global Toast thay vì local state
     const { showToast } = useToast();
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const token = localStorage.getItem("token");
 
     // --- Fetch Data ---
@@ -90,16 +89,12 @@ const ProfilePage: React.FC = () => {
         setProfile(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleAvatarClick = () => {
-        fileInputRef.current?.click();
-    };
-
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 1 * 1024 * 1024) {
-            showToast('Dung lượng file quá lớn (>1MB)', 'error');
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Dung lượng file quá lớn (>5MB)', 'error');
             return;
         }
 
@@ -172,7 +167,6 @@ const ProfilePage: React.FC = () => {
                         profile={profile}
                         onProfileChange={handleProfileChange}
                         onFileChange={handleFileChange}
-                        onAvatarClick={handleAvatarClick}
                         onSave={handleUpdateProfile}
                         message="" // Đã dùng Toast nên có thể bỏ message ở đây
                     />

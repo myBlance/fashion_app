@@ -148,6 +148,7 @@ const OrderHistoryPage: React.FC = () => {
             onChange={(_, val) => setSelectedStatus(val)}
             variant="scrollable"
             scrollButtons="auto"
+            allowScrollButtonsMobile
             textColor="primary"
             indicatorColor="primary"
             sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, fontSize: '0.95rem', minHeight: 56 } }}

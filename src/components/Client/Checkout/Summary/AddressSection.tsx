@@ -9,8 +9,10 @@ interface AddressSectionProps {
 }
 
 const AddressSection: React.FC<AddressSectionProps> = ({ addresses, selectedAddress, onSelectAddress }) => {
+    // 1. Hooks & State
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // 2. Render
     return (
         <>
             {/* Modal chọn địa chỉ */}

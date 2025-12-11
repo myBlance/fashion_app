@@ -31,7 +31,7 @@ const ContactPage = () => {
                                 <Box className="contact-icon-circle">
                                     <LocationOnIcon />
                                 </Box>
-                                <Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                                     <Typography variant="subtitle1" className="contact-label">Địa chỉ</Typography>
                                     <Typography variant="body2" className="contact-text">
                                         70 Lữ Gia, Phường 15, Quận 11, TP.HCM
@@ -45,7 +45,7 @@ const ContactPage = () => {
                                 <Box className="contact-icon-circle">
                                     <AccessTimeIcon />
                                 </Box>
-                                <Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                                     <Typography variant="subtitle1" className="contact-label">Thời gian làm việc</Typography>
                                     <Typography variant="body2" className="contact-text">
                                         8h - 22h
@@ -62,7 +62,7 @@ const ContactPage = () => {
                                 <Box className="contact-icon-circle">
                                     <PhoneIcon />
                                 </Box>
-                                <Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                                     <Typography variant="subtitle1" className="contact-label">Hotline</Typography>
                                     <Typography variant="body2" className="contact-text">
                                         1900 6750
@@ -76,7 +76,7 @@ const ContactPage = () => {
                                 <Box className="contact-icon-circle">
                                     <EmailIcon />
                                 </Box>
-                                <Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                                     <Typography variant="subtitle1" className="contact-label">Email</Typography>
                                     <Typography variant="body2" className="contact-text">
                                         support@sapo.vn

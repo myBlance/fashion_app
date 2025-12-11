@@ -110,18 +110,18 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  // ✅ Mua ngay: Đi thẳng đến thanh toán với sản phẩm này (không thêm vào giỏ)
+  // Mua ngay: Đi thẳng đến thanh toán với sản phẩm này (không thêm vào giỏ)
   const handleBuyNow = async () => {
     if (!product) return;
 
-    // ✅ Kiểm tra đăng nhập
+    // Kiểm tra đăng nhập
     if (!userId) {
       showToast("Vui lòng đăng nhập để mua hàng", "warning");
       navigate('/auth?tab=login');
       return;
     }
 
-    // ✅ Tạo item để checkout ngay
+    // Tạo item để checkout ngay
     const buyNowItem: CartItem = {
       id: `buynow-${Date.now()}`, // Temporary ID
       productId: product.id,
@@ -133,7 +133,7 @@ const ProductDetail: React.FC = () => {
       image: product.images[selectedColorIndex] || product.thumbnail || "",
     };
 
-    // ✅ Navigate đến checkout với sản phẩm trong state (không save vào cart)
+    // Navigate đến checkout với sản phẩm trong state (không save vào cart)
     navigate('/checkout', {
       state: {
         buyNowItem,

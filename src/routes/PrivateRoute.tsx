@@ -10,7 +10,7 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, auth }) => {
     const { role, loading } = useAuth();
 
-    // ✅ Chờ loading hoàn tất trước khi check role
+    // Chờ loading hoàn tất trước khi check role
     if (loading) {
         return (
             <div style={{

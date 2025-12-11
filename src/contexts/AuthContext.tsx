@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // ✅ Kiểm tra token có đúng định dạng JWT không
+    // Kiểm tra token có đúng định dạng JWT không
     const tokenParts = token.split('.');
     if (tokenParts.length !== 3) {
       console.warn('Token không đúng định dạng JWT');
@@ -56,15 +56,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const storedRole = localStorage.getItem('role') as Role | null; // ✅ Dùng localStorage thay vì sessionStorage
-    const storedUserId = localStorage.getItem('userId'); // ✅ Dùng localStorage thay vì sessionStorage
+    const storedRole = localStorage.getItem('role') as Role | null; // Dùng localStorage thay vì sessionStorage
+    const storedUserId = localStorage.getItem('userId'); // Dùng localStorage thay vì sessionStorage
     if (storedRole) setRole(storedRole);
     if (storedUserId) setUserId(storedUserId);
   };
 
   useEffect(() => {
     checkAuthStatus();
-    setLoading(false); // ✅ Đảm bảo setLoading(false) được gọi
+    setLoading(false); // Đảm bảo setLoading(false) được gọi
   }, []);
 
   const loginAs = async (newRole: Role, newUserId?: string) => {
@@ -127,7 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     navigate('/');
   };
 
-  // ✅ Luôn render children, không phụ thuộc vào loading
+  // Luôn render children, không phụ thuộc vào loading
   return (
     <AuthContext.Provider value={{ role, userId, loading, loginAs, logout, checkAuthStatus }}>
       {children}

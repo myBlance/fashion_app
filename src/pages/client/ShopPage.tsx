@@ -55,7 +55,7 @@ const ShopPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // ✅ Read URL params and apply filters on mount
+  // Read URL params and apply filters on mount
   useEffect(() => {
     const typeParam = searchParams.get('type');
     if (typeParam) {

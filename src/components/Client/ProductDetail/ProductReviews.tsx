@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Box, Typography, Chip, Rating, Avatar, Card, CardContent,
-  Stack, Divider, IconButton, Tooltip, LinearProgress,
-  Alert, Button
-} from '@mui/material';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import StarIcon from '@mui/icons-material/Star';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  Card, CardContent,
+  Chip,
+  Divider, IconButton,
+  LinearProgress,
+  Rating,
+  Stack,
+  Tooltip,
+  Typography
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { Review } from '../../../types/Review';
 
 // Component hiển thị hình ảnh/video
@@ -116,22 +125,22 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
   if (error) return <Box p={4}><Alert severity="error">{error}</Alert></Box>;
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 } }}>
-      
-      {/* --- Phần Tổng Quan (Dashboard) - ĐÃ THAY THẾ GRID BẰNG FLEXBOX --- */}
-      <Card sx={{ bgcolor: '#fffcfc', border: '1px solid #f0f0f0', boxShadow: 'none', mb: 4 }}>
+    <Box sx={{ px: { xs: 2, md: 4 }, py: 2 }}>
+
+      {/* --- Phần Tổng Quan (Dashboard) --- */}
+      <Card sx={{ bgcolor: '#fffcfc', border: 'none', boxShadow: 'none', mb: 4 }}>
         <CardContent>
-          <Box 
-            display="flex" 
+          <Box
+            display="flex"
             flexDirection={{ xs: 'column', md: 'row' }} // Mobile: Cột dọc, Desktop: Hàng ngang
-            alignItems="center" 
+            alignItems="center"
             gap={{ xs: 3, md: 4 }} // Khoảng cách giữa các phần
           >
-            
+
             {/* Phần 1: Điểm số trung bình */}
-            <Box 
-              sx={{ 
-                textAlign: 'center', 
+            <Box
+              sx={{
+                textAlign: 'center',
                 width: '100%',
                 flex: { md: 1.2 }, // Chiếm tỉ lệ nhỏ
                 borderRight: { md: '1px solid #eee' }, // Viền phải trên desktop
@@ -150,8 +159,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             </Box>
 
             {/* Phần 2: Thanh tỉ lệ sao */}
-            <Box 
-              sx={{ 
+            <Box
+              sx={{
                 width: '100%',
                 flex: { md: 1.8 }, // Chiếm tỉ lệ lớn nhất
                 px: { md: 2 }
@@ -163,32 +172,32 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
             </Box>
 
             {/* Phần 3: Nút lọc nhanh */}
-            <Box 
-              sx={{ 
+            <Box
+              sx={{
                 width: '100%',
                 flex: { md: 1 }, // Chiếm tỉ lệ vừa
-                display: 'flex', 
-                flexDirection: 'column', 
+                display: 'flex',
+                flexDirection: 'column',
                 gap: 1,
                 pl: { md: 2 }
               }}
             >
-               <Button 
-                  variant={selectedStars === null ? "contained" : "outlined"} 
-                  size="small" 
-                  onClick={() => { setSelectedStars(null); setHasCommentFilter(null); setHasMediaFilter(null); }}
-                  sx={{ bgcolor: selectedStars === null ? '#b11116' : 'transparent', color: selectedStars === null ? '#fff' : '#b11116', borderColor: '#b11116' }}
-                >
-                  Tất cả
-               </Button>
-               <Button 
-                  variant={hasMediaFilter ? "contained" : "outlined"} 
-                  size="small"
-                  onClick={() => setHasMediaFilter(prev => !prev)}
-                  sx={{ borderColor: '#b11116', color: hasMediaFilter ? '#fff' : '#b11116', bgcolor: hasMediaFilter ? '#b11116' : 'transparent' }}
-               >
-                  Có Hình ảnh / Video ({hasMedia})
-               </Button>
+              <Button
+                variant={selectedStars === null ? "contained" : "outlined"}
+                size="small"
+                onClick={() => { setSelectedStars(null); setHasCommentFilter(null); setHasMediaFilter(null); }}
+                sx={{ bgcolor: selectedStars === null ? '#b11116' : 'transparent', color: selectedStars === null ? '#fff' : '#b11116', borderColor: '#b11116' }}
+              >
+                Tất cả
+              </Button>
+              <Button
+                variant={hasMediaFilter ? "contained" : "outlined"}
+                size="small"
+                onClick={() => setHasMediaFilter(prev => !prev)}
+                sx={{ borderColor: '#b11116', color: hasMediaFilter ? '#fff' : '#b11116', bgcolor: hasMediaFilter ? '#b11116' : 'transparent' }}
+              >
+                Có Hình ảnh / Video ({hasMedia})
+              </Button>
             </Box>
 
           </Box>
@@ -230,16 +239,16 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
               <Avatar sx={{ bgcolor: '#f0f0f0', color: '#666', width: 48, height: 48 }}>
                 {review.userId.username.charAt(0).toUpperCase()}
               </Avatar>
-              <Box flexGrow={1}>
+              <Box flexGrow={1} textAlign="left">
                 <Typography variant="subtitle2" fontWeight="bold" sx={{ fontSize: '14px' }}>
                   {review.userId.username.replace(/^(.{1})(.*)(.{1})$/, '$1****$3')}
                 </Typography>
-                <Rating value={review.rating} readOnly size="small" sx={{ fontSize: '14px', my: 0.5 }} />
+                <Rating value={review.rating} readOnly size="small" sx={{ fontSize: '14px', my: 0.5, display: 'flex' }} />
                 <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                   {new Date(review.createdAt).toLocaleString('vi-VN')} | Phân loại: {review.productId}
                 </Typography>
-                
-                <Typography variant="body2" sx={{ mt: 1, color: '#333', lineHeight: 1.6 }}>
+
+                <Typography variant="body2" sx={{ mt: 1, color: '#333', lineHeight: 1.6, textAlign: 'justify' }}>
                   {review.comment}
                 </Typography>
 

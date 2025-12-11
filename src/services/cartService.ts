@@ -44,22 +44,22 @@ export const CartService = {
     };
   },
 
-  // ✅ Sửa: Xóa sản phẩm khỏi giỏ
+  // Sửa: Xóa sản phẩm khỏi giỏ
   async removeItem(productId: string, userId: string, color?: string, size?: string) {
-    const payload = { userId, productId, color, size }; // ✅ Gửi `productId`, không phải `cartItemId`
+    const payload = { userId, productId, color, size }; // Gửi `productId`, không phải `cartItemId`
     const res = await axios.delete(`${API_URL}`, { data: payload });
     return res.data;
   },
 
-  // ✅ Sửa: Cập nhật số lượng
+  // Sửa: Cập nhật số lượng
   async updateQuantity(
-    productId: string, // ✅ Thay `cartItemId` bằng `productId`
+    productId: string, // Thay `cartItemId` bằng `productId`
     userId: string,
     quantity: number,
     color?: string,
     size?: string
   ) {
-    const payload = { userId, productId, color, size, quantity }; // ✅ Gửi `productId`
+    const payload = { userId, productId, color, size, quantity }; // Gửi `productId`
     const res = await axios.put(`${API_URL}/update`, payload);
     return res.data;
   },

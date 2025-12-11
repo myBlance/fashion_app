@@ -15,10 +15,10 @@ const SimilarProducts: React.FC<SimilarProductsProps> = ({ currentProductId, cur
   const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Gọi API để lấy sản phẩm cùng loại
+  //  Gọi API để lấy sản phẩm cùng loại
   useEffect(() => {
     if (!currenttype) {
-      setLoading(false); // ✅ Luôn phải set loading để đảm bảo hook được gọi
+      setLoading(false);
       return;
     }
 

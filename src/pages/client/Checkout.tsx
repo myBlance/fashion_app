@@ -18,7 +18,7 @@ const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const { selectedCartItems, buyNowItem, isBuyNow } = location.state || {};
 
-  // ✅ Xử lý cho cả 2 trường hợp: checkout từ cart và buy now
+  // Xử lý cho cả 2 trường hợp: checkout từ cart và buy now
   let cartItems: CartItem[] = [];
 
   if (isBuyNow && buyNowItem) {

@@ -82,7 +82,7 @@ const SeepayPaymentPage: React.FC = () => {
       }
     };
 
-    // ✅ Sửa hàm handleRetryPayment để dùng endpoint mới
+    // Sửa hàm handleRetryPayment để dùng endpoint mới
     const handleRetryPayment = async () => {
       if (!existingOrderId) {
         setError('Không tìm thấy ID đơn hàng cần thanh toán lại.');
@@ -91,7 +91,7 @@ const SeepayPaymentPage: React.FC = () => {
       }
 
       try {
-        // ✅ Gọi API mới để lấy QR
+        // Gọi API mới để lấy QR
         const res = await axios.get<OrderResponse>(
           `${import.meta.env.VITE_API_BASE_URL}/api/orders/${existingOrderId}/seepay-qr`
         );
@@ -180,7 +180,7 @@ const SeepayPaymentPage: React.FC = () => {
   if (isPaid) {
     return (
       <div className="seepay-container success">
-        <div className="success-icon">✅</div>
+        <div className="success-icon"></div>
         <h2>Thanh toán thành công!</h2>
         <p>Đơn hàng <strong>{order?.orderId}</strong> đã được xác nhận.</p>
         <div className="buttons">

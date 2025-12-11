@@ -1,3 +1,4 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +19,8 @@ const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
   const { showToast } = useToast();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<CartItem | null>(null);
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -70,21 +73,31 @@ const CartPage: React.FC = () => {
     }
   };
 
-  const handleRemove = async (item: CartItem) => {
-    const confirm = window.confirm("Bạn có chắc muốn xóa sản phẩm này?");
-    if (!confirm) return;
+  const handleRemove = (item: CartItem) => {
+    setItemToDelete(item);
+    setOpenDeleteDialog(true);
+  };
 
-    dispatch(removeFromCart({ productId: item.productId, color: item.color, size: item.size }));
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    dispatch(removeFromCart({ productId: itemToDelete.productId, color: itemToDelete.color, size: itemToDelete.size }));
 
     // Only sync to backend if user is logged in
     if (userId) {
       try {
-        await CartService.removeItem(item.productId, userId, item.color, item.size);
+        await CartService.removeItem(itemToDelete.productId, userId, itemToDelete.color, itemToDelete.size);
       } catch (err) {
         const data = await CartService.getCart(userId);
         dispatch(setCartItems(data));
       }
     }
+    setOpenDeleteDialog(false);
+    setItemToDelete(null);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDeleteDialog(false);
+    setItemToDelete(null);
   };
 
   const handleCheckout = () => {
@@ -239,6 +252,30 @@ const CartPage: React.FC = () => {
 
         </div>
       </div>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Xác nhận xóa sản phẩm"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Bạn có chắc chắn muốn xóa sản phẩm <strong>{itemToDelete?.name}</strong> khỏi giỏ hàng không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Hủy
+          </Button>
+          <Button onClick={confirmDelete} color="error" autoFocus>
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

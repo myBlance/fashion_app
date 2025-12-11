@@ -5,7 +5,7 @@
   padding: 32px;
   background-color: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   font-family: "Inter", sans-serif;
   transition: all 0.3s ease;
 }
@@ -19,22 +19,46 @@
 }
 
 /* --- Tabs --- */
-.MuiTabs-root {
-  margin-bottom: 24px;
+.order-tabs-paper {
+  background-color: #fff !important;
+  border-radius: 6px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: none !important;
+  margin-bottom: 20px !important;
 }
 
-.MuiTab-root {
+.order-tabs-paper .MuiTabs-root {
+  min-height: 48px;
+  overflow: visible !important;
+}
+
+.order-tabs-paper .MuiTabs-scroller {
+  overflow: visible !important;
+}
+
+.order-tabs-paper .MuiTab-root {
+  font-family: 'Inter', sans-serif !important;
   font-weight: 500 !important;
   text-transform: none !important;
-  color: #555 !important;
-  padding: 6px 16px !important;
+  color: #6b7280 !important;
+  /* Gray-500 */
+  font-size: 14px !important;
+  min-height: 46px !important;
+  padding: 0 24px !important;
+  transition: color 0.2s;
 }
 
-.Mui-selected {
+.order-tabs-paper .MuiTab-root:hover {
+  color: #1976d2 !important;
+  background-color: transparent !important;
+}
+
+.order-tabs-paper .Mui-selected {
   color: #1976d2 !important;
   font-weight: 600 !important;
-  border-bottom: 3px solid #1976d2 !important;
 }
+
+/* Removed manual border-bottom to let MUI indicator work */
 
 /* --- Loader / Lỗi / Trống --- */
 .loader,
@@ -118,15 +142,42 @@
 }
 
 /* --- Trạng thái --- */
-.status-pending { color: #f59e0b; background: #fff7e6; }
-.status-paid { color: #0284c7; background: #e0f2fe; }
-.status-processing { color: #7c3aed; background: #f3e8ff; }
-.status-shipped { color: #0ea5e9; background: #e0f7fa; }
-.status-delivered { color: #16a34a; background: #dcfce7; }
-.status-cancelled { color: #dc2626; background: #fee2e2; }
+.status-pending {
+  color: #f59e0b;
+  background: #fff7e6;
+}
 
-.status-pending, .status-paid, .status-processing, 
-.status-shipped, .status-delivered, .status-cancelled {
+.status-paid {
+  color: #0284c7;
+  background: #e0f2fe;
+}
+
+.status-processing {
+  color: #7c3aed;
+  background: #f3e8ff;
+}
+
+.status-shipped {
+  color: #0ea5e9;
+  background: #e0f7fa;
+}
+
+.status-delivered {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.status-cancelled {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.status-pending,
+.status-paid,
+.status-processing,
+.status-shipped,
+.status-delivered,
+.status-cancelled {
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 6px;
@@ -154,15 +205,22 @@
   padding: 28px;
   width: 100%;
   max-width: 750px;
-  box-shadow: 0 10px 32px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
   animation: fadeInUp 0.3s ease;
   overflow-y: auto;
   max-height: 90vh;
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-content h3 {
@@ -179,7 +237,9 @@
   gap: 22px;
 }
 
-.products-list, .shipping-info, .order-summary {
+.products-list,
+.shipping-info,
+.order-summary {
   border: 1px solid #eee;
   border-radius: 12px;
   padding: 18px;
@@ -240,7 +300,9 @@
   transition: background-color 0.25s ease;
 }
 
-.cancel-order-btn:hover { background: #b91c1c; }
+.cancel-order-btn:hover {
+  background: #b91c1c;
+}
 
 .close-modal-btn {
   background: #e5e7eb;
@@ -252,7 +314,9 @@
   transition: background-color 0.25s ease;
 }
 
-.close-modal-btn:hover { background: #d1d5db; }
+.close-modal-btn:hover {
+  background: #d1d5db;
+}
 
 .error-message {
   color: #dc2626;
@@ -262,7 +326,9 @@
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
-  .order-history-container { padding: 20px; }
+  .order-history-container {
+    padding: 20px;
+  }
 
   .order-header {
     flex-direction: column;
@@ -274,8 +340,18 @@
     align-self: flex-end;
   }
 
-  .modal-content { padding: 20px; }
+  .modal-content {
+    padding: 20px;
+  }
 
-  .product-item { flex-direction: column; align-items: flex-start; }
-  .product-image { width: 100%; max-height: 220px; object-fit: cover; }
+  .product-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-image {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+  }
 }

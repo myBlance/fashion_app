@@ -6,7 +6,14 @@ import '../../../styles/CheckoutSummary.css';
 import { useToast } from '../../../contexts/ToastContext';
 import { Address } from '../../../types/Address';
 import { Voucher } from '../../../types/Voucher';
-import VoucherModal from '../Voucher/VoucherModal';
+
+// Import sub-components
+import AddressSection from './Summary/AddressSection';
+import OrderTotalSection from './Summary/OrderTotalSection';
+import PaymentSection from './Summary/PaymentSection';
+import ProductSection from './Summary/ProductSection';
+import ShippingSection from './Summary/ShippingSection';
+import VoucherSection from './Summary/VoucherSection';
 
 interface CheckoutSummaryProps {
   cartItems: Array<{
@@ -27,49 +34,27 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   const [shippingMethod, setShippingMethod] = useState('standard');
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-  const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+
   const navigate = useNavigate();
   const { showToast } = useToast();
-
   const token = localStorage.getItem('token');
 
-  // Tính phí vận chuyển
+  // Tính phí vận chuyển (Managed here or passed down? Passed down to ShippingSection to display options, used here for calculation)
   const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
 
-  // --- LOGIC TÍNH NGÀY GIAO HÀNG (REAL-TIME) ---
-  const getFutureDate = (daysToAdd: number) => {
-    const date = new Date();
-    date.setDate(date.getDate() + daysToAdd);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    return `${day}/${month}`;
-  };
-
-  // Giao hàng tiết kiệm: 4 - 6 ngày
-  const standardDateStart = getFutureDate(4);
-  const standardDateEnd = getFutureDate(6);
-
-  // Giao hàng nhanh: 2 - 3 ngày
-  const expressDateStart = getFutureDate(2);
-  const expressDateEnd = getFutureDate(3);
-  // ---------------------------------------------
-
   // Kiểm tra điều kiện áp dụng voucher
-  const isVoucherValid = selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
+  const isVoucherValid = !!selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
 
-  // ✅ Tính giảm giá từ voucher
+  // Tính giảm giá từ voucher
   const calculateDiscount = () => {
     if (!selectedVoucher || !isVoucherValid) return 0;
 
     if (selectedVoucher.type === 'fixed') {
-      // ✅ Giảm giá cố định: không vượt quá tổng tiền
       return Math.min(selectedVoucher.value || 0, totalAmount);
     }
 
     if (selectedVoucher.type === 'percentage') {
-      // ✅ Giảm giá theo %: tính phần trăm của tổng tiền, không vượt quá tổng tiền
       const percentage = selectedVoucher.value || 0;
       const discount = (totalAmount * percentage) / 100;
       return Math.min(discount, totalAmount);
@@ -78,7 +63,6 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     return 0;
   };
 
-  // ✅ Tính tổng tiền sau khi áp dụng voucher
   const discountAmount = calculateDiscount();
   const finalTotal = totalAmount - discountAmount + shippingFee;
 
@@ -106,7 +90,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     };
 
     fetchAddresses();
-  }, []);
+  }, [token]);
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress) {
@@ -140,293 +124,65 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       return;
     }
 
-    // ✅ Điều hướng tới đúng trang thanh toán
+    // Prepare order data for navigation
+    const orderData = {
+      state: {
+        cartItems,
+        totalAmount,
+        shippingFee,
+        discountAmount,
+        selectedAddress,
+        userId,
+      },
+    };
+
     if (selectedPaymentMethod === 'shopeepay') {
       navigate('/payment/shopeepay');
     } else if (selectedPaymentMethod === 'credit-card') {
       navigate('/payment/credit-card');
     } else if (selectedPaymentMethod === 'seepay') {
-      navigate('/payment/seepay', {
-        state: {
-          cartItems,
-          totalAmount,
-          shippingFee,
-          discountAmount,
-          selectedAddress,
-          userId,
-        },
-      });
+      navigate('/payment/seepay', orderData);
     } else if (selectedPaymentMethod === 'cash-on-delivery') {
-      navigate('/payment/cod', {
-        state: {
-          cartItems,
-          totalAmount,
-          shippingFee,
-          discountAmount,
-          selectedAddress,
-          userId,
-        },
-      });
+      navigate('/payment/cod', orderData);
     } else {
       showToast('Phương thức thanh toán chưa được hỗ trợ', 'info');
     }
   };
 
-  // ✅ Hàm để hiển thị thông tin giảm giá của voucher
-  const getVoucherDisplayText = (voucher: Voucher | null) => {
-    if (!voucher) return '';
-
-    if (voucher.type === 'percentage') {
-      return `Giảm ${voucher.value}%`;
-    }
-
-    if (voucher.type === 'fixed') {
-      return `Giảm ${(voucher.value || 0).toLocaleString()}₫`;
-    }
-
-    return 'Giảm giá';
-  };
-
-  const handleSelectVoucher = (voucher: Voucher | null) => {
-    setSelectedVoucher(voucher);
-  };
-
   return (
     <div className="checkout-summary">
-      {/* Modal chọn địa chỉ */}
-      {isAddressModalOpen && (
-        <div className="address-modal-overlay" onClick={() => setIsAddressModalOpen(false)}>
-          <div className="address-modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Chọn địa chỉ nhận hàng</h3>
-            <div className="address-list">
-              {addresses.map((addr) => (
-                <div
-                  key={addr._id}
-                  className={`address-item ${selectedAddress?._id === addr._id ? 'selected' : ''}`}
-                  onClick={() => {
-                    setSelectedAddress(addr);
-                    setIsAddressModalOpen(false);
-                  }}
-                >
-                  <div>
-                    <strong>{addr.name} (+84) {addr.phone}</strong>
-                    <p>{addr.address}</p>
-                  </div>
-                  {addr.isDefault && <span className="default-tag">Mặc định</span>}
-                </div>
-              ))}
-            </div>
-            <button className="close-modal-btn" onClick={() => setIsAddressModalOpen(false)}>
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Modal chọn voucher */}
-      <VoucherModal
-        open={isVoucherModalOpen}
-        onClose={() => setIsVoucherModalOpen(false)}
-        onSelect={handleSelectVoucher}
-        selectedVoucher={selectedVoucher}
+      <AddressSection
+        addresses={addresses}
+        selectedAddress={selectedAddress}
+        onSelectAddress={setSelectedAddress}
       />
 
-      {/* Địa chỉ nhận hàng */}
-      <div className="section address-section">
-        <div className="section-header">
-          <span className="icon">📍</span>
-          <h3>Địa Chỉ Nhận Hàng</h3>
-          <button className="change-btn" onClick={() => setIsAddressModalOpen(true)}>
-            Thay đổi
-          </button>
-        </div>
-        <div className="address-info">
-          {selectedAddress ? (
-            <>
-              <strong>{selectedAddress.name} (+84) {selectedAddress.phone}</strong>
-              <p>{selectedAddress.address}</p>
-            </>
-          ) : (
-            <p>Chưa có địa chỉ nào</p>
-          )}
-        </div>
-      </div>
+      <ProductSection cartItems={cartItems} />
 
-      {/* Sản phẩm */}
-      <div className="section products-section">
-        <div className="section-header">
-          <h3>Sản phẩm</h3>
-        </div>
-        <div className="products-list">
-          {cartItems.map((item, index) => (
-            <div key={index} className="product-item">
-              <img src={item.image} alt={item.name} />
-              <div className="product-details">
-                <div className="product-name">{item.name}</div>
-                <div className="product-variant">{item.color} / {item.size}</div>
-                <div className="product-price">
-                  {(item.price).toLocaleString()}₫ x {item.quantity}
-                </div>
-              </div>
-              <div className="product-total">
-                {(item.price * item.quantity).toLocaleString()}₫
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <VoucherSection
+        selectedVoucher={selectedVoucher}
+        onSelectVoucher={setSelectedVoucher}
+        isVoucherValid={isVoucherValid}
+      />
 
-      {/* Voucher */}
-      <div className="section voucher-section">
-        <div className="voucher-row">
-          <div className="voucher-label">Voucher từ Shop</div>
-          <button
-            className="choose-voucher"
-            onClick={() => setIsVoucherModalOpen(true)}
-          >
-            Chọn Voucher
-          </button>
-        </div>
+      <ShippingSection
+        shippingMethod={shippingMethod}
+        setShippingMethod={setShippingMethod}
+      />
 
-        {/* ✅ Hiển thị voucher đã chọn với thông tin giảm giá */}
-        {selectedVoucher && (
-          <div className={`selected-voucher ${isVoucherValid ? 'valid' : 'invalid'}`}>
-            <div>
-              <strong>{selectedVoucher.code}</strong> - {getVoucherDisplayText(selectedVoucher)}
-              {!isVoucherValid && (
-                <span className="voucher-warning">
-                  (Không đủ điều kiện)
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => setSelectedVoucher(null)}
-              className="delete-voucher-btn"
-            >
-              Xóa
-            </button>
-          </div>
-        )}
-      </div>
+      <PaymentSection
+        selectedPaymentMethod={selectedPaymentMethod}
+        setSelectedPaymentMethod={setSelectedPaymentMethod}
+      />
 
-      {/* Phần vận chuyển đã được sửa đổi Logic */}
-      <div className="section shipping-section">
-        <div className="section-header">
-          <h3>Phương Thức Vận Chuyển</h3>
-        </div>
-        <div className="shipping-options">
-          <div className="shipping-option">
-            <input
-              type="radio"
-              id="standard-shipping"
-              name="shipping"
-              value="standard"
-              checked={shippingMethod === 'standard'}
-              onChange={() => setShippingMethod('standard')}
-            />
-            <label htmlFor="standard-shipping">
-              <div className="shipping-title">Nhận hàng {standardDateStart} - {standardDateEnd}</div>
-              <div className="shipping-desc">
-                Giao hàng tiết kiệm (4-6 ngày)
-              </div>
-            </label>
-            <div className="shipping-price">16.500₫</div>
-          </div>
-          <div className="shipping-option">
-            <input
-              type="radio"
-              id="express-shipping"
-              name="shipping"
-              value="express"
-              checked={shippingMethod === 'express'}
-              onChange={() => setShippingMethod('express')}
-            />
-            <label htmlFor="express-shipping">
-              <div className="shipping-title">Nhận hàng {expressDateStart} - {expressDateEnd}</div>
-              <div className="shipping-desc">Giao hàng nhanh (2-3 ngày)</div>
-            </label>
-            <div className="shipping-price">30.000₫</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="section payment-section">
-        <div className="section-header">
-          <h3>Phương Thức Thanh Toán</h3>
-        </div>
-        <div className="payment-methods">
-          <div className="payment-method">
-            <input
-              type="radio"
-              id="shopeepay"
-              name="payment"
-              value="shopeepay"
-              checked={selectedPaymentMethod === 'shopeepay'}
-              onChange={() => setSelectedPaymentMethod('shopeepay')}
-            />
-            <label htmlFor="shopeepay">
-              <img src="/assets/images/shopee.png" alt="ShopeePay" className="payment-icon" />
-              Ví ShopeePay
-            </label>
-          </div>
-
-          <div className="payment-method">
-            <input
-              type="radio"
-              id="seepay"
-              name="payment"
-              value="seepay"
-              checked={selectedPaymentMethod === 'seepay'}
-              onChange={() => setSelectedPaymentMethod('seepay')}
-            />
-            <label htmlFor="seepay">
-              <img src="/assets/images/sepay-820x820-blue-icon.webp" alt="SeePay" className="payment-icon" />
-              SeePay (Quét QR)
-            </label>
-          </div>
-          <div className="payment-method">
-            <input
-              type="radio"
-              id="cash-on-delivery"
-              name="payment"
-              value="cash-on-delivery"
-              checked={selectedPaymentMethod === 'cash-on-delivery'}
-              onChange={() => setSelectedPaymentMethod('cash-on-delivery')}
-            />
-            <label htmlFor="cash-on-delivery">
-              <img src="/assets/images/COD.png" alt="Thanh toán khi nhận hàng" className="payment-icon" />
-              Thanh toán khi nhận hàng
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="section total-section">
-        <div className="total-row">
-          <span>Tổng tiền hàng</span>
-          <span>{totalAmount.toLocaleString()}₫</span>
-        </div>
-        {selectedVoucher && isVoucherValid && (
-          <div className="total-row">
-            <span>Giảm giá ({selectedVoucher.code})</span>
-            <span className="discount-valid">-{discountAmount.toLocaleString()}₫</span>
-          </div>
-        )}
-        {selectedVoucher && !isVoucherValid && (
-          <div className="total-row">
-            <span>Giảm giá ({selectedVoucher.code})</span>
-            <span className="discount-invalid">Không áp dụng</span>
-          </div>
-        )}
-        <div className="total-row">
-          <span>Phí vận chuyển</span>
-          <span>{shippingFee.toLocaleString()}₫</span>
-        </div>
-        <div className="total-row total-final">
-          <strong>Tổng thanh toán</strong>
-          <strong>{finalTotal.toLocaleString()}₫</strong>
-        </div>
-      </div>
+      <OrderTotalSection
+        totalAmount={totalAmount}
+        shippingFee={shippingFee}
+        finalTotal={finalTotal}
+        selectedVoucher={selectedVoucher}
+        isVoucherValid={isVoucherValid}
+        discountAmount={discountAmount}
+      />
 
       <div className="place-order-button">
         <button onClick={handlePlaceOrder} className="order-btn">

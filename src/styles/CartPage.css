@@ -1,6 +1,6 @@
 /* --- RESET & BASE --- */
 .cart-page-wrapper {
-  background-color: var(--bg-page);
+  background-color: #fff;
   min-height: 100vh;
   padding-bottom: 40px;
 }
@@ -60,13 +60,16 @@
   text-align: left;
   font-weight: 600;
   color: var(--color-text-secondary);
-  border-bottom: 2px solid var(--border-medium);
-  font-size: 14px;
+  border-bottom: 1px solid var(--border-medium);
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .cart-table td {
   padding: 20px 16px;
-  vertical-align: top;
+  vertical-align: middle;
   border-bottom: 1px solid var(--border-medium);
   color: var(--color-text-primary);
 }
@@ -79,6 +82,7 @@
 .product-item {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
 
 .product-item img {
@@ -97,10 +101,17 @@
 }
 
 .product-name {
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
-  font-size: 15px;
-  max-width: 250px;
+  font-size: 16px;
+  max-width: 300px;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  transition: color 0.2s;
+}
+
+.product-name:hover {
+  color: var(--color-primary-light);
 }
 
 .product-variant span {
@@ -111,54 +122,66 @@
 }
 
 /* Cột Quantity */
+/* Cột Quantity */
 .quantity-box {
   display: flex;
   align-items: center;
-  border: 1px solid var(--border-normal);
-  border-radius: 4px;
+  border: none;
+  gap: 8px;
+  /* Khoảng cách giữa các nút */
   width: fit-content;
   height: 32px;
 }
 
 .quantity-box button {
-  width: 30px;
-  height: 100%;
+  width: 32px;
+  height: 32px;
   background: var(--bg-card);
-  border: none;
+  border: 1px solid var(--border-medium);
+  /* Viền cho từng nút */
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1;
   color: var(--color-text-primary);
-  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
 .quantity-box button:hover:not(:disabled) {
   background: var(--bg-hover);
+  border-color: var(--color-primary-light);
+  color: var(--color-primary-light);
 }
 
 .quantity-box button:disabled {
   color: var(--color-gray-600);
   cursor: not-allowed;
+  border-color: var(--border-light);
+  background: var(--bg-page);
 }
 
 .quantity-box input {
-  width: 40px;
+  width: 36px;
   height: 100%;
   border: none;
-  border-left: 1px solid var(--border-normal);
-  border-right: 1px solid var(--border-normal);
+  background: transparent;
   text-align: center;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 16px;
   outline: none;
   color: var(--color-text-primary);
 }
 
 /* Cột Checkbox & Action */
 .custom-checkbox {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   accent-color: var(--color-primary-light);
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .remove-btn {
@@ -175,14 +198,16 @@
 }
 
 /* Cột Price & Total */
-.col-price,
-.col-total {
-  font-weight: 500;
+.col-price {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 16px;
 }
 
 .col-total {
   color: var(--color-primary-light);
   font-weight: 700;
+  font-size: 18px;
 }
 
 /* --- SUMMARY SECTION (Cột phải) --- */

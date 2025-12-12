@@ -1,11 +1,12 @@
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Button, CircularProgress, TextField } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthTextField from '../../components/Client/Common/AuthTextField';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import '../../styles/Authtabs.css';
@@ -67,106 +68,19 @@ const LoginPage = () => {
         <div className="tab-container">
             <h2>Đăng nhập</h2>
             <form className="tab-form" onSubmit={handleLogin}>
-                <TextField
+                <AuthTextField
                     id="username"
                     label="Email"
-                    variant="filled"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    sx={{
-                        width: '100%',
-                        '& .MuiFilledInput-root': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                            borderRadius: '4px',
-                            color: '#000000',
-                            border: '2px solid #999999',
-                            boxShadow: 'none',
-                            paddingLeft: '5px',
-                            transition: 'background-color 0s', // không đổi màu khi hover
-                            '&:hover': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên màu khi hover
-                            }, '&.Mui-focused': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên khi focus
-                            },
-                            '&:before': {
-                                borderBottom: 'none !important',
-                            },
-                            '&:after': {
-                                borderBottom: 'none !important',
-                            },
-                            '&:hover:before': {
-                                borderBottom: 'none !important',
-                            },
-                            '& input': {
-                                caretColor: '#000000',
-                            },
-                            '& input:-webkit-autofill': {
-                                WebkitBoxShadow: '0 0 0 1000px rgba(0,0,0,0) inset !important',
-                                WebkitTextFillColor: '#000000 !important',
-                                transition: 'background-color 0s 600000s, color 0s 600000s',
-                                borderRadius: '40px',
-                            },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: '#000000',
-                            left: '5px',
-                            '&.Mui-focused': {
-                                color: '#000000',
-                            },
-                        },
-                    }}
                 />
-                <TextField
+                <AuthTextField
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Mật khẩu"
-                    variant="filled"
                     type={showPassword ? 'text' : 'password'}
-                    sx={{
-                        mb: 3,
-                        mt: 3,
-                        width: '100%',
-                        '& .MuiFilledInput-root': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                            borderRadius: '4px',
-                            color: '#000000',
-                            border: '2px solid #999999',
-                            boxShadow: 'none',
-                            paddingLeft: '5px',
-                            transition: 'background-color 0s', // không đổi màu khi hover
-                            '&:hover': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên màu khi hover
-                            }, '&.Mui-focused': {
-                                backgroundColor: 'rgba(255, 255, 255, 0.5)', // giữ nguyên khi focus
-                            },
-                            '&:before': {
-                                borderBottom: 'none !important',
-                            },
-                            '&:after': {
-                                borderBottom: 'none !important',
-                            },
-                            '&:hover:before': {
-                                borderBottom: 'none !important',
-                            },
-                            '& input': {
-                                caretColor: '#000000',
-                            },
-                            '& input:-webkit-autofill': {
-                                WebkitBoxShadow: '0 0 0 1000px rgba(0,0,0,0) inset !important',
-                                WebkitTextFillColor: '#000000 !important',
-                                transition: 'background-color 0s 600000s, color 0s 600000s',
-                                borderRadius: '40px',
-                            },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: '#000000',
-                            left: '5px',
-                            '&.Mui-focused': {
-                                color: '#000000',
-                            },
-                        },
-                    }}
+                    sx={{ mt: 1, mb: 3 }} // Override default mb:2 if needed, or keep it. Original had mt:3 mb:3.
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">

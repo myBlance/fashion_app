@@ -1,13 +1,9 @@
-import { Edit, Visibility } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
     Avatar,
     Box,
     Card,
     Chip,
-    IconButton,
-    Tooltip,
-    Typography,
+    Typography
 } from '@mui/material';
 import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
@@ -28,10 +24,11 @@ import {
     useSidebarState,
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
+import AdminRowActions from '../../../components/Admin/AdminRowActions';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
-import { productFilters } from './ProductFilter';
 import { typeOptions } from '../../../constants/filterOptions';
+import { productFilters } from './ProductFilter';
 
 // 🔹 Base type cho custom field — dùng chung
 interface CustomFieldProps {
@@ -129,7 +126,6 @@ const SizeField = ({ source, cellClassName }: CustomFieldProps) => {
     ) : null;
 };
 
-// 🔹 DescriptionField — ✅
 const DescriptionField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
     const desc = record?.[source] || '';
@@ -142,21 +138,17 @@ const DescriptionField = ({ source, cellClassName }: CustomFieldProps) => {
                 whiteSpace: 'normal',
                 textAlign: 'left',
                 lineHeight: 1.4,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
                 wordBreak: 'break-word',
-                maxHeight: '3.6em',
+                minWidth: '300px',
             }}
+
+
         >
             {desc || '—'}
         </Typography>
     );
 };
 
-// 🔹 DetailsField — ✅ Đã sửa: hỗ trợ cả string và array
 const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
     const record = useRecordContext();
     const rawDetails = record?.[source];
@@ -169,7 +161,6 @@ const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
         );
     }
 
-    // ✅ Nếu là string → hiển thị như một dòng
     if (typeof rawDetails === 'string') {
         return (
             <Typography
@@ -188,7 +179,6 @@ const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
         );
     }
 
-    // ✅ Nếu là mảng → hiển thị bullet list
     if (Array.isArray(rawDetails)) {
         if (rawDetails.length === 0) {
             return (
@@ -220,7 +210,6 @@ const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
         );
     }
 
-    // ✅ Trường hợp khác (số, object, v.v.) → hiển thị như string
     return (
         <Typography variant="body2" className={cellClassName}>
             {String(rawDetails)}
@@ -228,14 +217,14 @@ const DetailsField = ({ source, cellClassName }: CustomFieldProps) => {
     );
 };
 
-// 🔹 ListActions
+//  ListActions
 const ListActions = () => (
     <TopToolbar>
         <FilterButton />
     </TopToolbar>
 );
 
-// 🔹 ProductList
+//  ProductList
 export const ProductList = () => {
     const [open] = useSidebarState();
     const navigate = useNavigate();
@@ -374,7 +363,7 @@ export const ProductList = () => {
                             '& .text-left-cell': {
                                 textAlign: 'left !important',
                                 px: 2,
-                                verticalAlign: 'top',
+                                verticalAlign: 'middle',
                             },
                             '& .text-left-cell.RaDatagrid-headerCell': {
                                 textAlign: 'center !important',
@@ -467,54 +456,11 @@ export const ProductList = () => {
                             cellClassName="sticky-actions"
                             headerClassName="sticky-actions"
                             render={(record: any) => (
-                                <Box sx={{ display: 'flex', gap: '2px' }}>
-                                    <Tooltip title="Xem">
-                                        <IconButton
-                                            size="small"
-                                            color="primary"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate(`/admin/products/show?clone=${record.id}`);
-                                            }}
-                                        >
-                                            <Visibility fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Sửa">
-                                        <IconButton
-                                            size="small"
-                                            color="info"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate(`/admin/products/${record.id}`);
-                                            }}
-                                        >
-                                            <Edit fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Xoá">
-                                        <IconButton
-                                            color="error"
-                                            size="small"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
-                                                    dataProvider
-                                                        .delete('products', { id: record.id })
-                                                        .then(() => {
-                                                            notify('Xoá thành công', { type: 'info' });
-                                                            refresh();
-                                                        })
-                                                        .catch(() => {
-                                                            notify('Xoá thất bại', { type: 'warning' });
-                                                        });
-                                                }
-                                            }}
-                                        >
-                                            <DeleteIcon fontSize="small" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
+                                <AdminRowActions
+                                    record={record}
+                                    resource="products"
+                                    onView={() => navigate(`/admin/products/show?clone=${record.id}`)}
+                                />
                             )}
                         />
                     </DatagridConfigurable>

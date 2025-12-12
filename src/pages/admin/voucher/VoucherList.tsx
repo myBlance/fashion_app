@@ -1,12 +1,8 @@
-import { Edit, Visibility } from '@mui/icons-material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Card,
   Chip,
-  IconButton,
-  Tooltip,
-  Typography,
+  Typography
 } from '@mui/material';
 import {
   DatagridConfigurable,
@@ -24,6 +20,7 @@ import {
   useSidebarState,
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
+import AdminRowActions from '../../../components/Admin/AdminRowActions';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs'; // Điều chỉnh đường dẫn nếu cần
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar'; // Điều chỉnh đường dẫn nếu cần
 import { Voucher } from '../../../types/Voucher';
@@ -190,48 +187,10 @@ export const VoucherList = () => {
               cellClassName="sticky-actions"
               headerClassName="sticky-actions"
               render={(record: Voucher) => (
-                <Box sx={{ display: 'flex', gap: '2px' }}>
-                  <Tooltip title="Xem">
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => navigate(`/admin/vouchers/${record.id}`)}
-                    >
-                      <Visibility fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Sửa">
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => navigate(`/admin/vouchers/${record.id}`)}
-                    >
-                      <Edit fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Xoá">
-                    <IconButton
-                      color="error"
-                      size="small"
-                      onClick={() => {
-                        if (window.confirm('Bạn có chắc muốn xoá voucher này?')) {
-                          dataProvider.delete('vouchers', { id: record.id })
-                            .then(() => {
-                              notify('Xoá thành công', { type: 'info' });
-                              refresh();
-                            })
-                            .catch(() => {
-                              notify('Xoá thất bại', { type: 'warning' });
-                            });
-                        }
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <AdminRowActions
+                  record={record}
+                  resource="vouchers"
+                />
               )}
             />
           </DatagridConfigurable>

@@ -1,7 +1,8 @@
-import { Button, TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthTextField from '../../components/Client/Common/AuthTextField';
 import { useToast } from '../../contexts/ToastContext';
 import '../../styles/Authtabs.css';
 
@@ -54,51 +55,39 @@ const RegisterPage = () => {
     <div className='tab-container'>
       <h2>Đăng ký</h2>
       <form className='tab-form' onSubmit={(e) => e.preventDefault()}>
-        <TextField
+        <AuthTextField
           label="Họ"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
-          fullWidth
-          margin="normal"
         />
-        <TextField
+        <AuthTextField
           label="Tên"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
-          fullWidth
-          margin="normal"
         />
-        <TextField
+        <AuthTextField
           label="Email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          fullWidth
-          margin="normal"
         />
-        <TextField
+        <AuthTextField
           label="Số điện thoại"
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          fullWidth
-          margin="normal"
         />
-        <TextField
+        <AuthTextField
           label="Mật khẩu"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
         />
-        <TextField
+        <AuthTextField
           label="Xác nhận mật khẩu"
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          fullWidth
-          margin="normal"
         />
         <Button
           type="submit"

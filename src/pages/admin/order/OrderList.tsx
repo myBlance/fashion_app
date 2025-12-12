@@ -1,7 +1,4 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Box, Card, Chip, IconButton, Tooltip } from '@mui/material';
+import { Box, Card, Chip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
 import {
@@ -17,6 +14,7 @@ import {
   useRefresh,
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
+import AdminRowActions from '../../../components/Admin/AdminRowActions';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { orderFilters } from './OrderFilter';
@@ -189,61 +187,10 @@ export const OrderList = () => {
           <FunctionField
             label="Hành động"
             render={(record: any) => (
-              <Box sx={{ display: 'flex', gap: 0.1 }}>
-                <Tooltip title="Xem">
-                  <IconButton
-                    size="small"
-                    color="primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/admin/orders/${record.id}/show`);
-                    }}
-                  >
-                    <VisibilityIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Sửa">
-                  <IconButton
-                    size="small"
-                    color="info"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/admin/orders/${record.id}`);
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Xoá">
-                  <IconButton
-                    color="error"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent row click
-                      if (window.confirm('Bạn có chắc muốn xoá đơn hàng này?')) {
-                        dataProvider
-                          .delete('orders', { id: record.id })
-                          .then(() => {
-                            notify('Xoá thành công', { type: 'info' });
-                            // Navigate to list if we're on the detail/edit page
-                            if (window.location.pathname.includes(record.id)) {
-                              navigate('/admin/orders');
-                            }
-                            refresh();
-                          })
-                          .catch((error) => {
-                            console.error('Delete error:', error);
-                            notify('Xoá thất bại: ' + (error?.message || 'Unknown error'), { type: 'warning' });
-                          });
-                      }
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <AdminRowActions
+                record={record}
+                resource="orders"
+              />
             )}
           />
         </DatagridConfigurable>

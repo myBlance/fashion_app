@@ -1,11 +1,8 @@
-import { Delete as DeleteIcon, Edit, Visibility } from '@mui/icons-material';
 import {
   Box,
   Card,
   Chip,
-  IconButton,
-  Tooltip,
-  Typography,
+  Typography
 } from '@mui/material';
 import {
   DatagridConfigurable,
@@ -15,18 +12,17 @@ import {
   List,
   NumberField,
   Pagination,
-  SelectInput,
   TextField,
-  TextInput,
   TopToolbar,
   useNotify,
   useRefresh,
-  useSidebarState,
+  useSidebarState
 } from 'react-admin';
-import { useNavigate } from 'react-router-dom';
+import AdminRowActions from '../../../components/Admin/AdminRowActions';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { Review } from '../../../types/Review';
+import { reviewFilters } from './ReviewFilter';
 
 const ListActions = () => (
   <TopToolbar>
@@ -36,7 +32,6 @@ const ListActions = () => (
 
 export const ReviewList = () => {
   const [open] = useSidebarState();
-  const navigate = useNavigate();
   const refresh = useRefresh();
   const notify = useNotify();
 
@@ -73,23 +68,7 @@ export const ReviewList = () => {
 
       <List
         resource="reviews"
-        filters={[
-          <SelectInput
-            source="rating"
-            label="Số sao"
-            choices={[
-              { id: 5, name: '5 Sao' },
-              { id: 4, name: '4 Sao' },
-              { id: 3, name: '3 Sao' },
-              { id: 2, name: '2 Sao' },
-              { id: 1, name: '1 Sao' },
-            ]}
-            alwaysOn
-          />,
-          <TextInput source="orderId" label="Mã đơn hàng" />,
-          <TextInput source="productId" label="ID Sản phẩm" />,
-          <TextInput source="userId" label="ID Người dùng" />,
-        ]}
+        filters={reviewFilters}
         exporter={false}
         pagination={<Pagination rowsPerPageOptions={[5, 10, 25, 50]} />}
         perPage={10}
@@ -207,56 +186,10 @@ export const ReviewList = () => {
               cellClassName="sticky-actions"
               headerClassName="sticky-actions"
               render={(record: Review) => (
-                <Box sx={{ display: 'flex', gap: '2px' }}>
-                  <Tooltip title="Xem">
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => navigate(`/admin/reviews/${record.id}/show`)}
-                    >
-                      <Visibility fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Sửa">
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => navigate(`/admin/reviews/${record.id}`)}
-                    >
-                      <Edit fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Xoá">
-                    <IconButton
-                      color="error"
-                      size="small"
-                      onClick={() => {
-                        if (window.confirm('Bạn có chắc muốn xóa đánh giá này?')) {
-                          fetch(`${import.meta.env.VITE_API_BASE_URL}/api/reviews/${record._id}`, {
-                            method: 'DELETE',
-                            headers: {
-                              Authorization: `Bearer ${localStorage.getItem('adminToken')}`,
-                            },
-                          })
-                            .then(res => res.json())
-                            .then(data => {
-                              if (data.success) {
-                                notify('Xóa thành công', { type: 'info' });
-                                refresh();
-                              } else {
-                                notify('Xóa thất bại', { type: 'warning' });
-                              }
-                            })
-                            .catch(() => notify('Xóa thất bại', { type: 'warning' }));
-                        }
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <AdminRowActions
+                  record={record}
+                  resource="reviews"
+                />
               )}
             />
           </DatagridConfigurable>

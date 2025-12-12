@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import DynamicBreadcrumbs from "../../components/Client/Breadcrumb/DynamicBreadcrumbs";
 import ProductDetailTabs from "../../components/Client/ProductDetail/ProductDetailTabs";
 import SimilarProducts from "../../components/Client/ProductDetail/SimilarProducts";
-import StorePolicies from "../../components/Client/ProductDetail/StorePolicies";
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { CartService } from "../../services/cartService";
@@ -257,10 +256,6 @@ const ProductDetail: React.FC = () => {
           <div className="action-buttons">
             <button className="btn add-to-cart" onClick={handleAddToCart}>THÊM VÀO GIỎ</button>
             <button className="btn buy-now" onClick={handleBuyNow}>MUA NGAY</button>
-          </div>
-
-          <div className="policy-wrapper">
-            <StorePolicies />
           </div>
         </div>
       </div>

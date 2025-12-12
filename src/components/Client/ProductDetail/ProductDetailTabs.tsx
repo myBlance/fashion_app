@@ -1,8 +1,9 @@
+import { Box, Container, Paper, Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Paper, Container } from '@mui/material';
+import BuyingGuide from './BuyingGuide';
 import ProductDescription from './ProductDescription';
 import ProductReviews from './ProductReviews';
-import BuyingGuide from './BuyingGuide';
+import StorePolicies from './StorePolicies';
 
 interface ProductDetailTabsProps {
   productId: string;
@@ -56,6 +57,7 @@ export default function ProductDetailTabs({
             <Tab label="Mô Tả Sản Phẩm" disableRipple />
             <Tab label="Đánh Giá" disableRipple />
             <Tab label="Hướng Dẫn Mua Hàng" disableRipple />
+            <Tab label="Chính Sách & Ưu Đãi" disableRipple />
           </Tabs>
         </Box>
 
@@ -68,6 +70,9 @@ export default function ProductDetailTabs({
           </TabPanel>
           <TabPanel value={tabIndex} index={2}>
             <BuyingGuide />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={3}>
+            <StorePolicies />
           </TabPanel>
         </Box>
       </Paper>

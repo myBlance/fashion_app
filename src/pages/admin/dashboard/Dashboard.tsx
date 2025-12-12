@@ -23,9 +23,8 @@ import {
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { CustomAppBar } from '../../components/Admin/CustomAppBar';
-import '../../styles/Dashboard.css';
-
+import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
+import '../../../styles/Dashboard.css';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface DashboardStats {

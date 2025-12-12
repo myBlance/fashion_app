@@ -1,33 +1,46 @@
-import { ShoppingBag } from '@mui/icons-material';
+import { ArrowDownward, ArrowUpward, ShoppingBag } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
   CircularProgress,
   Container,
+  FormControl,
+  IconButton,
+  MenuItem,
   Pagination,
   Paper,
+  Select,
+  SelectChangeEvent,
   Stack,
   Tab,
   Tabs,
-  Typography
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/Client/Common/PageHeader';
 import OrderDetailsDialog from '../../components/Client/Order/OrderDetailsDialog';
 import OrderHistoryErrorBoundary from '../../components/Client/Order/OrderHistoryErrorBoundary';
 import OrderListItem from '../../components/Client/Order/OrderListItem';
 import { useToast } from '../../contexts/ToastContext';
 import '../../styles/OrderHistory.css';
 import { Order } from '../../types/Order';
+import { getStatusConfig } from '../../utils/orderHelpers';
 
 const OrderHistoryPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const { showToast } = useToast();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Pagination State
   const [page, setPage] = useState(1);
@@ -46,11 +59,11 @@ const OrderHistoryPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      let url = `${import.meta.env.VITE_API_BASE_URL}/api/orders`;
-      if (selectedStatus !== 'all') url += `?status=${selectedStatus}`;
+      let url = `${import.meta.env.VITE_API_BASE_URL}/api/orders?_sort=createdAt&_order=${sortOrder === 'newest' ? 'DESC' : 'ASC'}`;
+      if (selectedStatus !== 'all') url += `&status=${selectedStatus}`;
 
       const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
-      const data = Array.isArray(res.data) ? res.data.reverse() : [];
+      const data = Array.isArray(res.data) ? res.data : [];
 
       setOrders(data.map(order => {
         let paymentStatus = order.paymentStatus || 'unpaid';
@@ -77,7 +90,7 @@ const OrderHistoryPage: React.FC = () => {
     }
   };
 
-  useEffect(() => { fetchOrders(); }, [selectedStatus]);
+  useEffect(() => { fetchOrders(); }, [selectedStatus, sortOrder]);
 
   // Actions Handlers
   const handleMarkDelivered = async (order: Order) => {
@@ -138,9 +151,35 @@ const OrderHistoryPage: React.FC = () => {
   return (
     <OrderHistoryErrorBoundary>
       <Container maxWidth="lg" sx={{ mt: 4, mb: 8, minHeight: '70vh' }}>
-        <Typography variant="h5" gutterBottom fontWeight="700" sx={{ mb: 3, color: '#333' }}>
-          Lịch sử đơn hàng
-        </Typography>
+        <Box sx={{ position: 'relative', display: 'flex', alignItems: 'left', justifyContent: 'left', mb: 3 }}>
+          <PageHeader title="Lịch sử đơn hàng" />
+          <Box sx={{ position: 'absolute', right: 0 }}>
+            {isMobile ? (
+              <Tooltip title={sortOrder === 'newest' ? 'Mới nhất' : 'Cũ nhất'}>
+                <IconButton
+                  size="small"
+                  onClick={() => setSortOrder(prev => prev === 'newest' ? 'oldest' : 'newest')}
+                  sx={{ bgcolor: 'white', border: '1px solid #e0e0e0', borderRadius: 1 }}
+                >
+                  {sortOrder === 'newest' ? <ArrowDownward /> : <ArrowUpward />}
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <FormControl size="small" sx={{ minWidth: 150, bgcolor: 'white', borderRadius: 1 }}>
+                <Select
+                  value={sortOrder}
+                  onChange={(e: SelectChangeEvent) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Sắp xếp' }}
+                  sx={{ '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e0e0e0' } }}
+                >
+                  <MenuItem value="newest">Mới nhất</MenuItem>
+                  <MenuItem value="oldest">Cũ nhất</MenuItem>
+                </Select>
+              </FormControl>
+            )}
+          </Box>
+        </Box>
 
         <Paper className="order-tabs-paper" elevation={0} variant="outlined" sx={{ mb: 4, bgcolor: '#fdfdfd', borderRadius: 2 }}>
           <Tabs
@@ -149,13 +188,46 @@ const OrderHistoryPage: React.FC = () => {
             variant="scrollable"
             scrollButtons="auto"
             allowScrollButtonsMobile
-            textColor="primary"
+            textColor="inherit"
             indicatorColor="primary"
-            sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, fontSize: '0.95rem', minHeight: 56 } }}
+            sx={{
+              '& .MuiTab-root': {
+                textTransform: 'none',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                minHeight: 56,
+                transition: 'all 0.2s',
+                '&.Mui-selected': {
+                  fontWeight: 700
+                }
+              },
+              '& .MuiTabs-indicator': {
+                bgcolor: getStatusConfig(selectedStatus).hex
+              }
+            }}
           >
-            {statusTabs.map((tab) => (
-              <Tab key={tab.value} label={tab.label} value={tab.value} />
-            ))}
+            {statusTabs.map((tab) => {
+              const config = getStatusConfig(tab.value);
+              const isSelected = selectedStatus === tab.value;
+              return (
+                <Tab
+                  key={tab.value}
+                  label={tab.label}
+                  value={tab.value}
+                  sx={{
+                    color: config.hex,
+                    opacity: isSelected ? 1 : 0.6,
+                    minWidth: 'auto',
+                    px: 2,
+                    '&.Mui-selected': {
+                      color: config.hex,
+                      fontWeight: 700,
+                      opacity: 1
+                    }
+                  }}
+                />
+              );
+            })}
           </Tabs>
         </Paper>
 

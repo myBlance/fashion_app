@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Tabs, Tab, Box } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
@@ -24,7 +24,7 @@ export default function AuthTabs() {
     };
 
     return (
-        <Box sx={{ width: '100%', maxWidth: 450, mx: 'auto', mt: 5 }}>
+        <Box sx={{ width: '100%', mx: 'auto', mt: 5 }}>
             <Tabs
                 value={tabIndex}
                 onChange={handleChange}
@@ -77,7 +77,7 @@ export default function AuthTabs() {
                         },
                     }}
                 />
-                </Tabs>
+            </Tabs>
 
 
 
@@ -85,7 +85,7 @@ export default function AuthTabs() {
                 <LoginPage />
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
-                <RegisterPage/>
+                <RegisterPage />
             </TabPanel>
         </Box>
     );

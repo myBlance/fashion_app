@@ -10,11 +10,13 @@ import {
     TextField,
     Typography
 } from '@mui/material';
+import PageHeader from '../../components/Client/Common/PageHeader';
 import '../../styles/ContactPage.css';
 
 const ContactPage = () => {
     return (
-        <Container maxWidth="lg" className="contact-page-container">
+        <Container maxWidth="lg" className="contact-page-container" sx={{ pt: 4 }}>
+            <PageHeader title="Liên hệ" />
             <Box display="flex" flexWrap="wrap" gap={4} mb={5}>
                 {/* Left Column: Store Info */}
                 <Box className="contact-info-column">

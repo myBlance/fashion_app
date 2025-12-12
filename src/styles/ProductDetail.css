@@ -10,11 +10,8 @@
 /* Wrapper chính chia 2 cột */
 .product-detail-wrapper {
   display: flex;
-  /* QUAN TRỌNG: align-items flex-start để cột ngắn không bị kéo dài bằng cột dài.
-     Điều này tạo không gian cho thuộc tính sticky hoạt động. */
   align-items: flex-start;
   gap: 50px;
-  /* Khoảng cách giữa 2 cột rộng rãi */
   margin-top: 20px;
   position: relative;
 }
@@ -217,6 +214,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #333;
+  text-align: left;
 }
 
 .selected-val {
@@ -388,7 +386,6 @@
     flex-direction: column;
     gap: 30px;
     align-items: stretch;
-    /* Quay lại stretch để full width */
   }
 
   .gallery-container {
@@ -397,7 +394,6 @@
     min-width: auto;
     flex: none;
     flex-direction: column-reverse;
-    /* Đưa thumbnail xuống dưới ảnh chính */
   }
 
   .thumbnails-list {

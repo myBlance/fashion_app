@@ -1,28 +1,18 @@
-/* Authtabs.css */
-
-/* Container chính: Tạo hình dáng thẻ (Card) */
 .tab-container {
   width: 100%;
   max-width: 450px;
-  /* Giới hạn chiều rộng tối đa, không dùng width cứng */
   margin: 0 auto;
-  /* Căn giữa theo chiều ngang */
   padding: 40px;
-  /* Tăng khoảng cách bên trong */
   background-color: #ffffff;
   border-radius: 16px;
-  /* Bo góc mềm mại hơn */
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  /* Đổ bóng tạo chiều sâu */
   text-align: center;
   box-sizing: border-box;
-  /* Đảm bảo padding không làm vỡ khung */
 }
 
 /* Tiêu đề */
 .tab-container h2 {
   font-size: 2rem;
-  /* Dùng rem cho chuẩn tỉ lệ */
   font-weight: 700;
   margin: 0 0 32px 0;
   color: #1a1a1a;
@@ -34,10 +24,8 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* Tạo khoảng cách đều giữa các input mà không cần margin quá nhiều */
 }
 
-/* Phần link bên dưới (Quên mật khẩu / Đăng ký) */
 .login-links {
   margin-top: 24px;
   font-size: 14px;
@@ -77,17 +65,8 @@
   .tab-container {
     max-width: 100%;
     padding: 24px 20px;
-    /* Giảm padding trên màn hình nhỏ */
     box-shadow: none;
-    /* Bỏ bóng trên mobile để trông phẳng hơn (tùy chọn) */
     border-radius: 0;
-    /* Bỏ bo góc nếu muốn full màn hình */
-    height: 100vh;
-    /* Full chiều cao màn hình trên mobile */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* Căn giữa nội dung theo chiều dọc */
   }
 
   .tab-container h2 {

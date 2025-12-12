@@ -1,8 +1,3 @@
-/* ========================================
-   MODERN PRODUCT CARD STYLES
-   ======================================== */
-
-/* --- CARD CONTAINER --- */
 .product-card {
     width: 220px;
     position: relative;
@@ -407,6 +402,11 @@
     .product-card-color-dot {
         width: 18px;
         height: 18px;
+    }
+
+    /* Hide hover-based action buttons on mobile (touch devices don't support hover) */
+    .product-card-actions {
+        display: none;
     }
 }
 

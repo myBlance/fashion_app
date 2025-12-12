@@ -1,3 +1,4 @@
+import { CircularProgress } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +42,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   // 2. Effects
   useEffect(() => {
@@ -105,6 +107,8 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       return;
     }
 
+    setIsPlacingOrder(true);
+
     let userId = null;
     if (token) {
       try {
@@ -115,6 +119,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       } catch (err) {
         console.error('Lỗi khi lấy thông tin người dùng:', err);
         showToast('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 'error');
+        setIsPlacingOrder(false);
         navigate('/login');
         return;
       }
@@ -122,6 +127,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
 
     if (!userId) {
       showToast('Vui lòng đăng nhập để đặt hàng.', 'warning');
+      setIsPlacingOrder(false);
       navigate('/login');
       return;
     }
@@ -140,14 +146,13 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
 
     if (selectedPaymentMethod === 'shopeepay') {
       navigate('/payment/shopeepay');
-    } else if (selectedPaymentMethod === 'credit-card') {
-      navigate('/payment/credit-card');
     } else if (selectedPaymentMethod === 'seepay') {
       navigate('/payment/seepay', orderData);
     } else if (selectedPaymentMethod === 'cash-on-delivery') {
       navigate('/payment/cod', orderData);
     } else {
       showToast('Phương thức thanh toán chưa được hỗ trợ', 'info');
+      setIsPlacingOrder(false);
     }
   };
 
@@ -188,8 +193,21 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
       />
 
       <div className="place-order-button">
-        <button onClick={handlePlaceOrder} className="order-btn">
-          Đặt hàng
+        <button
+          onClick={handlePlaceOrder}
+          className="order-btn"
+          disabled={isPlacingOrder}
+          style={{
+            opacity: isPlacingOrder ? 0.7 : 1,
+            cursor: isPlacingOrder ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px'
+          }}
+        >
+          {isPlacingOrder && <CircularProgress size={20} color="inherit" />}
+          {isPlacingOrder ? 'Đang xử lý...' : 'Đặt hàng'}
         </button>
       </div>
     </div>

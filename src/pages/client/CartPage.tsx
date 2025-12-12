@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
+import PageHeader from '../../components/Client/Common/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { CartService } from '../../services/cartService';
@@ -129,10 +129,15 @@ const CartPage: React.FC = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="empty-cart-container">
-        <img src="/assets/images/empty-cart.png" alt="Empty Cart" />
-        <p>Giỏ hàng của bạn đang trống</p>
-        <a href="/" className="continue-shopping-btn">Tiếp tục mua sắm</a>
+      <div className="cart-page-wrapper" >
+        <div className="cart-container">
+          <PageHeader title="Giỏ hàng (0)" />
+          <div className="empty-cart-container">
+            <img src="/assets/images/empty-cart.png" alt="Empty Cart" />
+            <p>Giỏ hàng của bạn đang trống</p>
+            <a href="/" className="continue-shopping-btn">Tiếp tục mua sắm</a>
+          </div>
+        </div>
       </div>
     );
   }
@@ -140,8 +145,7 @@ const CartPage: React.FC = () => {
   return (
     <div className="cart-page-wrapper">
       <div className="cart-container">
-        <DynamicBreadcrumbs />
-        <h2 className="cart-title">Giỏ hàng ({cartItems.length})</h2>
+        <PageHeader title={`Giỏ hàng (${cartItems.length})`} />
 
         <div className="cart-layout">
           {/* Cột trái: Danh sách sản phẩm */}

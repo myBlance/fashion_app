@@ -1,11 +1,12 @@
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import StorefrontIcon from '@mui/icons-material/Storefront'; // icon khác cho products
 import { Admin, CustomRoutes, Resource } from 'react-admin';
-import { Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
 import dataProvider from '../../data/dataProvider';
 import { AdminLayout } from '../../layouts/AdminLayout';
+import authProvider from '../auth/authProvider';
 import AdminProfilePage from './AdminProfilePage';
-import Dashboard from './Dashboard';
+import Dashboard from './dashboard/Dashboard';
 import { OrderEdit } from './order/OrderEdit';
 import { OrderList } from './order/OrderList';
 import { ProductCreate } from './product/ProductCreate';
@@ -16,10 +17,15 @@ import { ReviewShow } from './review/ReviewShow';
 import { VoucherCreate } from './voucher/VoucherCreate';
 import { VoucherEdit } from './voucher/VoucherEdit';
 import { VoucherList } from './voucher/VoucherList';
+
+const AdminLogin = () => <Navigate to="/auth?tab=login" />;
+
 const AdminApp = () => (
     <Admin
         basename="/admin"
         dataProvider={dataProvider}
+        authProvider={authProvider}
+        loginPage={AdminLogin}
         dashboard={Dashboard}
         layout={AdminLayout}
     >

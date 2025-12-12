@@ -1,11 +1,12 @@
-import { Breadcrumbs, Link, Typography } from '@mui/material';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Breadcrumbs, Link, Typography } from '@mui/material';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 // 1. Tạo từ điển map các route sang tiếng Việt
 const routeNameMap: Record<string, string> = {
     'shop': 'Sản phẩm',
+    'product': 'Sản phẩm',
     'cart': 'Giỏ hàng',
     'wishlist': 'Yêu thích',
     'checkout': 'Thanh toán',
@@ -29,7 +30,7 @@ function getBreadcrumbName(str: string) {
     // Nếu chuỗi quá dài (thường là ID sản phẩm/đơn hàng), hiển thị gọn lại
     // MongoDB ID thường là 24 ký tự
     if (str.length > 20) {
-        return 'Chi tiết'; 
+        return 'Chi tiết';
     }
 
     // Mặc định: Viết hoa chữ cái đầu và bỏ dấu gạch ngang
@@ -38,23 +39,23 @@ function getBreadcrumbName(str: string) {
 
 export default function DynamicBreadcrumbs() {
     const location = useLocation();
-    
+
     // Lấy state được truyền qua navigate (nếu có) để hiển thị tên sản phẩm thay vì ID
     // Ví dụ: navigate(`/product/${id}`, { state: { name: "Áo thun" } })
-    const state = location.state as { name?: string } | null; 
+    const state = location.state as { name?: string } | null;
 
     const pathnames = location.pathname.split('/').filter((x) => x);
 
     return (
-        <Breadcrumbs 
-            separator={<NavigateNextIcon fontSize="small" />} 
-            aria-label="breadcrumb" 
+        <Breadcrumbs
+            separator={<NavigateNextIcon fontSize="small" />}
+            aria-label="breadcrumb"
             sx={{ my: 2, display: 'flex', alignItems: 'center' }}
         >
-            <Link 
-                component={RouterLink} 
-                to="/" 
-                underline="hover" 
+            <Link
+                component={RouterLink}
+                to="/"
+                underline="hover"
                 color="inherit"
                 sx={{ display: 'flex', alignItems: 'center' }}
             >
@@ -63,12 +64,24 @@ export default function DynamicBreadcrumbs() {
             </Link>
 
             {pathnames.map((value, index) => {
-                const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+                let to = `/${pathnames.slice(0, index + 1).join('/')}`;
                 const isLast = index === pathnames.length - 1;
 
+                // Redirect /product (case-insensitive) to /shop
+                if (value.toLowerCase() === 'product') {
+                    to = '/shop';
+                }
+
                 // Logic: Nếu là phần tử cuối cùng VÀ có state.name (tên sp) thì dùng state.name
-                // Nếu không thì dùng logic getBreadcrumbName
-                let displayName = getBreadcrumbName(value);
+                // Nếu không thì dùng logic getBreadcrumbName.
+                // Pass lowercase value to lookup key in map
+                let displayName = getBreadcrumbName(value.toLowerCase());
+
+                // If lookup failed (returned original string capitalized), try looking up original value just in case,
+                // otherwise keep what getBreadcrumbName returned (which handles the default formatting).
+                // Actually getBreadcrumbName returns capitalized string if not found.
+                // Let's rely on getBreadcrumbName doing the lookup on lowercased key.
+
                 if (isLast && state?.name) {
                     displayName = state.name;
                 }

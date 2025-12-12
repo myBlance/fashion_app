@@ -7,7 +7,6 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
     background-color: #fff;
     margin-right: -24px !important;
-    /* Fix for existing Admin layout offsets */
 }
 
 /* LEFT SIDEBAR (Gradient) */

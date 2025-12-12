@@ -1,9 +1,11 @@
+import CloseIcon from '@mui/icons-material/Close';
 import {
     Avatar,
     Box,
     Button,
     Card,
     Divider,
+    IconButton,
     Typography,
 } from '@mui/material';
 import axios from 'axios';
@@ -14,11 +16,12 @@ import {
     minValue,
     NumberInput,
     required,
+    SelectArrayInput,
     SelectInput,
     SimpleForm,
     TextInput,
     useNotify,
-    useRedirect,
+    useRedirect
 } from 'react-admin';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
@@ -39,6 +42,14 @@ export const ProductCreate = () => {
     const imagesInputRef = useRef<HTMLInputElement>(null);
 
     // === CHỌN ẢNH ĐẠI DIỆN ===
+    const handleRemoveThumbnail = () => {
+        setThumbnailPreview(null);
+        setThumbnailFile(null);
+        if (thumbnailInputRef.current) {
+            thumbnailInputRef.current.value = '';
+        }
+    };
+
     const handleThumbnailSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -60,6 +71,11 @@ export const ProductCreate = () => {
         setImagesPreview((prev) => [...prev, ...previews]);
     };
 
+    const handleRemoveImage = (index: number) => {
+        setImagesPreview((prev) => prev.filter((_, i) => i !== index));
+        setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    };
+
     // === SUBMIT DỮ LIỆU ===
     const handleSubmit = async (data: any) => {
         try {
@@ -78,7 +94,7 @@ export const ProductCreate = () => {
             formData.append('sold', data.sold || 0);
             formData.append('total', data.total || 0);
             formData.append('status', data.status || 'selling');
-            formData.append('style', data.style || '');
+            formData.append('style', JSON.stringify(data.style || []));
             formData.append('description', data.description || '');
             formData.append('details', data.details || '');
             formData.append('colors', JSON.stringify(data.colors || []));
@@ -130,7 +146,7 @@ export const ProductCreate = () => {
                                         <TextInput source="name" validate={required()} fullWidth variant="outlined" label="Tên sản phẩm" placeholder="Nhập tên sản phẩm..." />
                                     </Box>
                                     <Box sx={{ flex: 1, minWidth: '200px' }}>
-                                        <TextInput source="brand" fullWidth variant="outlined" label="Thương hiệu" placeholder="Thương hiệu..." />
+                                        <TextInput source="brand" defaultValue="Dola Style" fullWidth variant="outlined" label="Thương hiệu" placeholder="Thương hiệu..." />
                                     </Box>
                                 </Box>
                                 <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', mt: 2 }}>
@@ -138,7 +154,15 @@ export const ProductCreate = () => {
                                         <SelectInput source="type" choices={typeChoices} fullWidth variant="outlined" label="Danh mục" />
                                     </Box>
                                     <Box sx={{ flex: 1 }}>
-                                        <SelectInput source="style" choices={styleChoices} fullWidth variant="outlined" label="Phong cách" />
+                                        <SelectArrayInput
+                                            source="style"
+                                            choices={styleChoices}
+                                            fullWidth
+                                            variant="outlined"
+                                            label="Phong cách"
+                                            optionText="name"
+                                            optionValue="id"
+                                        />
                                     </Box>
                                 </Box>
                                 <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -257,13 +281,29 @@ export const ProductCreate = () => {
                                     <Divider />
                                 </Box>
                                 <Box sx={{ display: 'flex', gap: 4 }}>
-                                    <Box sx={{ textAlign: 'center' }}>
+                                    <Box sx={{ textAlign: 'center', position: 'relative', display: 'inline-block' }}>
                                         <Avatar
                                             src={thumbnailPreview || 'https://via.placeholder.com/150x150?text=Upload'}
                                             sx={{ width: 120, height: 120, mb: 2, cursor: 'pointer', border: '2px dashed #ccc' }}
                                             onClick={() => thumbnailInputRef.current?.click()}
                                             variant="rounded"
                                         />
+                                        {thumbnailPreview && (
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleRemoveThumbnail}
+                                                sx={{
+                                                    position: 'absolute',
+                                                    top: -8,
+                                                    right: -8,
+                                                    bgcolor: 'white',
+                                                    boxShadow: 1,
+                                                    '&:hover': { bgcolor: '#f5f5f5' }
+                                                }}
+                                            >
+                                                <CloseIcon fontSize="small" color="error" />
+                                            </IconButton>
+                                        )}
                                         <input type="file" accept="image/*" hidden ref={thumbnailInputRef} onChange={handleThumbnailSelect} />
                                         <Button size="small" variant="outlined" onClick={() => thumbnailInputRef.current?.click()}>
                                             Ảnh bìa
@@ -273,7 +313,23 @@ export const ProductCreate = () => {
                                     <Box sx={{ flex: 1 }}>
                                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                                             {imagesPreview.map((src, idx) => (
-                                                <Avatar key={idx} src={src} variant="rounded" sx={{ width: 100, height: 100, border: '1px solid #eee' }} />
+                                                <Box key={idx} sx={{ position: 'relative' }}>
+                                                    <Avatar src={src} variant="rounded" sx={{ width: 100, height: 100, border: '1px solid #eee' }} />
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleRemoveImage(idx)}
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: -8,
+                                                            right: -8,
+                                                            bgcolor: 'white',
+                                                            boxShadow: 1,
+                                                            '&:hover': { bgcolor: '#f5f5f5' }
+                                                        }}
+                                                    >
+                                                        <CloseIcon fontSize="small" color="error" />
+                                                    </IconButton>
+                                                </Box>
                                             ))}
                                             <Box
                                                 sx={{

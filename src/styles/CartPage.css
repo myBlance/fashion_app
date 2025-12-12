@@ -1,14 +1,12 @@
-/* --- CƠ BẢN --- */
 .cart-page-wrapper {
   background-color: #fff;
   min-height: 100vh;
-  padding-bottom: 40px;
 }
 
 .cart-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 32px 24px;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 

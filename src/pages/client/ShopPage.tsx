@@ -19,6 +19,7 @@ import ShopFilters, { Filters } from '../../components/Client/Shop/ShopFilters';
 import SortControls from '../../components/Client/Shop/SortControls';
 import { getProducts } from '../../services/productService';
 import { Product } from "../../types/Product";
+import PageHeader from '../../components/Client/Common/PageHeader';
 
 const ShopPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -100,9 +101,12 @@ const ShopPage: React.FC = () => {
 
     // Filter by style
     if (filters.style.length > 0) {
-      filtered = filtered.filter(product =>
-        filters.style.includes(product.style)
-      );
+      filtered = filtered.filter(product => {
+        if (!product.style) return false;
+        // Support both string (legacy) and array (new)
+        const productStyles = Array.isArray(product.style) ? product.style : [product.style];
+        return filters.style.some(s => productStyles.includes(s));
+      });
     }
 
     // Filter by size
@@ -203,9 +207,7 @@ const ShopPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" textAlign="center" mb={3} fontWeight="bold">
-        Tất cả sản phẩm
-      </Typography>
+      <PageHeader title="Tất cả sản phẩm" />
 
       {/* Mobile: Filter Button */}
       {isMobile && (

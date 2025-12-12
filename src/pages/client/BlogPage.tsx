@@ -15,6 +15,7 @@ import {
     Typography
 } from '@mui/material';
 import React from 'react';
+import PageHeader from '../../components/Client/Common/PageHeader';
 import '../../styles/BlogPage.css';
 
 // Mock Data
@@ -78,6 +79,7 @@ const popularPosts = [
 const BlogPage: React.FC = () => {
     return (
         <Container maxWidth="lg" className="blog-page-container">
+            <PageHeader title="Tin tức" />
             <Box display="flex" flexWrap="wrap" gap={4}>
                 {/* Main Content Column */}
                 <Box sx={{ flex: { xs: '1 1 100%', md: '3' } }}>

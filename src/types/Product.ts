@@ -8,7 +8,7 @@ export interface Product {
     type: string;
     status: 'selling' | 'stopped' | 'sold_out'
     colors: string[];
-    style: string;
+    style: string[];
     sizes: string[];
     sold: number;
     total: number;

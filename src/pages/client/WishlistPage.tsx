@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
-import DynamicBreadcrumbs from '../../components/Client/Breadcrumb/DynamicBreadcrumbs';
+import PageHeader from '../../components/Client/Common/PageHeader';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProducts } from '../../services/productService';
@@ -25,12 +25,12 @@ const WishlistPage: React.FC = () => {
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<string | null>(null);
 
-    // ✅ Sử dụng useMemo để tạo stable string từ wishlistIds
+    //  Sử dụng useMemo để tạo stable string từ wishlistIds
     const wishlistIdsStr = useMemo(() => wishlistIds.join(','), [wishlistIds.length, wishlistIds.join(',')]);
 
     useEffect(() => {
         if (userId) {
-            // ✅ Fetch wishlist từ Redux store cho logged-in users
+            //  Fetch wishlist từ Redux store cho logged-in users
             dispatch(fetchWishlist(userId));
         } else {
             // Load guest wishlist from localStorage
@@ -38,10 +38,10 @@ const WishlistPage: React.FC = () => {
         }
     }, [userId, dispatch]);
 
-    // ✅ Khi wishlistIds thay đổi (sau khi fetch thành công), cập nhật products
+    //  Khi wishlistIds thay đổi (sau khi fetch thành công), cập nhật products
     useEffect(() => {
         const loadProducts = async () => {
-            // ✅ Chỉ load khi không đang loading và không có error
+            //  Chỉ load khi không đang loading và không có error
             if (wishlistLoading) return;
 
             if (wishlistError) {
@@ -50,7 +50,7 @@ const WishlistPage: React.FC = () => {
                 return;
             }
 
-            // ✅ Nếu wishlist rỗng, set products rỗng ngay và return
+            //  Nếu wishlist rỗng, set products rỗng ngay và return
             if (wishlistIds.length === 0) {
                 setProducts([]);
                 setLoading(false);
@@ -61,10 +61,10 @@ const WishlistPage: React.FC = () => {
                 setLoading(true);
                 setError(null);
 
-                // 1️⃣ Lấy tất cả sản phẩm
+                // 1️ Lấy tất cả sản phẩm
                 const { data } = await getProducts(0, 1000);
 
-                // 2️⃣ Lọc theo danh sách yêu thích từ Redux
+                // 2️ Lọc theo danh sách yêu thích từ Redux
                 const favoriteProducts = data.filter((p) => wishlistIds.includes(p.id));
                 setProducts(favoriteProducts);
             } catch (err) {
@@ -76,19 +76,12 @@ const WishlistPage: React.FC = () => {
         };
 
         loadProducts();
-        // ✅ Dùng stable string từ useMemo thay vì JSON.stringify trực tiếp
+        //  Dùng stable string từ useMemo thay vì JSON.stringify trực tiếp
     }, [wishlistIdsStr, wishlistLoading, wishlistError]);
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <DynamicBreadcrumbs />
-
-            <Box mb={4} mt={2}>
-                <Typography variant="h4" fontWeight="bold" color="#d32f2f" textAlign={{ xs: 'center', md: 'left' }}>
-                    Sản phẩm yêu thích
-                </Typography>
-                <Box sx={{ width: 60, height: 4, bgcolor: '#d32f2f', mt: 1, mx: { xs: 'auto', md: 0 }, borderRadius: 1 }} />
-            </Box>
+            <PageHeader title="Sản phẩm yêu thích" />
 
             {(loading || wishlistLoading) && (
                 <Box

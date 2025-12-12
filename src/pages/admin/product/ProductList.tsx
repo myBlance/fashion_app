@@ -362,7 +362,7 @@ export const ProductList = () => {
                             '& .text-left-cell': {
                                 textAlign: 'left !important',
                                 px: 2,
-                                verticalAlign: 'top',
+                                verticalAlign: 'middle',
                             },
                             '& .text-left-cell.RaDatagrid-headerCell': {
                                 textAlign: 'center !important',

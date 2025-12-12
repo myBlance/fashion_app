@@ -1,5 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
 import React from 'react';
+import PageHeader from '../../components/Client/Common/PageHeader';
 
 const sections = [
   {
@@ -36,17 +37,8 @@ const sections = [
 
 const AboutPage: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box textAlign="center" mb={10}>
-        <Typography variant="h3" fontWeight="900" color="#d32f2f" gutterBottom sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>
-          Câu Chuyện Về Dola Style
-        </Typography>
-        <Box sx={{ width: 100, height: 4, bgcolor: '#d32f2f', mx: 'auto', borderRadius: 2 }} />
-        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', mt: 3, fontStyle: 'italic' }}>
-          "Nơi vẻ đẹp và phong cách được tôn vinh"
-        </Typography>
-      </Box>
-
+    <Container maxWidth="lg" sx={{ pt: 4, pb: 8 }}>
+      <PageHeader title="Giới thiệu" />
       <Box display="flex" flexDirection="column" gap={10}>
         {sections.map((section, index) => (
           <Box

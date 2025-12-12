@@ -21,7 +21,7 @@ import {
     useNotify,
     useRecordContext,
     useRefresh,
-    useSidebarState,
+    useSidebarState
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import AdminRowActions from '../../../components/Admin/AdminRowActions';
@@ -141,7 +141,6 @@ const DescriptionField = ({ source, cellClassName }: CustomFieldProps) => {
                 wordBreak: 'break-word',
                 minWidth: '300px',
             }}
-
 
         >
             {desc || '—'}
@@ -363,7 +362,7 @@ export const ProductList = () => {
                             '& .text-left-cell': {
                                 textAlign: 'left !important',
                                 px: 2,
-                                verticalAlign: 'middle',
+                                verticalAlign: 'top',
                             },
                             '& .text-left-cell.RaDatagrid-headerCell': {
                                 textAlign: 'center !important',

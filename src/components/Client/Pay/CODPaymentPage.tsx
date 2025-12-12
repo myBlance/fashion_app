@@ -16,7 +16,7 @@ const CODPaymentPage: React.FC = () => {
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Ref để tránh useEffect gọi API 2 lần trong React Strict Mode
   const hasCreatedOrder = useRef(false);
 
@@ -39,7 +39,7 @@ const CODPaymentPage: React.FC = () => {
     // 1. Kiểm tra dữ liệu đầu vào
     if (!location.state || !cartItems || cartItems.length === 0 || !userId) {
       // Nếu reload trang làm mất state, quay về giỏ hàng
-      navigate('/cart'); 
+      navigate('/cart');
       return;
     }
 
@@ -50,19 +50,11 @@ const CODPaymentPage: React.FC = () => {
     const createOrder = async () => {
       try {
         const token = localStorage.getItem('token');
-        
-        // Nếu backend yêu cầu xác thực
-        /* if (!token) {
-          setError('Phiên đăng nhập không hợp lệ.');
-          setIsLoading(false);
-          return;
-        } 
-        */
 
         // Chuẩn bị payload
         const orderPayload = {
           id: `ORD-${Date.now()}`, // Tạo ID đơn hàng unique
-          user: userId, // ✅ QUAN TRỌNG: Không được comment dòng này
+          user: userId,
           products: cartItems.map((item: CartItem) => ({
             product: item.productId || item.id, // Đảm bảo lấy đúng ID string
             quantity: item.quantity,
@@ -71,9 +63,9 @@ const CODPaymentPage: React.FC = () => {
           })),
           totalPrice: finalAmount,
           status: 'pending',
-          paymentMethod: 'cash-on-delivery', // Khớp với enum backend nếu có
-          shippingMethod: shippingMethod,    // ✅ Thêm trường này
-          shippingFee: shippingFee,          // ✅ Thêm trường này
+          paymentMethod: 'cash-on-delivery',
+          shippingMethod: shippingMethod,
+          shippingFee: shippingFee,
           shippingAddress: {
             fullName: selectedAddress.name,
             phone: selectedAddress.phone,
@@ -115,9 +107,7 @@ const CODPaymentPage: React.FC = () => {
 
   const handleViewOrder = () => {
     // Điều hướng tới trang lịch sử đơn hàng hoặc chi tiết đơn vừa tạo
-    navigate('/order-history'); 
-    // Hoặc nếu muốn xem chi tiết đơn vừa tạo:
-    // navigate(`/order/${order?.id}`);
+    navigate('/orders');
   };
 
   if (isLoading) {
@@ -151,7 +141,7 @@ const CODPaymentPage: React.FC = () => {
       </div>
       <h2>Đặt hàng thành công!</h2>
       <p className="order-id">Mã đơn hàng: <strong>{order?.id}</strong></p>
-      
+
       <div className="order-summary-card">
         <div className="summary-row">
           <span>Phương thức thanh toán:</span>

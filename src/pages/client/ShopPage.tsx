@@ -6,7 +6,6 @@ import {
   Drawer,
   Pagination,
   SelectChangeEvent,
-  Skeleton,
   Typography,
   useMediaQuery,
   useTheme
@@ -14,26 +13,12 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
-import ActiveFilters from '../../components/Client/Shop/ActiveFilters';
-import FilterSelect from '../../components/Client/Shop/FilterSelect';
+import ProductGrid from '../../components/Client/Shop/ProductGrid';
+import ProductSkeleton from '../../components/Client/Shop/ProductSkeleton';
+import ShopFilters, { Filters } from '../../components/Client/Shop/ShopFilters';
 import SortControls from '../../components/Client/Shop/SortControls';
-import {
-  colorOptions,
-  priceOptions,
-  sizeOptions,
-  styleOptions,
-  typeOptions,
-} from "../../constants/filterOptions";
 import { getProducts } from '../../services/productService';
 import { Product } from "../../types/Product";
-
-interface Filters {
-  price: string[];
-  type: string[];
-  style: string[];
-  size: string[];
-  color: string[];
-}
 
 const ShopPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -51,6 +36,7 @@ const ShopPage: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -58,11 +44,19 @@ const ShopPage: React.FC = () => {
   // Read URL params and apply filters on mount
   useEffect(() => {
     const typeParam = searchParams.get('type');
+    const searchParam = searchParams.get('search');
+
     if (typeParam) {
       setFilters(prev => ({
         ...prev,
         type: [typeParam],
       }));
+    }
+
+    if (searchParam) {
+      setSearchTerm(searchParam.toLowerCase());
+    } else {
+      setSearchTerm('');
     }
   }, [searchParams]);
 
@@ -71,6 +65,13 @@ const ShopPage: React.FC = () => {
     if (!allProducts.length) return;
 
     let filtered = [...allProducts];
+
+    // Filter by search term (Name)
+    if (searchTerm) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm)
+      );
+    }
 
     // Filter by price
     if (filters.price.length > 0) {
@@ -131,7 +132,7 @@ const ShopPage: React.FC = () => {
 
     setFilteredProducts(filtered);
     setPage(1);
-  }, [filters, sort, allProducts]);
+  }, [filters, sort, allProducts, searchTerm]);
 
   // Fetch all products once on mount
   useEffect(() => {
@@ -200,59 +201,6 @@ const ShopPage: React.FC = () => {
     page * limit
   );
 
-  const FilterContent = () => (
-    <>
-      <ActiveFilters
-        filters={filters}
-        onRemoveFilter={handleRemoveFilter}
-        onClearAll={clearAllFilters}
-      />
-
-      <Box display="flex" flexWrap="wrap" gap={2} mb={0}>
-        <FilterSelect
-          label="Mức giá"
-          value={filters.price}
-          onChange={handleFilterChange('price')}
-          options={priceOptions}
-          ariaLabel="Mức giá"
-          count={filters.price.length}
-        />
-        <FilterSelect
-          label="Loại"
-          value={filters.type}
-          onChange={handleFilterChange('type')}
-          options={typeOptions}
-          ariaLabel="Loại"
-          count={filters.type.length}
-        />
-        <FilterSelect
-          label="Phong cách"
-          value={filters.style}
-          onChange={handleFilterChange('style')}
-          options={styleOptions}
-          ariaLabel="Phong cách"
-          count={filters.style.length}
-        />
-        <FilterSelect
-          label="Size"
-          value={filters.size}
-          onChange={handleFilterChange('size')}
-          options={sizeOptions}
-          ariaLabel="Size"
-          count={filters.size.length}
-        />
-        <FilterSelect
-          label="Màu sắc"
-          value={filters.color}
-          onChange={handleFilterChange('color')}
-          options={colorOptions}
-          ariaLabel="Màu sắc"
-          count={filters.color.length}
-        />
-      </Box>
-    </>
-  );
-
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" textAlign="center" mb={3} fontWeight="bold">
@@ -284,7 +232,12 @@ const ShopPage: React.FC = () => {
             border: '1px solid #e0e0e0',
           }}
         >
-          <FilterContent />
+          <ShopFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={clearAllFilters}
+          />
         </Box>
       )}
 
@@ -305,7 +258,12 @@ const ShopPage: React.FC = () => {
         <Typography variant="h6" fontWeight="bold" mb={2}>
           Bộ lọc
         </Typography>
-        <FilterContent />
+        <ShopFilters
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onRemoveFilter={handleRemoveFilter}
+          onClearAll={clearAllFilters}
+        />
         <Button
           variant="contained"
           color="error"
@@ -321,35 +279,11 @@ const ShopPage: React.FC = () => {
 
       {/* Product Grid with Skeleton Loading */}
       {loading ? (
-        <Box
-          display="grid"
-          gridTemplateColumns={{
-            xs: 'repeat(2, 1fr)',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-            lg: 'repeat(4, 1fr)',
-          }}
-          gap={3}
-        >
-          {[...Array(8)].map((_, index) => (
-            <Box key={index}>
-              <Skeleton variant="rectangular" height={280} sx={{ borderRadius: 2 }} />
-              <Skeleton width="80%" height={30} sx={{ mt: 1 }} />
-              <Skeleton width="50%" height={24} />
-            </Box>
-          ))}
-        </Box>
+        <ProductGrid>
+          <ProductSkeleton count={8} />
+        </ProductGrid>
       ) : (
-        <Box
-          display="grid"
-          gridTemplateColumns={{
-            xs: 'repeat(2, 1fr)',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-            lg: 'repeat(4, 1fr)',
-          }}
-          gap={3}
-        >
+        <ProductGrid>
           {paginatedProducts.length > 0 ? (
             paginatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -366,7 +300,7 @@ const ShopPage: React.FC = () => {
               )}
             </Box>
           )}
-        </Box>
+        </ProductGrid>
       )}
 
       {/* MUI Pagination */}

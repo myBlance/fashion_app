@@ -17,7 +17,7 @@ import {
   useDataProvider,
   useNotify,
   useRefresh,
-  useSidebarState,
+  useSidebarState
 } from 'react-admin';
 import { useNavigate } from 'react-router-dom';
 import AdminRowActions from '../../../components/Admin/AdminRowActions';

@@ -51,8 +51,6 @@ export const clientRoutes: RouteItem[] = [
     { path: '/payment/shopeepay', element: React.createElement(ShopeePayPayment), auth: 'client' },
     { path: '/payment/seepay', element: React.createElement(SeepayPaymentPage), auth: 'client' },
     { path: '/payment/cod', element: React.createElement(CODPaymentPage), auth: 'client' },
-
-
     { path: '/blog', element: React.createElement(BlogPage), auth: 'client' },
     { path: '/contact', element: React.createElement(ContactPage), auth: 'client' },
 ];

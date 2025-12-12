@@ -3,19 +3,26 @@
 /* Container chính: Tạo hình dáng thẻ (Card) */
 .tab-container {
   width: 100%;
-  max-width: 450px; /* Giới hạn chiều rộng tối đa, không dùng width cứng */
-  margin: 0 auto;   /* Căn giữa theo chiều ngang */
-  padding: 40px;    /* Tăng khoảng cách bên trong */
+  max-width: 450px;
+  /* Giới hạn chiều rộng tối đa, không dùng width cứng */
+  margin: 0 auto;
+  /* Căn giữa theo chiều ngang */
+  padding: 40px;
+  /* Tăng khoảng cách bên trong */
   background-color: #ffffff;
-  border-radius: 16px; /* Bo góc mềm mại hơn */
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Đổ bóng tạo chiều sâu */
+  border-radius: 16px;
+  /* Bo góc mềm mại hơn */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  /* Đổ bóng tạo chiều sâu */
   text-align: center;
-  box-sizing: border-box; /* Đảm bảo padding không làm vỡ khung */
+  box-sizing: border-box;
+  /* Đảm bảo padding không làm vỡ khung */
 }
 
 /* Tiêu đề */
 .tab-container h2 {
-  font-size: 2rem; /* Dùng rem cho chuẩn tỉ lệ */
+  font-size: 2rem;
+  /* Dùng rem cho chuẩn tỉ lệ */
   font-weight: 700;
   margin: 0 0 32px 0;
   color: #1a1a1a;
@@ -26,7 +33,8 @@
 .tab-form {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Tạo khoảng cách đều giữa các input mà không cần margin quá nhiều */
+  gap: 16px;
+  /* Tạo khoảng cách đều giữa các input mà không cần margin quá nhiều */
 }
 
 /* Phần link bên dưới (Quên mật khẩu / Đăng ký) */
@@ -41,7 +49,8 @@
 }
 
 .login-links a {
-  color: #ca161c; /* Màu đỏ thương hiệu */
+  color: #ca161c;
+  /* Màu đỏ thương hiệu */
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -67,16 +76,49 @@
 @media (max-width: 600px) {
   .tab-container {
     max-width: 100%;
-    padding: 24px 20px; /* Giảm padding trên màn hình nhỏ */
-    box-shadow: none;   /* Bỏ bóng trên mobile để trông phẳng hơn (tùy chọn) */
-    border-radius: 0;   /* Bỏ bo góc nếu muốn full màn hình */
-    height: 100vh;      /* Full chiều cao màn hình trên mobile */
+    padding: 24px 20px;
+    /* Giảm padding trên màn hình nhỏ */
+    box-shadow: none;
+    /* Bỏ bóng trên mobile để trông phẳng hơn (tùy chọn) */
+    border-radius: 0;
+    /* Bỏ bo góc nếu muốn full màn hình */
+    height: 100vh;
+    /* Full chiều cao màn hình trên mobile */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Căn giữa nội dung theo chiều dọc */
+    justify-content: center;
+    /* Căn giữa nội dung theo chiều dọc */
   }
 
   .tab-container h2 {
     font-size: 1.75rem;
   }
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Premium Button Style */
+.auth-button {
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px rgba(202, 22, 28, 0.2);
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(202, 22, 28, 0.3) !important;
 }

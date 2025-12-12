@@ -1,12 +1,9 @@
-import { LockOutlined, PersonOutline, PhotoCamera } from "@mui/icons-material";
+import { LockOutlined, LogoutOutlined, PersonOutline, PhotoCamera } from "@mui/icons-material";
 import {
     Alert,
     Avatar,
     Box,
     Button,
-    Card,
-    Divider,
-    Paper,
     Tab,
     Tabs,
     TextField,
@@ -14,7 +11,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { CustomAppBar } from "../../components/Admin/CustomAppBar";
+import { useLogout } from 'react-admin';
 import '../../styles/AdminProfilePage.css';
 
 interface AdminProfile {
@@ -41,6 +38,7 @@ const AdminProfilePage: React.FC = () => {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    const logout = useLogout();
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -140,68 +138,65 @@ const AdminProfilePage: React.FC = () => {
 
     if (loading) {
         return (
-            <Card className="admin-loading-card">
-                <Typography align="center">Đang tải thông tin...</Typography>
-            </Card>
+            <Box className="admin-profile-card" sx={{ justifyContent: 'center', alignItems: 'center', minHeight: '400px!important' }}>
+                <Typography>Đang tải thông tin...</Typography>
+            </Box>
         );
     }
 
     return (
-        <Card className="admin-profile-card">
-            <Box className="admin-profile-content">
-                <CustomAppBar />
+        <Box className="admin-profile-card">
+            {/* LEFT SIDEBAR */}
+            <Box className="admin-profile-sidebar">
+                <Box className="admin-avatar-box">
+                    <Avatar
+                        src={profile.avatarUrl || "https://i.pravatar.cc/150?img=5"}
+                        alt={profile.name || profile.username}
+                        className="admin-avatar"
+                        onClick={handleAvatarClick}
+                    />
+                    <Box className="admin-camera-icon-box" onClick={handleAvatarClick}>
+                        <PhotoCamera fontSize="small" />
+                    </Box>
+                </Box>
+                <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    ref={fileInputRef}
+                    onChange={handleAvatarChange}
+                />
 
-                <Typography variant="h4" className="admin-profile-title">
-                    Cài đặt Admin
+                <Typography className="profile-name">
+                    {profile.name || profile.username}
                 </Typography>
+                <Typography className="profile-email">
+                    {profile.email || "Chưa cập nhật email"}
+                </Typography>
+                <Typography variant="caption" sx={{ mt: 1, opacity: 0.6 }}>
+                    @{profile.username}
+                </Typography>
+            </Box>
+
+            {/* RIGHT CONTENT */}
+            <Box className="admin-profile-content">
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                    <Typography variant="h4" className="profile-heading" sx={{ mb: 0 }}>
+                        Cài đặt tài khoản
+                    </Typography>
+                </Box>
 
                 <Tabs
                     value={tab}
                     onChange={(_, newTab) => setTab(newTab)}
-                    className="admin-profile-tabs"
+                    className="admin-tabs"
                 >
-                    <Tab
-                        icon={<PersonOutline />}
-                        iconPosition="start"
-                        label="Thông tin cá nhân"
-                    />
-                    <Tab
-                        icon={<LockOutlined />}
-                        iconPosition="start"
-                        label="Đổi mật khẩu"
-                    />
+                    <Tab icon={<PersonOutline />} iconPosition="start" label="Thông tin cá nhân" />
+                    <Tab icon={<LockOutlined />} iconPosition="start" label="Bảo mật" />
                 </Tabs>
 
                 {tab === 0 && (
-                    <Paper elevation={2} className="admin-profile-paper">
-                        <Box className="admin-avatar-container">
-                            <Box className="admin-avatar-box">
-                                <Avatar
-                                    src={profile.avatarUrl || "https://i.pravatar.cc/150?img=5"}
-                                    alt={profile.name || profile.username}
-                                    className="admin-avatar"
-                                    onClick={handleAvatarClick}
-                                />
-                                <Box
-                                    className="admin-camera-icon-box"
-                                    onClick={handleAvatarClick}
-                                >
-                                    <PhotoCamera className="admin-camera-icon" />
-                                </Box>
-                            </Box>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                style={{ display: "none" }}
-                                ref={fileInputRef}
-                                onChange={handleAvatarChange}
-                            />
-                            <Typography variant="h6" mt={2}>{profile.name || profile.username}</Typography>
-                            <Typography variant="body2" color="text.secondary">@{profile.username}</Typography>
-                        </Box>
-
-                        <Divider sx={{ mb: 3 }} />
-
+                    <Box className="profile-form">
                         <TextField
                             label="Họ và tên"
                             name="name"
@@ -210,6 +205,7 @@ const AdminProfilePage: React.FC = () => {
                             fullWidth
                             margin="normal"
                             variant="outlined"
+                            className="modern-input"
                         />
                         <TextField
                             label="Email"
@@ -220,41 +216,47 @@ const AdminProfilePage: React.FC = () => {
                             fullWidth
                             margin="normal"
                             variant="outlined"
+                            className="modern-input"
                         />
 
                         <Button
                             variant="contained"
-                            size="large"
                             fullWidth
-                            sx={{ mt: 3 }}
+                            className="action-btn"
+                            sx={{ mt: 4, bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
                             onClick={handleUpdateProfile}
                         >
-                            Cập nhật thông tin
+                            Lưu thay đổi
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<LogoutOutlined />}
+                            onClick={() => logout()}
+                            sx={{ borderRadius: '10px', mt: 16, ml: 40 }}
+                        >
+                            Đăng xuất
                         </Button>
 
                         {message && (
-                            <Alert
-                                severity={message.includes("thành công") ? "success" : "error"}
-                                sx={{ mt: 2 }}
-                            >
+                            <Alert severity={message.includes("thất bại") ? "error" : "success"} sx={{ mt: 2, borderRadius: 2 }}>
                                 {message}
                             </Alert>
                         )}
-                    </Paper>
+                    </Box>
                 )}
 
                 {tab === 1 && (
-                    <Paper elevation={2} className="admin-profile-paper">
-                        <Typography variant="h6" mb={3}>Đổi mật khẩu</Typography>
-
+                    <Box className="profile-form">
                         <TextField
-                            label="Mật khẩu cũ"
+                            label="Mật khẩu hiện tại"
                             type="password"
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
                             fullWidth
                             margin="normal"
                             variant="outlined"
+                            className="modern-input"
                         />
                         <TextField
                             label="Mật khẩu mới"
@@ -265,22 +267,24 @@ const AdminProfilePage: React.FC = () => {
                             margin="normal"
                             variant="outlined"
                             helperText="Tối thiểu 6 ký tự"
+                            className="modern-input"
                         />
                         <TextField
-                            label="Xác nhận mật khẩu mới"
+                            label="Xác nhận mật khẩu"
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             fullWidth
                             margin="normal"
                             variant="outlined"
+                            className="modern-input"
                         />
 
                         <Button
                             variant="contained"
-                            size="large"
                             fullWidth
-                            sx={{ mt: 3 }}
+                            className="action-btn"
+                            sx={{ mt: 4, bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
                             onClick={handleChangePassword}
                             disabled={!currentPassword || !newPassword || !confirmPassword}
                         >
@@ -288,17 +292,14 @@ const AdminProfilePage: React.FC = () => {
                         </Button>
 
                         {passwordMessage && (
-                            <Alert
-                                severity={passwordMessage.includes("thành công") ? "success" : "error"}
-                                sx={{ mt: 2 }}
-                            >
+                            <Alert severity={passwordMessage.includes("thất bại") ? "error" : "success"} sx={{ mt: 2, borderRadius: 2 }}>
                                 {passwordMessage}
                             </Alert>
                         )}
-                    </Paper>
+                    </Box>
                 )}
             </Box>
-        </Card>
+        </Box>
     );
 };
 

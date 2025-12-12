@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout } from 'react-admin';
 
-import { Loyalty, MoreVert, ShoppingCart, Store, Reviews } from '@mui/icons-material';
+import { Loyalty, MoreVert, Reviews, ShoppingCart, Store } from '@mui/icons-material';
 import {
     Avatar,
     Box,
@@ -72,7 +72,7 @@ const UserMenu = () => {
     return (
         <>
             <Box className="user-menu-box">
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box display="flex" alignItems="center" gap={2} onClick={handleInforUser} sx={{ cursor: 'pointer' }}>
                     <Avatar alt={profile?.name || 'User'} src={profile?.avatarUrl || '/user-avatar.png'} />
                     <Typography variant="body1" className="user-menu-name">
                         {loading ? 'Đang tải...' : profile?.name || 'ADMIN'}

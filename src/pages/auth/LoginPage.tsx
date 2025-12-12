@@ -101,6 +101,7 @@ const LoginPage = () => {
                     type="submit"
                     variant="contained"
                     fullWidth
+                    className="auth-button"
                     sx={{ mt: 2, backgroundColor: '#ca161c', color: '#fff' }}
                     disabled={loading}
                 >

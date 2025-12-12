@@ -30,6 +30,7 @@ const CurrentStatus = () => {
 
   const statusLabels: Record<string, string> = {
     pending: 'Chờ xác nhận',
+    awaiting_payment: 'Chờ thanh toán',
     confirmed: 'Đã xác nhận',
     paid: 'Đã thanh toán',
     processing: 'Đang xử lý',
@@ -40,6 +41,7 @@ const CurrentStatus = () => {
 
   const statusColors: Record<string, 'default' | 'success' | 'error' | 'warning' | 'info'> = {
     pending: 'warning',
+    awaiting_payment: 'warning',
     confirmed: 'info',
     paid: 'success',
     processing: 'info',
@@ -66,17 +68,25 @@ const CurrentStatus = () => {
 // === Component thông tin người dùng ===
 const UserInfo = () => {
   const record = useRecordContext<Order>();
-  if (!record) return null;
+  if (!record || !record.user) return null;
+
+  const user = record.user;
+  const isUserObject = typeof user === 'object';
+
   return (
-    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff', height: '100%' }}>
       <Box sx={{ p: 3 }}>
         <Box mb={2}>
           <Typography variant="h6">👤 Thông tin người dùng</Typography>
           <Divider />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography><strong>Tên đăng nhập:</strong> {record.user?.username}</Typography>
-          <Typography><strong>Email:</strong> {record.user?.email}</Typography>
+          <Typography>
+            <strong>Tên đăng nhập:</strong> {isUserObject ? user.username : user}
+          </Typography>
+          <Typography>
+            <strong>Email:</strong> {isUserObject ? user.email : 'N/A'}
+          </Typography>
         </Box>
       </Box>
     </Card>
@@ -86,24 +96,26 @@ const UserInfo = () => {
 // === Component địa chỉ giao hàng ===
 const ShippingAddress = () => {
   const record = useRecordContext<Order>();
-  if (!record) return null;
+  if (!record || !record.shippingAddress) return null;
   const addr = record.shippingAddress;
   return (
-    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
+    <Card elevation={0} sx={{ mb: 3, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff', height: '100%' }}>
       <Box sx={{ p: 3 }}>
         <Box mb={2}>
           <Typography variant="h6">📦 Địa chỉ giao hàng</Typography>
           <Divider />
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography><strong>Họ tên:</strong> {addr.fullName}</Typography>
-          <Typography><strong>SĐT:</strong> {addr.phone}</Typography>
-          <Typography><strong>Địa chỉ:</strong> {addr.addressLine}</Typography>
+          <Typography><strong>Họ tên:</strong> {addr.fullName || 'N/A'}</Typography>
+          <Typography><strong>SĐT:</strong> {addr.phone || 'N/A'}</Typography>
+          <Typography><strong>Địa chỉ:</strong> {addr.addressLine || 'N/A'}</Typography>
         </Box>
       </Box>
     </Card>
   );
 };
+
+
 
 // === Component danh sách sản phẩm ===
 const ProductList = () => {
@@ -172,7 +184,7 @@ const ProductList = () => {
 const TotalPrice = () => {
   const record = useRecordContext<Order>();
   if (!record) return null;
-  return <>{record.totalPrice?.toLocaleString('vi-VN')}₫</>;
+  return <>{(record.totalPrice || 0).toLocaleString('vi-VN')}₫</>;
 };
 
 // === Toolbar tùy chỉnh ===
@@ -183,7 +195,7 @@ const CustomToolbar = (props: any) => (
       display: 'flex',
       justifyContent: 'space-between',
       borderTop: '1px solid #e0e0e0',
-      bg: 'white',
+      bgcolor: 'white', // Fixed bg -> bgcolor
       p: 2,
       mt: 2
     }}
@@ -245,6 +257,7 @@ export const OrderEdit = (props: any) => {
                       label="Trạng thái đơn hàng"
                       choices={[
                         { id: 'pending', name: 'Chờ xác nhận' },
+                        { id: 'awaiting_payment', name: 'Chờ thanh toán' },
                         { id: 'confirmed', name: 'Đã xác nhận' },
                         { id: 'paid', name: 'Đã thanh toán' },
                         { id: 'processing', name: 'Đang xử lý' },
@@ -271,8 +284,14 @@ export const OrderEdit = (props: any) => {
               </Box>
             </Card>
 
-            <UserInfo />
-            <ShippingAddress />
+            <Stack direction="row" spacing={3} width="100%">
+              <Box flex={1}>
+                <UserInfo />
+              </Box>
+              <Box flex={1}>
+                <ShippingAddress />
+              </Box>
+            </Stack>
             <ProductList />
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 3, px: 1 }}>

@@ -51,18 +51,113 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
         return { city: '', district: '', ward: '', specificAddress: fullAddr };
     };
 
-    const initialAddressParts = parseAddress(address.address);
+    const [provinces, setProvinces] = useState<any[]>([]);
+    const [districts, setDistricts] = useState<any[]>([]);
+    const [wards, setWards] = useState<any[]>([]);
+
+    const [selectedProvince, setSelectedProvince] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedWard, setSelectedWard] = useState('');
 
     const [formData, setFormData] = useState({
         name: address.name,
         phone: address.phone,
-        city: initialAddressParts.city,
-        district: initialAddressParts.district,
-        ward: initialAddressParts.ward,
-        specificAddress: initialAddressParts.specificAddress,
+        specificAddress: '',
         isDefault: address.isDefault || false,
         type: address.type || 'home',
     });
+
+    // Parse initial address on open
+    const initialParts = React.useMemo(() => parseAddress(address.address), [address.address]);
+
+    // Initialize specific address part
+    React.useEffect(() => {
+        setFormData(prev => ({ ...prev, specificAddress: initialParts.specificAddress }));
+    }, [initialParts]);
+
+    // Fetch Provinces
+    React.useEffect(() => {
+        fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error === 0) {
+                    setProvinces(data.data);
+                    // Try to auto-select province
+                    const found = data.data.find((p: any) => p.name === initialParts.city || initialParts.city.includes(p.name) || p.name.includes(initialParts.city));
+                    if (found) setSelectedProvince(found.id);
+                }
+            })
+            .catch(err => console.error(err));
+    }, [initialParts.city]);
+
+    // Fetch Districts
+    React.useEffect(() => {
+        if (selectedProvince) {
+            fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === 0) {
+                        setDistricts(data.data);
+
+                        // Check if we should auto-select district
+                        // We only auto-select if the current selectedProvince matches the initial address province
+                        const matchedProv = provinces.find((p: any) => p.name === initialParts.city || initialParts.city.includes(p.name) || p.name.includes(initialParts.city));
+
+                        let autoSelected = false;
+                        if (matchedProv && matchedProv.id === selectedProvince) {
+                            const found = data.data.find((d: any) => d.name === initialParts.district || initialParts.district.includes(d.name) || d.name.includes(initialParts.district));
+                            if (found) {
+                                setSelectedDistrict(found.id);
+                                autoSelected = true;
+                            }
+                        }
+
+                        if (!autoSelected) {
+                            setSelectedDistrict('');
+                            setWards([]);
+                            setSelectedWard('');
+                        }
+                    }
+                })
+                .catch(err => console.error(err));
+        } else {
+            setDistricts([]);
+            setWards([]);
+        }
+    }, [selectedProvince, provinces, initialParts.city, initialParts.district]);
+
+    // Fetch Wards
+    React.useEffect(() => {
+        if (selectedDistrict) {
+            fetch(`https://esgoo.net/api-tinhthanh/3/${selectedDistrict}.htm`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === 0) {
+                        setWards(data.data);
+
+                        // Auto-select ward
+                        const matchedDist = districts.find((d: any) => d.name === initialParts.district || initialParts.district.includes(d.name) || d.name.includes(initialParts.district));
+
+                        let autoSelected = false;
+                        if (matchedDist && matchedDist.id === selectedDistrict) {
+                            const found = data.data.find((w: any) => w.name === initialParts.ward || initialParts.ward.includes(w.name) || w.name.includes(initialParts.ward));
+                            if (found) {
+                                setSelectedWard(found.id);
+                                autoSelected = true;
+                            }
+                        }
+
+                        if (!autoSelected) {
+                            setSelectedWard('');
+                        }
+                    }
+                })
+                .catch(err => console.error(err));
+        } else {
+            setWards([]);
+        }
+    }, [selectedDistrict, districts, initialParts.district, initialParts.ward]);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -80,12 +175,16 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
             return;
         }
 
-        if (!formData.name || !formData.phone || !formData.city || !formData.district || !formData.ward || !formData.specificAddress) {
+        if (!formData.name || !formData.phone || !selectedProvince || !selectedDistrict || !selectedWard || !formData.specificAddress) {
             alert('Vui lòng điền đầy đủ thông tin');
             return;
         }
 
-        const fullAddress = `${formData.specificAddress}, ${formData.ward}, ${formData.district}, ${formData.city}`;
+        const provinceName = provinces.find(p => p.id === selectedProvince)?.name || '';
+        const districtName = districts.find(d => d.id === selectedDistrict)?.name || '';
+        const wardName = wards.find(w => w.id === selectedWard)?.name || '';
+
+        const fullAddress = `${formData.specificAddress}, ${wardName}, ${districtName}, ${provinceName}`;
 
         onSave({
             ...formData,
@@ -123,35 +222,64 @@ const EditAddressModal: React.FC<EditAddressModalProps> = ({
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                     <TextField
+                        select
                         fullWidth
                         label="Tỉnh / Thành phố"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
+                        value={selectedProvince}
+                        onChange={(e) => setSelectedProvince(e.target.value)}
                         variant="outlined"
                         size="small"
-                    />
+                        SelectProps={{ native: true }}
+                        InputLabelProps={{ shrink: true }}
+                    >
+                        <option value="">Chọn Tỉnh/Thành phố</option>
+                        {provinces.map((province) => (
+                            <option key={province.id} value={province.id}>
+                                {province.name}
+                            </option>
+                        ))}
+                    </TextField>
                     <TextField
+                        select
                         fullWidth
                         label="Quận / Huyện"
-                        name="district"
-                        value={formData.district}
-                        onChange={handleChange}
+                        value={selectedDistrict}
+                        onChange={(e) => setSelectedDistrict(e.target.value)}
                         variant="outlined"
                         size="small"
-                    />
+                        disabled={!selectedProvince}
+                        SelectProps={{ native: true }}
+                        InputLabelProps={{ shrink: true }}
+                    >
+                        <option value="">Chọn Quận/Huyện</option>
+                        {districts.map((district) => (
+                            <option key={district.id} value={district.id}>
+                                {district.name}
+                            </option>
+                        ))}
+                    </TextField>
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                     <TextField
+                        select
                         fullWidth
                         label="Phường / Xã"
-                        name="ward"
-                        value={formData.ward}
-                        onChange={handleChange}
+                        value={selectedWard}
+                        onChange={(e) => setSelectedWard(e.target.value)}
                         variant="outlined"
                         size="small"
-                    />
+                        disabled={!selectedDistrict}
+                        SelectProps={{ native: true }}
+                        InputLabelProps={{ shrink: true }}
+                    >
+                        <option value="">Chọn Phường/Xã</option>
+                        {wards.map((ward) => (
+                            <option key={ward.id} value={ward.id}>
+                                {ward.name}
+                            </option>
+                        ))}
+                    </TextField>
                     <TextField
                         fullWidth
                         label="Số nhà, tên đường"

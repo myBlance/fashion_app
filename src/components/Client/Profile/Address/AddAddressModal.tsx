@@ -25,16 +25,70 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
     onClose,
     onAdd,
 }) => {
+    const [provinces, setProvinces] = useState<any[]>([]);
+    const [districts, setDistricts] = useState<any[]>([]);
+    const [wards, setWards] = useState<any[]>([]);
+
+    const [selectedProvince, setSelectedProvince] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedWard, setSelectedWard] = useState('');
+
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
-        city: '',
-        district: '',
-        ward: '',
         specificAddress: '',
         type: 'home' as 'home' | 'work',
         isDefault: false,
     });
+
+    // Fetch Provinces
+    React.useEffect(() => {
+        fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error === 0) {
+                    setProvinces(data.data);
+                }
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    // Fetch Districts
+    React.useEffect(() => {
+        if (selectedProvince) {
+            fetch(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === 0) {
+                        setDistricts(data.data);
+                        setWards([]);
+                        setSelectedDistrict('');
+                        setSelectedWard('');
+                    }
+                })
+                .catch(err => console.error(err));
+        } else {
+            setDistricts([]);
+            setWards([]);
+        }
+    }, [selectedProvince]);
+
+    // Fetch Wards
+    React.useEffect(() => {
+        if (selectedDistrict) {
+            fetch(`https://esgoo.net/api-tinhthanh/3/${selectedDistrict}.htm`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error === 0) {
+                        setWards(data.data);
+                        setSelectedWard('');
+                    }
+                })
+                .catch(err => console.error(err));
+        } else {
+            setWards([]);
+        }
+    }, [selectedDistrict]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -46,12 +100,16 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
     };
 
     const handleSave = () => {
-        if (!formData.name || !formData.phone || !formData.city || !formData.district || !formData.ward || !formData.specificAddress) {
+        if (!formData.name || !formData.phone || !selectedProvince || !selectedDistrict || !selectedWard || !formData.specificAddress) {
             alert('Vui lòng điền đầy đủ thông tin');
             return;
         }
 
-        const fullAddress = `${formData.specificAddress}, ${formData.ward}, ${formData.district}, ${formData.city}`;
+        const provinceName = provinces.find(p => p.id === selectedProvince)?.name || '';
+        const districtName = districts.find(d => d.id === selectedDistrict)?.name || '';
+        const wardName = wards.find(w => w.id === selectedWard)?.name || '';
+
+        const fullAddress = `${formData.specificAddress}, ${wardName}, ${districtName}, ${provinceName}`;
 
         onAdd({
             name: formData.name,
@@ -59,7 +117,6 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
             address: fullAddress,
             type: formData.type,
             isDefault: formData.isDefault,
-            // _id sẽ do backend tự sinh
         });
         onClose();
     };
@@ -93,35 +150,64 @@ const AddAddressModal: React.FC<AddAddressModalProps> = ({
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                     <TextField
+                        select
                         fullWidth
                         label="Tỉnh / Thành phố"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
+                        value={selectedProvince}
+                        onChange={(e) => setSelectedProvince(e.target.value)}
                         variant="outlined"
                         size="small"
-                    />
+                        SelectProps={{ native: true }}
+                        InputLabelProps={{ shrink: true }}
+                    >
+                        <option value="">Chọn Tỉnh/Thành phố</option>
+                        {provinces.map((province) => (
+                            <option key={province.id} value={province.id}>
+                                {province.name}
+                            </option>
+                        ))}
+                    </TextField>
                     <TextField
+                        select
                         fullWidth
                         label="Quận / Huyện"
-                        name="district"
-                        value={formData.district}
-                        onChange={handleChange}
+                        value={selectedDistrict}
+                        onChange={(e) => setSelectedDistrict(e.target.value)}
                         variant="outlined"
                         size="small"
-                    />
+                        disabled={!selectedProvince}
+                        SelectProps={{ native: true }}
+                        InputLabelProps={{ shrink: true }}
+                    >
+                        <option value="">Chọn Quận/Huyện</option>
+                        {districts.map((district) => (
+                            <option key={district.id} value={district.id}>
+                                {district.name}
+                            </option>
+                        ))}
+                    </TextField>
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                     <TextField
+                        select
                         fullWidth
                         label="Phường / Xã"
-                        name="ward"
-                        value={formData.ward}
-                        onChange={handleChange}
+                        value={selectedWard}
+                        onChange={(e) => setSelectedWard(e.target.value)}
                         variant="outlined"
                         size="small"
-                    />
+                        disabled={!selectedDistrict}
+                        SelectProps={{ native: true }}
+                        InputLabelProps={{ shrink: true }}
+                    >
+                        <option value="">Chọn Phường/Xã</option>
+                        {wards.map((ward) => (
+                            <option key={ward.id} value={ward.id}>
+                                {ward.name}
+                            </option>
+                        ))}
+                    </TextField>
                     <TextField
                         fullWidth
                         label="Số nhà, tên đường"

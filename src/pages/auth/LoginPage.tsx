@@ -68,8 +68,7 @@ const LoginPage = () => {
             <h2>Đăng nhập</h2>
             <form className="tab-form" onSubmit={handleLogin}>
                 <TextField
-                    id="filled-multiline-flexible"
-                    maxRows={4}
+                    id="username"
                     label="Email"
                     variant="filled"
                     value={username}
@@ -118,11 +117,10 @@ const LoginPage = () => {
                     }}
                 />
                 <TextField
-                    id="filled-multiline-flexible"
+                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Mật khẩu"
-                    maxRows={4}
                     variant="filled"
                     type={showPassword ? 'text' : 'password'}
                     sx={{
@@ -186,10 +184,10 @@ const LoginPage = () => {
                     }}
                 />
                 <Button
+                    type="submit"
                     variant="contained"
                     fullWidth
                     sx={{ mt: 2, backgroundColor: '#ca161c', color: '#fff' }}
-                    onClick={handleLogin}
                     disabled={loading}
                 >
                     {loading ? <CircularProgress size={24} color="inherit" /> : 'Đăng nhập'}

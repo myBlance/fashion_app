@@ -1,17 +1,15 @@
-import { 
-  priceOptions,
-  typeOptions,
-  styleOptions,
-  sizeOptions,
+import {
   colorOptions,
+  priceOptions,
+  sizeOptions,
+  styleOptions,
+  typeOptions,
 } from "../constants/filterOptions";
 
-
-// ✅ Giả định Product interface (bạn có thể điều chỉnh theo schema)
 import { Product } from "../types/Product";
 
 export interface Filters {
-  price: string[]; // ['1', '2', ...]
+  price: string[];
   type: string[];
   style: string[];
   size: string[];
@@ -43,12 +41,12 @@ export const getLabel = (key: string, value: string) => {
   return option ? option.label : value;
 };
 
-// ✅ Cải thiện filterProducts
+//  Cải thiện filterProducts
 export const filterProducts = (products: Product[], filters: Filters) => {
   const { price, type, style, size, color } = filters;
 
   return products.filter((product) => {
-    // ✅ Price range filter
+
     const matchPrice = price.length === 0 || price.some((p) => {
       if (p === '1') return product.price >= 50000 && product.price <= 100000;
       if (p === '2') return product.price > 100000 && product.price <= 200000;
@@ -59,11 +57,11 @@ export const filterProducts = (products: Product[], filters: Filters) => {
       return false;
     });
 
-    // ✅ Type, Style filter (case-insensitive)
+    //  Type, Style filter (case-insensitive)
     const matchType = type.length === 0 || type.some(t => product.type.toLowerCase().includes(t.toLowerCase()));
-    const matchStyle = style.length === 0 || style.some(s => product.style.toLowerCase().includes(s.toLowerCase()));
+    const matchStyle = style.length === 0 || style.some(s => product.style.some(ps => ps.toLowerCase().includes(s.toLowerCase())));
 
-    // ✅ Size, Color filter
+    //  Size, Color filter
     const matchSize = size.length === 0 || size.some(s => product.sizes.includes(s));
     const matchColor = color.length === 0 || color.some(c => product.colors.includes(c));
 
@@ -71,7 +69,7 @@ export const filterProducts = (products: Product[], filters: Filters) => {
   });
 };
 
-// ✅ Cải thiện sortProducts
+//  Cải thiện sortProducts
 export const sortProducts = (products: Product[], sort: string) => {
   return [...products].sort((a, b) => {
     switch (sort) {

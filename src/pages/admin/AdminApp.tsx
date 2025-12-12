@@ -1,5 +1,5 @@
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import StorefrontIcon from '@mui/icons-material/Storefront'; // icon khác cho products
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Admin, CustomRoutes, Resource } from 'react-admin';
 import { Navigate, Route } from 'react-router-dom';
 import dataProvider from '../../data/dataProvider';

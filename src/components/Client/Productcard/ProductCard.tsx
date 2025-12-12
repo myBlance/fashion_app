@@ -25,8 +25,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isFavoriteLocal, setIsFavoriteLocal] = useState(wishlist.includes(product.id));
   const [loadingFavorite, setLoadingFavorite] = useState(false);
 
+  // Determine API base URL
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath) return '';
+    if (imagePath.startsWith('http') || imagePath.startsWith('data:')) {
+      return imagePath;
+    }
+    return `${API_BASE_URL}/${imagePath}`;
+  };
+
   const soldPercentage = (product.sold / product.total) * 100;
-  const displayedImage = hovered ? product.images[1] || product.images[0] : product.images[0];
+  const rawImage = hovered ? product.images[1] || product.images[0] : product.images[0];
+  const displayedImage = getImageUrl(rawImage);
 
   // Đồng bộ khi wishlist trong Redux thay đổi
   useEffect(() => {

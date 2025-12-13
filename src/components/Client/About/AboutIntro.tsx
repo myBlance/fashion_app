@@ -8,7 +8,6 @@ const AboutIntro: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                backgroundImage: 'url(/assets/images/paper-bg.jpg)', // ảnh nền giấy
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 borderRadius: 2,
@@ -18,7 +17,7 @@ const AboutIntro: React.FC = () => {
                 flexWrap: 'wrap',
             }}
         >
-        {/* Left content */}
+            {/* Left content */}
             <Box sx={{ maxWidth: 700 }}>
                 <Typography variant="h5" fontWeight="bold" color="error" gutterBottom>
                     Về chúng tôi

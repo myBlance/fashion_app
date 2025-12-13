@@ -25,24 +25,32 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onToggleMenu, mobileM
     const wishlistCount = wishlistItems?.length || 0;
 
     const getActiveTab = () => {
+        if (mobileMenuOpen) return 'menu'; // Ưu tiên check menu mở trước
+
         const currentPath = location.pathname;
         if (currentPath.startsWith('/cart')) return 'cart';
         if (currentPath.startsWith('/wishlist')) return 'wishlist';
         if (currentPath === '/') return 'home';
         if (currentPath.startsWith('/orders')) return 'orders';
         if (currentPath.startsWith('/profile')) return 'profile';
-        if (mobileMenuOpen) return 'menu';
         return '';
     };
 
     const activeTab = getActiveTab();
+
+    const handleNavigation = (path: string) => {
+        if (mobileMenuOpen) {
+            onToggleMenu();
+        }
+        navigate(path);
+    };
 
     return (
         <div className="navbar-bottom-mobile">
             {/* 1. Giỏ hàng */}
             <div
                 className={`bottom-nav-item ${activeTab === 'cart' ? 'active' : ''}`}
-                onClick={() => { navigate('/cart'); }}
+                onClick={() => handleNavigation('/cart')}
             >
                 <div className="nav-icon-wrapper">
                     <Badge badgeContent={totalQuantity} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', height: '16px', minWidth: '16px' } }}>
@@ -54,7 +62,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onToggleMenu, mobileM
             {/* 2. Yêu thích */}
             <div
                 className={`bottom-nav-item ${activeTab === 'wishlist' ? 'active' : ''}`}
-                onClick={() => { navigate('/wishlist'); }}
+                onClick={() => handleNavigation('/wishlist')}
             >
                 <div className="nav-icon-wrapper">
                     <Badge badgeContent={wishlistCount} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', height: '16px', minWidth: '16px' } }}>
@@ -66,7 +74,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onToggleMenu, mobileM
             {/* 3. Trang chủ */}
             <div
                 className={`bottom-nav-item ${activeTab === 'home' ? 'active' : ''}`}
-                onClick={() => { navigate('/'); }}
+                onClick={() => handleNavigation('/')}
             >
                 <div className="nav-icon-wrapper">
                     <HomeOutlinedIcon className={activeTab === 'home' ? 'active-icon' : ''} />
@@ -86,7 +94,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onToggleMenu, mobileM
             {/* 5. Tài khoản */}
             <div
                 className={`bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                onClick={() => { navigate('/profile'); }}
+                onClick={() => handleNavigation('/profile')}
             >
                 <div className="nav-icon-wrapper">
                     <PermIdentityOutlinedIcon className={activeTab === 'profile' ? 'active-icon' : ''} />

@@ -214,16 +214,16 @@ const ProductEditForm = () => {
                         </Box>
                         <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="price" fullWidth variant="outlined" validate={[required(), minValue(0)]} label="Giá Bán" />
+                                <NumberInput source="price" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Bán" />
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="originalPrice" fullWidth variant="outlined" validate={[required(), minValue(0)]} label="Giá Gốc" />
+                                <NumberInput source="originalPrice" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Gốc" />
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="total" fullWidth variant="outlined" label="Tổng kho" />
+                                <NumberInput source="total" fullWidth variant="outlined" min={0} validate={[minValue(0)]} label="Tổng kho" />
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="sold" fullWidth variant="outlined" label="Đã bán" />
+                                <NumberInput source="sold" fullWidth variant="outlined" min={0} validate={[minValue(0)]} label="Đã bán" />
                             </Box>
                         </Box>
                         <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>

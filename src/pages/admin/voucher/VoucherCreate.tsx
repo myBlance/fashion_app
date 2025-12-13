@@ -3,6 +3,7 @@ import {
   BooleanInput,
   Create,
   DateInput,
+  minValue,
   NumberInput,
   RadioButtonGroupInput,
   required,
@@ -143,12 +144,12 @@ export const VoucherCreate = (props: any) => (
               <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: 1 }}>
                   <TradingInputWrapper color="#2e7d32" label="Mức giảm">
-                    <NumberInput source="value" validate={required()} fullWidth label="" />
+                    <NumberInput source="value" min={0} validate={[required(), minValue(0)]} fullWidth label="" />
                   </TradingInputWrapper>
                 </Box>
                 <Box sx={{ flex: 1 }}>
                   <TradingInputWrapper color="#d32f2f" label="Đơn hàng tối thiểu">
-                    <NumberInput source="minOrderAmount" validate={required()} fullWidth label="" />
+                    <NumberInput source="minOrderAmount" min={0} validate={[required(), minValue(0)]} fullWidth label="" />
                   </TradingInputWrapper>
                 </Box>
               </Box>
@@ -181,8 +182,8 @@ export const VoucherCreate = (props: any) => (
             <Box sx={{ flex: 2 }}>
               <TradingInputWrapper color="#607d8b" label="Giới hạn sử dụng">
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                  <NumberInput source="maxUses" defaultValue={100} label="Tổng lượt dùng" sx={{ flex: 1 }} />
-                  <NumberInput source="maxUsesPerUser" defaultValue={1} label="Lượt dùng/Khách" sx={{ flex: 1 }} />
+                  <NumberInput source="maxUses" defaultValue={100} min={0} validate={[minValue(0)]} label="Tổng lượt dùng" sx={{ flex: 1 }} />
+                  <NumberInput source="maxUsesPerUser" defaultValue={1} min={0} validate={[minValue(0)]} label="Lượt dùng/Khách" sx={{ flex: 1 }} />
                 </Box>
               </TradingInputWrapper>
             </Box>

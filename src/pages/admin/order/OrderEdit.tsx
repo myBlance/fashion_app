@@ -13,57 +13,19 @@ import {
   DateField,
   Edit,
   SaveButton,
-  SelectInput,
   SimpleForm,
   TextInput,
   Toolbar,
-  required,
+  useInput,
+  useNotify,
   useRecordContext,
+  useRefresh,
+  useUpdate,
 } from 'react-admin';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { Order } from '../../../types/Order';
-// === Component trạng thái đơn hàng ===
-const CurrentStatus = () => {
-  const record = useRecordContext<Order>();
-  if (!record) return null;
 
-  const statusLabels: Record<string, string> = {
-    pending: 'Chờ xác nhận',
-    awaiting_payment: 'Chờ thanh toán',
-    confirmed: 'Đã xác nhận',
-    paid: 'Đã thanh toán',
-    processing: 'Đang xử lý',
-    shipped: 'Đang giao',
-    delivered: 'Đã giao',
-    cancelled: 'Đã hủy',
-  };
-
-  const statusColors: Record<string, 'default' | 'success' | 'error' | 'warning' | 'info'> = {
-    pending: 'warning',
-    awaiting_payment: 'warning',
-    confirmed: 'info',
-    paid: 'success',
-    processing: 'info',
-    shipped: 'info',
-    delivered: 'success',
-    cancelled: 'error',
-  };
-
-  return (
-    <Box mb={2}>
-      <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 0.5 }}>
-        Trạng thái hiện tại:
-      </Typography>
-      <Chip
-        label={statusLabels[record.status] || 'Không xác định'}
-        color={statusColors[record.status] || 'default'}
-        size="medium"
-        sx={{ fontWeight: 'bold' }}
-      />
-    </Box>
-  );
-};
 
 // === Component thông tin người dùng ===
 const UserInfo = () => {
@@ -218,6 +180,125 @@ const CustomToolbar = (props: any) => (
   </Toolbar>
 );
 
+// === Component Button hành động trạng thái ===
+const OrderStatusActions = () => {
+  const { field } = useInput({ source: 'status' });
+  const record = useRecordContext();
+  const [update, { isLoading }] = useUpdate();
+  const notify = useNotify();
+  const refresh = useRefresh();
+
+  const currentStatus = field.value;
+
+  // Helper to update status immediately
+  const handleUpdateStatus = (newStatus: string) => {
+    if (!record) return;
+
+    update(
+      'orders',
+      { id: record.id, data: { status: newStatus }, previousData: record },
+      {
+        onSuccess: () => {
+          notify('Cập nhật trạng thái thành công', { type: 'success' });
+          refresh(); // Refresh web (reload data)
+          field.onChange(newStatus); // Update form state locally to reflect immediately in UI if refresh lag
+        },
+        onError: (error: any) => {
+          notify(`Lỗi: ${error.message}`, { type: 'error' });
+        }
+      }
+    );
+  };
+
+  const statusLabels: Record<string, string> = {
+    pending: 'Chờ xác nhận',
+    awaiting_payment: 'Chờ thanh toán',
+    confirmed: 'Đã xác nhận',
+    paid: 'Đã thanh toán',
+    shipped: 'Đang giao',
+    delivered: 'Đã giao',
+    cancelled: 'Đã hủy',
+  };
+
+  const statusColors: Record<string, 'default' | 'success' | 'error' | 'warning' | 'info'> = {
+    pending: 'warning',
+    awaiting_payment: 'warning',
+    confirmed: 'info',
+    paid: 'success',
+    shipped: 'info',
+    delivered: 'success',
+    cancelled: 'error',
+  };
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {/* Hiển thị trạng thái hiện tại */}
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Typography variant="body2" color="textSecondary">Trạng thái hiện tại:</Typography>
+        <Chip
+          label={statusLabels[currentStatus] || 'Không xác định'}
+          color={statusColors[currentStatus] || 'default'}
+          size="medium"
+          sx={{ fontWeight: 'bold' }}
+        />
+      </Box>
+
+      {/* Hiển thị các nút hành động */}
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        {(currentStatus === 'pending' || currentStatus === 'paid') && (
+          <>
+            <Typography variant="body2" color="textSecondary">Hành động:</Typography>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => handleUpdateStatus('cancelled')}
+              disabled={isLoading}
+            >
+              Hủy đơn
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => handleUpdateStatus('confirmed')}
+              disabled={isLoading}
+            >
+              Xác nhận
+            </Button>
+          </>
+        )}
+
+        {currentStatus === 'awaiting_payment' && (
+          <>
+            <Typography variant="body2" color="textSecondary">Hành động:</Typography>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => handleUpdateStatus('cancelled')}
+              disabled={isLoading}
+            >
+              Hủy đơn
+            </Button>
+          </>
+        )}
+
+        {currentStatus === 'confirmed' && (
+          <>
+            <Typography variant="body2" color="textSecondary">Hành động:</Typography>
+            <Button
+              variant="contained"
+              color="info"
+              onClick={() => handleUpdateStatus('shipped')}
+              disabled={isLoading}
+            >
+              Đang giao
+            </Button>
+          </>
+        )}
+      </Box>
+    </Box>
+  );
+};
+
 // === OrderEdit ===
 export const OrderEdit = (props: any) => {
   return (
@@ -251,27 +332,8 @@ export const OrderEdit = (props: any) => {
                   <Box sx={{ flex: 1 }}>
                     <TextInput source="id" label="Mã đơn hàng" disabled fullWidth variant="outlined" />
                   </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <SelectInput
-                      source="status"
-                      label="Trạng thái đơn hàng"
-                      choices={[
-                        { id: 'pending', name: 'Chờ xác nhận' },
-                        { id: 'awaiting_payment', name: 'Chờ thanh toán' },
-                        { id: 'confirmed', name: 'Đã xác nhận' },
-                        { id: 'paid', name: 'Đã thanh toán' },
-                        { id: 'processing', name: 'Đang xử lý' },
-                        { id: 'shipped', name: 'Đang giao' },
-                        { id: 'delivered', name: 'Đã giao' },
-                        { id: 'cancelled', name: 'Đã hủy' },
-                      ]}
-                      validate={required()}
-                      fullWidth
-                      variant="outlined"
-                    />
-                  </Box>
-                  <Box sx={{ flex: 1, pt: 1 }}>
-                    <CurrentStatus />
+                  <Box sx={{ flex: 2, pt: 1 }}>
+                    <OrderStatusActions />
                   </Box>
                 </Box>
 

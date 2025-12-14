@@ -19,7 +19,7 @@ export interface Order {
   user: string | { username: string; email: string };
   products: ProductInOrder[];
   totalPrice: number;
-  status: 'pending' | 'awaiting_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: 'pending' | 'awaiting_payment' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
   paymentMethod: string;
   paymentStatus: 'paid' | 'unpaid';
   shippingAddress: {

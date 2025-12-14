@@ -158,7 +158,6 @@ const Dashboard: React.FC = () => {
       pending: 'Chờ xác nhận',
       awaiting_payment: 'Chờ thanh toán',
       paid: 'Đã thanh toán',
-      processing: 'Đang xử lý',
       shipped: 'Đang giao',
       delivered: 'Đã giao',
       cancelled: 'Đã hủy'
@@ -171,7 +170,6 @@ const Dashboard: React.FC = () => {
       pending: 'warning',
       awaiting_payment: 'warning',
       paid: 'success',
-      processing: 'info',
       shipped: 'info',
       delivered: 'success',
       cancelled: 'error'

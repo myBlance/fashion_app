@@ -70,7 +70,7 @@ const OrderHistoryPage: React.FC = () => {
         // Logic suy luận paymentStatus từ status đơn hàng
         if (order.status === 'paid') {
           paymentStatus = 'paid';
-        } else if (order.paymentMethod === 'seepay' && ['processing', 'shipped', 'delivered', 'confirmed'].includes(order.status)) {
+        } else if (order.paymentMethod === 'seepay' && ['shipped', 'delivered', 'confirmed'].includes(order.status)) {
           paymentStatus = 'paid';
         } else if (['cod', 'cash-on-delivery'].includes(order.paymentMethod) && order.status === 'delivered') {
           paymentStatus = 'paid';
@@ -140,9 +140,9 @@ const OrderHistoryPage: React.FC = () => {
   const statusTabs = [
     { value: 'all', label: 'Tất cả' },
     { value: 'pending', label: 'Chờ xác nhận' },
+    { value: 'confirmed', label: 'Đã xác nhận' },
     { value: 'awaiting_payment', label: 'Chờ thanh toán' },
     { value: 'paid', label: 'Đã thanh toán' },
-    { value: 'processing', label: 'Đang xử lý' },
     { value: 'shipped', label: 'Đang giao' },
     { value: 'delivered', label: 'Đã giao' },
     { value: 'cancelled', label: 'Đã hủy' },

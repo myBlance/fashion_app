@@ -26,7 +26,6 @@ export const orderFilters = [
             { id: 'confirmed', name: 'Đã xác nhận' },
             { id: 'awaiting_payment', name: 'Chờ thanh toán' },
             { id: 'paid', name: 'Đã thanh toán' },
-            { id: 'processing', name: 'Đang xử lý' },
             { id: 'shipped', name: 'Đang giao' },
             { id: 'delivered', name: 'Đã giao' },
             { id: 'cancelled', name: 'Đã hủy' },

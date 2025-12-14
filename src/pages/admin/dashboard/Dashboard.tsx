@@ -157,6 +157,7 @@ const Dashboard: React.FC = () => {
     const labels: { [key: string]: string } = {
       pending: 'Chờ xác nhận',
       awaiting_payment: 'Chờ thanh toán',
+      confirmed: 'Đã xác nhận',
       paid: 'Đã thanh toán',
       shipped: 'Đang giao',
       delivered: 'Đã giao',

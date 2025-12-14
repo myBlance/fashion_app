@@ -27,7 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminRowActions from '../../../components/Admin/AdminRowActions';
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
-import { typeOptions } from '../../../constants/filterOptions';
+import { styleChoices, typeOptions } from '../../../constants/filterOptions';
 import { productFilters } from './ProductFilter';
 
 // 🔹 Base type cho custom field — dùng chung
@@ -125,6 +125,55 @@ const SizeField = ({ source, cellClassName }: CustomFieldProps) => {
             ))}
         </Box>
     ) : null;
+};
+
+// 🔹 StyleField — ✅ Handle mixed types (JSON string, Array, CSV)
+const StyleField = ({ source, cellClassName }: CustomFieldProps) => {
+    const record = useRecordContext();
+    if (!record || !record[source]) return null;
+
+    let styles: string[] = [];
+    const rawValue = record[source];
+
+    try {
+        if (Array.isArray(rawValue)) {
+            styles = rawValue;
+        } else if (typeof rawValue === 'string') {
+            // Check if it looks like a JSON array
+            if (rawValue.trim().startsWith('[') && rawValue.trim().endsWith(']')) {
+                const parsed = JSON.parse(rawValue);
+                if (Array.isArray(parsed)) {
+                    styles = parsed;
+                } else {
+                    styles = [String(parsed)];
+                }
+            } else {
+                // Assume it's a comma-separated string
+                styles = rawValue.split(',').map(s => s.trim()).filter(Boolean);
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to parse style field:', rawValue);
+        styles = [String(rawValue)];
+    }
+
+    return (
+        <Box
+            className={cellClassName}
+            display="flex"
+            gap={0.5}
+            flexWrap="wrap"
+            maxWidth={200}
+        >
+            {styles.map((style: string, index: number) => {
+                // Try to map ID to name if possible, otherwise use value
+                const label = styleChoices.find(c => c.id === style)?.name || style;
+                return (
+                    <Chip key={index} label={label} size="small" variant="outlined" />
+                );
+            })}
+        </Box>
+    );
 };
 
 const DescriptionField = ({ source, cellClassName }: CustomFieldProps) => {
@@ -399,7 +448,7 @@ export const ProductList = () => {
                         <ThumbnailField source="thumbnail" label="Ảnh" cellClassName="text-left-cell" />
                         <TextField source="name" label="Tên sản phẩm" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
                         <TextField source="brand" label="Thương hiệu" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
-                        <TextField source="style" label="Phong cách" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
+                        <StyleField source="style" label="Phong cách" cellClassName="text-left-cell" sortable={true} />
                         <DescriptionField source="description" label="Mô tả" cellClassName="text-left-cell" sortable={true} />
                         <DetailsField source="details" label="Chi tiết" cellClassName="text-left-cell" sortable={true} />
                         <FunctionField

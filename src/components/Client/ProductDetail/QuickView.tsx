@@ -21,7 +21,7 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
   const { showToast } = useToast();
 
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
   const { userId: authUserId } = useAuth();
@@ -30,7 +30,7 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
   useEffect(() => {
     if (product) {
       setSelectedImage(0);
-      setSelectedColor(product.colors[0] || '');
+      setSelectedColorIndex(0);
       setSelectedSize(product.sizes[0] || '');
       setQuantity(1);
     }
@@ -49,24 +49,63 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
 
   if (!product) return null;
 
+  // Get current stock based on selected variant
+  const getCurrentStock = () => {
+    const selectedColor = product.colors[selectedColorIndex];
+    if (product.variants && product.variants.length > 0) {
+      const currentVariant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
+      return currentVariant ? currentVariant.quantity : 0;
+    }
+    return product.total || 0;
+  };
+
+  const currentStock = getCurrentStock();
+  const isAvailable = currentStock > 0 && product.status === 'selling';
+
   const handleQuantityChange = (delta: number) => {
-    setQuantity((prev) => Math.max(1, prev + delta));
+    setQuantity((prev) => {
+      const newQty = prev + delta;
+      if (newQty < 1) return 1;
+      if (newQty > currentStock) {
+        showToast("Số lượng vượt quá tồn kho!", "warning");
+        return prev;
+      }
+      return newQty;
+    });
+  };
+
+  const handleColorSelect = (index: number) => {
+    setSelectedColorIndex(index);
+    // Update image to match selected color
+    if (product.images[index]) {
+      setSelectedImage(index);
+    }
+    // Reset quantity when color changes
+    setQuantity(1);
+  };
+
+  const handleSizeSelect = (size: string) => {
+    setSelectedSize(size);
+    // Reset quantity when size changes
+    setQuantity(1);
   };
 
   const handleAddToCart = async () => {
     if (!product) return;
 
-    const colorIndex = product.colors.indexOf(selectedColor);
-    const actualColorIndex = colorIndex >= 0 ? colorIndex : 0;
+    if (!isAvailable) {
+      showToast("Sản phẩm đã hết hàng!", "error");
+      return;
+    }
 
     const newItem: Omit<CartItem, "id"> = {
       productId: product.id,
       name: product.name,
-      color: product.colors[actualColorIndex] || "Chưa chọn",
+      color: product.colors[selectedColorIndex] || "Chưa chọn",
       size: selectedSize,
       price: product.price,
       quantity,
-      image: product.images[actualColorIndex] || product.thumbnail || "",
+      image: product.images[selectedColorIndex] || product.thumbnail || "",
     };
 
     try {
@@ -82,7 +121,7 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
       }
       showToast("Đã thêm vào giỏ!", "success");
       if (onAddToCart) {
-        onAddToCart(product.colors[actualColorIndex], selectedSize, quantity);
+        onAddToCart(product.colors[selectedColorIndex], selectedSize, quantity);
       }
     } catch (err) {
       console.error("Lỗi khi thêm vào giỏ:", err);
@@ -112,7 +151,7 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
         <div className="quickview-content">
           {/* Main Image */}
           <img
-            src={product.images[selectedImage]}
+            src={product.images[selectedImage] || product.thumbnail}
             alt={product.name}
             className="quickview-main-image"
           />
@@ -135,8 +174,8 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
 
           <div className="quickview-status">
             Tình trạng:
-            <span className={`quickview-status-value ${product.status ? 'available' : 'unavailable'}`}>
-              {product.status ? 'Còn hàng' : 'Hết hàng'}
+            <span className={`quickview-status-value ${isAvailable ? 'available' : 'unavailable'}`}>
+              {isAvailable ? `Còn hàng (${currentStock})` : 'Hết hàng'}
             </span>
           </div>
 
@@ -145,23 +184,31 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
             <span className="quickview-price">
               {product.price.toLocaleString()}đ
             </span>
-            <span className="quickview-original-price">
-              {product.originalPrice.toLocaleString()}đ
-            </span>
+            {product.originalPrice > product.price && (
+              <span className="quickview-original-price">
+                {product.originalPrice.toLocaleString()}đ
+              </span>
+            )}
           </div>
 
           {/* Color selection */}
           <div className="quickview-option-section">
-            <label className="quickview-option-label">Màu sắc:</label>
+            <label className="quickview-option-label">
+              Màu sắc: <strong>{product.colors[selectedColorIndex]}</strong>
+            </label>
             <div className="quickview-color-options">
-              {product.colors.map((color) => (
-                <button
+              {product.colors.map((color, index) => (
+                <div
                   key={color}
-                  className={`quickview-color-btn ${selectedColor === color ? 'selected' : ''}`}
-                  onClick={() => setSelectedColor(color)}
+                  className={`quickview-color-circle-wrapper ${selectedColorIndex === index ? 'selected' : ''}`}
+                  onClick={() => handleColorSelect(index)}
+                  title={color}
                 >
-                  {color}
-                </button>
+                  <div
+                    className="quickview-color-circle"
+                    style={{ backgroundColor: color }}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -170,15 +217,22 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
           <div className="quickview-option-section">
             <label className="quickview-option-label">Size:</label>
             <div className="quickview-size-options">
-              {product.sizes.map((size) => (
-                <button
-                  key={size}
-                  className={`quickview-size-btn ${selectedSize === size ? 'selected' : ''}`}
-                  onClick={() => setSelectedSize(size)}
-                >
-                  {size}
-                </button>
-              ))}
+              {product.sizes.map((size) => {
+                // Check if this size is available for selected color
+                const variant = product.variants?.find(v => v.color === product.colors[selectedColorIndex] && v.size === size);
+                const sizeAvailable = variant ? variant.quantity > 0 : true;
+
+                return (
+                  <button
+                    key={size}
+                    className={`quickview-size-btn ${selectedSize === size ? 'selected' : ''} ${!sizeAvailable ? 'disabled' : ''}`}
+                    onClick={() => sizeAvailable && handleSizeSelect(size)}
+                    disabled={!sizeAvailable}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -189,6 +243,7 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
               <button
                 className="quickview-quantity-btn"
                 onClick={() => handleQuantityChange(-1)}
+                disabled={quantity <= 1}
               >
                 -
               </button>
@@ -198,6 +253,7 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
               <button
                 className="quickview-quantity-btn"
                 onClick={() => handleQuantityChange(1)}
+                disabled={quantity >= currentStock}
               >
                 +
               </button>
@@ -208,9 +264,9 @@ const QuickView: React.FC<QuickViewProps> = ({ open, onClose, product, onAddToCa
           <button
             className="quickview-add-to-cart"
             onClick={handleAddToCart}
-            disabled={!product.status}
+            disabled={!isAvailable}
           >
-            THÊM VÀO GIỎ HÀNG
+            {isAvailable ? 'THÊM VÀO GIỎ HÀNG' : 'HẾT HÀNG'}
           </button>
         </div>
       </div>

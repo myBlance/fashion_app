@@ -17,6 +17,9 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Review } from '../../../types/Review';
+import { getColorLabel } from '../../../utils/colorHelper';
+
+
 
 // Component hiển thị hình ảnh/video
 const ReviewMedia = ({ media }: { media: string[] }) => {
@@ -245,7 +248,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
                 </Typography>
                 <Rating value={review.rating} readOnly size="small" sx={{ fontSize: '14px', my: 0.5, display: 'flex' }} />
                 <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                  {new Date(review.createdAt).toLocaleString('vi-VN')} | Phân loại: {review.productId}
+                  {new Date(review.createdAt).toLocaleString('vi-VN')}
+                  {(review.selectedColor || review.selectedSize) && (
+                    <> | Phân loại: {review.selectedColor ? getColorLabel(review.selectedColor) : ''} {review.selectedSize ? `, Size ${review.selectedSize}` : ''}</>
+                  )}
                 </Typography>
 
                 <Typography variant="body2" sx={{ mt: 1, color: '#333', lineHeight: 1.6, textAlign: 'justify' }}>

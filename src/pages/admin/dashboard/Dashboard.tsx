@@ -67,6 +67,37 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
   </Paper>
 );
 
+// Helper for Dashboard Images
+const getDashboardImageUrl = (raw: any) => {
+  if (!raw) return '/no-image.png';
+
+  let url = raw;
+
+  // 1. Handle Object
+  if (typeof url === 'object') {
+    url = url.path || url.url || '';
+  }
+
+  // 2. Handle Array
+  if (Array.isArray(url)) {
+    url = url.length > 0 ? url[0] : '';
+  }
+
+  if (typeof url !== 'string' || !url) return '/no-image.png';
+
+  // 3. Absolute URL
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  // 4. Normalize
+  url = url.replace(/\\/g, '/');
+  url = url.replace(/^(\/|uploads\/)+/, '');
+
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || '';
+  return `${baseUrl}/uploads/${url}`;
+};
+
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -372,7 +403,7 @@ const Dashboard: React.FC = () => {
                       <TableRow key={product.productId}>
                         <TableCell>
                           <Box display="flex" alignItems="center" gap={1}>
-                            <img src={product.image} alt={product.name} className="table-product-image" style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40 }} />
+                            <img src={getDashboardImageUrl(product.image)} alt={product.name} className="table-product-image" style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40 }} />
                             <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{product.name}</Typography>
                           </Box>
                         </TableCell>
@@ -405,7 +436,7 @@ const Dashboard: React.FC = () => {
                         <TableCell>
                           <Box display="flex" alignItems="center" gap={1}>
                             <img
-                              src={product.image}
+                              src={getDashboardImageUrl(product.image)}
                               alt={product.name}
                               className="table-product-image"
                               style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40 }}

@@ -16,4 +16,6 @@ export interface Review {
   createdAt: string;
   updatedAt: string;
   likes: number;
+  selectedColor?: string;
+  selectedSize?: string;
 }

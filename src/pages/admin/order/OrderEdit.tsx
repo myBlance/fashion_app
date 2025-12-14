@@ -25,6 +25,7 @@ import {
 import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { Order } from '../../../types/Order';
+import { getColorHex, getColorLabel } from '../../../utils/colorHelper';
 
 
 // === Component thông tin người dùng ===
@@ -79,6 +80,37 @@ const ShippingAddress = () => {
 
 
 
+// === Helper function to get image URL ===
+const getProductImageUrl = (raw: any) => {
+  if (!raw) return '/no-image.png';
+
+  let url = raw;
+
+  // 1. Handle Object
+  if (typeof url === 'object') {
+    url = url.path || url.url || '';
+  }
+
+  // 2. Handle Array
+  if (Array.isArray(url)) {
+    url = url.length > 0 ? url[0] : '';
+  }
+
+  if (typeof url !== 'string' || !url) return '/no-image.png';
+
+  // 3. Absolute URL
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  // 4. Normalize
+  url = url.replace(/\\/g, '/');
+  url = url.replace(/^(\/|uploads\/)+/, '');
+
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || '';
+  return `${baseUrl}/uploads/${url}`;
+};
+
 // === Component danh sách sản phẩm ===
 const ProductList = () => {
   const record = useRecordContext<Order>();
@@ -107,11 +139,17 @@ const ProductList = () => {
                 }}
               >
                 <Avatar
-                  src={p.product?.image}
+                  src={getProductImageUrl(p.product?.thumbnail || p.product?.image)}
                   alt={p.product?.name}
                   variant="rounded"
-                  sx={{ width: 64, height: 64, border: '1px solid #ddd' }}
-                />
+                  sx={{ width: 64, height: 64, border: '1px solid #ddd', bgcolor: '#fff' }}
+                >
+                  <Box
+                    component="img"
+                    src="/no-image.png"
+                    sx={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.5 }}
+                  />
+                </Avatar>
                 <Box sx={{ flexGrow: 1 }}>
                   <Typography variant="subtitle1" fontWeight={600}>
                     {p.product?.name}
@@ -121,7 +159,24 @@ const ProductList = () => {
                   </Typography>
                   {(p.selectedColor || p.selectedSize) && (
                     <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
-                      <Chip label={`Màu: ${p.selectedColor || 'N/A'}`} size="small" sx={{ mr: 1, height: 24 }} />
+                      {p.selectedColor && (
+                        <Chip
+                          avatar={
+                            <Box
+                              sx={{
+                                bgcolor: getColorHex(p.selectedColor),
+                                width: 16,
+                                height: 16,
+                                borderRadius: '50%',
+                                border: '1px solid rgba(0,0,0,0.1)'
+                              }}
+                            />
+                          }
+                          label={`Màu: ${getColorLabel(p.selectedColor)}`}
+                          size="small"
+                          sx={{ mr: 1, height: 24, fontSize: '0.75rem', pl: 0.5 }}
+                        />
+                      )}
                       <Chip label={`Size: ${p.selectedSize || 'N/A'}`} size="small" sx={{ height: 24 }} />
                     </Typography>
                   )}

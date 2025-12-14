@@ -17,22 +17,7 @@ import {
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-interface Product {
-  _id?: string;
-  id?: string;
-  code?: string;
-  name: string;
-  image?: string;
-  price: number;
-}
-
-interface ProductInOrder {
-  product: Product | null;
-  quantity: number;
-  selectedColor?: string;
-  selectedSize?: string;
-  productId: string;
-}
+import { ProductInOrder } from '../../../types/Order';
 
 interface ProductRatingProps {
   item: ProductInOrder;
@@ -40,6 +25,40 @@ interface ProductRatingProps {
   productId: string;
   onReviewSubmitted?: () => void;
 }
+
+// Helper for Image URL (Aggressive Normalization)
+const getProductImageUrl = (raw: any) => {
+  if (!raw) return '/no-image.png';
+
+  let url = raw;
+
+  // 1. Handle Object
+  if (typeof url === 'object') {
+    url = url.path || url.url || '';
+  }
+
+  // 2. Handle Array (take first)
+  if (Array.isArray(url)) {
+    url = url.length > 0 ? url[0] : '';
+  }
+
+  if (typeof url !== 'string' || !url) return '/no-image.png';
+
+  // 3. Check for absolute URL
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  // 4. Normalize slashes
+  url = url.replace(/\\/g, '/');
+
+  // 5. Remove leading slashes and 'uploads/' prefix
+  url = url.replace(/^(\/|uploads\/)+/, '');
+
+  // 6. Construct full URL
+  const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || '';
+  return `${baseUrl}/uploads/${url}`;
+};
 
 export const ProductRating: React.FC<ProductRatingProps> = ({ item, orderId, productId, onReviewSubmitted }) => {
   const [open, setOpen] = useState(false); // Modal state
@@ -105,6 +124,8 @@ export const ProductRating: React.FC<ProductRatingProps> = ({ item, orderId, pro
     formData.append('productId', productId);
     formData.append('rating', rating.toString());
     formData.append('comment', comment);
+    if (item.selectedColor) formData.append('selectedColor', item.selectedColor);
+    if (item.selectedSize) formData.append('selectedSize', item.selectedSize);
     images.forEach(img => formData.append('images', img));
 
     try {
@@ -170,7 +191,11 @@ export const ProductRating: React.FC<ProductRatingProps> = ({ item, orderId, pro
         <DialogContent sx={{ pt: 3 }}>
           {product && (
             <Stack direction="row" spacing={2} mb={3} alignItems="center">
-              <img src={product.image} alt={product.name} style={{ width: 60, height: 60, borderRadius: 8, objectFit: 'cover' }} />
+              <img
+                src={getProductImageUrl(product.thumbnail || product.image)}
+                alt={product.name}
+                style={{ width: 60, height: 60, borderRadius: 8, objectFit: 'cover' }}
+              />
               <Box>
                 <Typography variant="subtitle1" fontWeight="600">{product.name}</Typography>
                 <Typography variant="body2" color="text.secondary">Vui lòng chia sẻ trải nghiệm của bạn</Typography>

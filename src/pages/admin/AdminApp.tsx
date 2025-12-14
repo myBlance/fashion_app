@@ -1,3 +1,4 @@
+import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import { Admin, CustomRoutes, Resource } from 'react-admin';
@@ -14,6 +15,8 @@ import { ProductEdit } from './product/ProductEdit';
 import { ProductList } from './product/ProductList';
 import { ReviewList } from './review/ReviewList';
 import { ReviewShow } from './review/ReviewShow';
+import { UserEdit } from './user/UserEdit';
+import { UserList } from './user/UserList';
 import { VoucherCreate } from './voucher/VoucherCreate';
 import { VoucherEdit } from './voucher/VoucherEdit';
 import { VoucherList } from './voucher/VoucherList';
@@ -53,6 +56,12 @@ const AdminApp = () => (
             name="reviews"
             list={ReviewList}
             show={ReviewShow}
+        />
+        <Resource
+            name="users"
+            list={UserList}
+            edit={UserEdit}
+            icon={PersonIcon}
         />
 
         <CustomRoutes>

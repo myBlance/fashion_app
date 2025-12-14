@@ -2,7 +2,8 @@ import {
   AttachMoney,
   Inventory,
   People,
-  ShoppingCart
+  ShoppingCart,
+  TrendingUp
 } from '@mui/icons-material';
 import {
   Box,
@@ -29,12 +30,14 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 
 interface DashboardStats {
   totalRevenue: number;
+  totalProfit: number; // Added profit
   totalOrders: number;
   totalProducts: number;
   totalUsers: number;
   ordersByStatus: { [key: string]: number };
-  revenueByDate: Array<{ _id: string; revenue: number; orders: number }>;
+  revenueByDate: Array<{ _id: string; revenue: number; profit: number; orders: number }>; // Added profit
   topProducts: Array<{ productId: string; name: string; image: string; soldQuantity: number }>;
+
   recentOrders: Array<{
     id: string;
     customerName: string;
@@ -126,6 +129,7 @@ const Dashboard: React.FC = () => {
   const revenueChartData = stats.revenueByDate.map(item => ({
     date: new Date(item._id).toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' }),
     revenue: item.revenue,
+    profit: item.profit,
     orders: item.orders
   }));
 
@@ -152,6 +156,14 @@ const Dashboard: React.FC = () => {
               value={formatCurrency(stats.totalRevenue)}
               icon={<AttachMoney sx={{ fontSize: 40 }} />}
               color="#4caf50"
+            />
+          </Box>
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
+            <StatCard
+              title="Tổng lợi nhuận"
+              value={formatCurrency(stats.totalProfit)}
+              icon={<TrendingUp sx={{ fontSize: 40 }} />}
+              color="#ff9800"
             />
           </Box>
           <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
@@ -185,7 +197,7 @@ const Dashboard: React.FC = () => {
           {/* Revenue Chart */}
           <Box flex="2" minWidth={{ xs: '100%', md: '300px' }}>
             <Paper elevation={2} className="chart-paper">
-              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Doanh thu 7 ngày qua</Typography>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Doanh thu & Lợi nhuận 7 ngày qua</Typography>
               <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <LineChart data={revenueChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -194,6 +206,7 @@ const Dashboard: React.FC = () => {
                   <Tooltip formatter={(value: any) => formatCurrency(value)} />
                   {!isMobile && <Legend />}
                   <Line type="monotone" dataKey="revenue" stroke="#4caf50" strokeWidth={2} name="Doanh thu" />
+                  <Line type="monotone" dataKey="profit" stroke="#ff9800" strokeWidth={2} name="Lợi nhuận" />
                 </LineChart>
               </ResponsiveContainer>
             </Paper>

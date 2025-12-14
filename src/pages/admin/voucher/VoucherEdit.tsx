@@ -52,11 +52,11 @@ export const VoucherEdit = (props: any) => (
       boxShadow: 'none',
     }}
   >
-    <Box sx={{ padding: 2 }}>
-      <CustomAppBar />
-      <CustomBreadcrumbs />
-    </Box>
     <Edit {...props} sx={{ '& .RaEdit-card': { boxShadow: 'none' } }}>
+      <Box sx={{ padding: 2 }}>
+        <CustomAppBar />
+        <CustomBreadcrumbs />
+      </Box>
       <SimpleForm sx={{ maxWidth: '900px', margin: '0 auto', pb: 5 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%' }}>
 

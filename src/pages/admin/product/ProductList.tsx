@@ -36,6 +36,7 @@ interface CustomFieldProps {
     label?: string;          // bắt buộc để DatagridConfigurable đọc header
     cellClassName?: string;  // để style cell
     headerClassName?: string; // nếu cần style header riêng
+    sortable?: boolean;
 }
 
 const ThumbnailField = ({ source, cellClassName }: CustomFieldProps) => {
@@ -48,7 +49,7 @@ const ThumbnailField = ({ source, cellClassName }: CustomFieldProps) => {
                 src="/no-image.png"
                 alt="No image"
                 className={cellClassName}
-                sx={{ width: 48, height: 48 }}
+                sx={{ width: 80, height: 80 }}
             />
         );
     }
@@ -70,9 +71,9 @@ const ThumbnailField = ({ source, cellClassName }: CustomFieldProps) => {
             alt={record?.name || 'Thumbnail'}
             className={cellClassName}
             sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '10%',
+                width: 80,
+                height: 80,
+                borderRadius: '8%',
                 border: '1px solid #ddd',
                 backgroundColor: '#f5f5f5',
                 objectFit: 'cover',
@@ -320,6 +321,34 @@ export const ProductList = () => {
                                 textAlign: 'center',
                                 verticalAlign: 'middle',
                             },
+                            // Force sort icons to be visible
+                            // 🔹 FORCE SHOW SORT ICON ALWAYS
+                            // 🔹 FORCE SHOW SORT ICON ALWAYS
+                            '& .MuiTableSortLabel-icon': {
+                                opacity: '1 !important',
+                                visibility: 'visible !important',
+                                display: 'block !important',
+                                color: 'rgba(100, 100, 100, 0.6) !important', // Neutral gray
+                                transition: 'transform 0.2s ease-in-out',
+                                marginLeft: '4px !important',
+                                marginRight: '0 !important',
+                            },
+                            // 🔹 Ensure arrow is always on the right
+                            '& .MuiButtonBase-root.MuiTableSortLabel-root': {
+                                flexDirection: 'row !important',
+                            },
+                            // 🔹 Fix direction for inactive headers (always point down)
+                            '& .MuiTableSortLabel-root:not(.Mui-active) .MuiTableSortLabel-icon': {
+                                transform: 'rotate(0deg) !important',
+                            },
+                            '& .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                                color: ({ palette }) =>
+                                    palette.mode === 'light' ? 'rgba(0, 0, 0, 0.87) !important' : '#ffffff !important',
+                            },
+                            // Dark mode adjustments
+                            '& .MuiTableSortLabel-root': {
+                                color: 'inherit',
+                            },
                             '& .RaDatagrid-rowCell': {
                                 py: 2,
                                 textAlign: 'center',
@@ -369,35 +398,39 @@ export const ProductList = () => {
                             },
                         })}
                     >
-                        <TextField source="id" label="Mã sản phẩm" />
+                        <TextField source="id" label="Mã sản phẩm" sortable={true} />
                         <ThumbnailField source="thumbnail" label="Ảnh" cellClassName="text-left-cell" />
-                        <TextField source="name" label="Tên sản phẩm" sx={{ whiteSpace: 'nowrap' }} />
-                        <TextField source="brand" label="Thương hiệu" sx={{ whiteSpace: 'nowrap' }} />
-                        <TextField source="style" label="Phong cách" sx={{ whiteSpace: 'nowrap' }} />
-                        <DescriptionField source="description" label="Mô tả" cellClassName="text-left-cell" />
-                        <DetailsField source="details" label="Chi tiết" cellClassName="text-left-cell" />
+                        <TextField source="name" label="Tên sản phẩm" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
+                        <TextField source="brand" label="Thương hiệu" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
+                        <TextField source="style" label="Phong cách" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
+                        <DescriptionField source="description" label="Mô tả" cellClassName="text-left-cell" sortable={true} />
+                        <DetailsField source="details" label="Chi tiết" cellClassName="text-left-cell" sortable={true} />
                         <FunctionField
                             label="Danh mục"
+                            sortBy="type"
                             render={(record: any) => {
                                 const found = typeOptions.find((choice) => choice.value === record.type);
                                 return found ? found.label : record.type;
                             }}
                         />
-                        <ColorField source="colors" label="Màu" cellClassName="text-left-cell" />
-                        <SizeField source="sizes" label="Size" cellClassName="text-left-cell" />
+                        <ColorField source="colors" label="Màu" cellClassName="text-left-cell" sortable={true} />
+                        <SizeField source="sizes" label="Size" cellClassName="text-left-cell" sortable={true} />
                         <NumberField
                             source="price"
                             label="Giá bán"
                             options={{ style: 'currency', currency: 'VND' }}
                             sx={{ fontWeight: 'bold' }}
+                            sortable={true}
                         />
                         <NumberField
                             source="originalPrice"
                             label="Giá gốc"
                             options={{ style: 'currency', currency: 'VND' }}
+                            sortable={true}
                         />
                         <FunctionField
                             label="Giảm giá"
+                            sortBy="price"
                             render={(record: any) =>
                                 record.originalPrice && record.price
                                     ? `${Math.round(((record.originalPrice - record.price) / record.originalPrice) * 100)}%`
@@ -405,15 +438,17 @@ export const ProductList = () => {
                             }
                             sx={{ color: 'error.main', fontWeight: 'bold' }}
                         />
-                        <NumberField source="sold" label="Đã bán" />
+                        <NumberField source="sold" label="Đã bán" sortable={true} />
                         <FunctionField
                             label="Tồn kho"
-                            render={(record) => (record?.total || 0) - (record?.sold || 0)}
+                            sortBy="total"
+                            render={(record: any) => (record?.total || 0) - (record?.sold || 0)}
                         />
-                        <FunctionField label="Tổng số lượng" render={(record) => record?.total || 0} />
+                        <FunctionField label="Tổng số lượng" sortBy="total" render={(record: any) => record?.total || 0} />
                         <FunctionField
                             label="Trạng thái"
-                            render={(record) => {
+                            sortBy="status"
+                            render={(record: any) => {
                                 const total = record?.total || 0;
                                 const sold = record?.sold || 0;
                                 const remaining = total - sold;
@@ -449,7 +484,7 @@ export const ProductList = () => {
                                 );
                             }}
                         />
-                        <DateField source="createdAt" label="Ngày tạo" sx={{ whiteSpace: 'nowrap' }} />
+                        <DateField source="createdAt" label="Ngày tạo" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
                         <FunctionField
                             label="Hành động"
                             cellClassName="sticky-actions"

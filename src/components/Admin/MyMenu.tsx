@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout } from 'react-admin';
 
-import { Loyalty, MoreVert, Reviews, ShoppingCart, Store } from '@mui/icons-material';
+import { Loyalty, MoreVert, Person, Reviews, ShoppingCart, Store } from '@mui/icons-material';
 import {
     Avatar,
     Box,
@@ -107,26 +107,32 @@ const MyMenu: React.FC<MenuProps> = (props) => (
                 <Menu.DashboardItem className="my-menu-item" />
                 <Menu.Item
                     to="/admin/orders"
-                    primaryText="Order"
+                    primaryText="Orders"
                     leftIcon={<ShoppingCart />}
                     className="my-menu-item"
                 />
                 <Menu.Item
                     to="/admin/products"
-                    primaryText="Product"
+                    primaryText="Products"
                     leftIcon={<Store />}
                     className="my-menu-item"
                 />
                 <Menu.Item
                     to="/admin/vouchers"
-                    primaryText="Voucher"
+                    primaryText="Vouchers"
                     leftIcon={<Loyalty />}
                     className="my-menu-item"
                 />
                 <Menu.Item
                     to="/admin/reviews"
-                    primaryText="Review"
+                    primaryText="Reviews"
                     leftIcon={<Reviews />}
+                    className="my-menu-item"
+                />
+                <Menu.Item
+                    to="/admin/users"
+                    primaryText="Users"
+                    leftIcon={<Person />}
                     className="my-menu-item"
                 />
                 {/* Thêm mục menu khác tại đây */}

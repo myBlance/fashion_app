@@ -2,6 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import EditCartItemDialog from '../../components/Client/Cart/EditCartItemDialog';
 import PageHeader from '../../components/Client/Common/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
@@ -44,7 +45,15 @@ const CartPage: React.FC = () => {
   }, [userId, dispatch]);
 
   const handleIncrease = async (item: CartItem) => {
-    const newQuantity = (item.quantity ?? 1) + 1;
+    const currentQty = item.quantity ?? 1;
+    const maxStock = item.stock ?? 9999;
+
+    if (currentQty >= maxStock) {
+      showToast(`Chỉ còn ${maxStock} sản phẩm trong kho!`, 'warning');
+      return;
+    }
+
+    const newQuantity = currentQty + 1;
     dispatch(increaseQuantity({ productId: item.productId, color: item.color, size: item.size }));
 
     // Only sync to backend if user is logged in
@@ -98,6 +107,29 @@ const CartPage: React.FC = () => {
   const handleCloseDialog = () => {
     setOpenDeleteDialog(false);
     setItemToDelete(null);
+  };
+
+  // Edit Variant Logic
+  const [editingItem, setEditingItem] = useState<CartItem | null>(null);
+
+  const handleUpdateVariant = async (oldColor: string, oldSize: string, newColor: string, newSize: string) => {
+    if (!userId || !editingItem) return;
+
+    try {
+      const updatedCart = await CartService.updateVariant(
+        userId,
+        editingItem.productId,
+        oldColor,
+        oldSize,
+        newColor,
+        newSize
+      );
+      dispatch(setCartItems(updatedCart));
+      showToast('Cập nhật phân loại thành công', 'success');
+    } catch (error) {
+      console.error(error);
+      showToast('Lỗi khi cập nhật phân loại', 'error');
+    }
   };
 
   const handleCheckout = () => {
@@ -202,6 +234,21 @@ const CartPage: React.FC = () => {
                             <div className="product-variant">
                               <span>Màu: {item.color}</span>
                               <span>Size: {item.size}</span>
+                              {item.stock !== undefined && (
+                                <span style={{ fontSize: '12px', color: '#666', marginLeft: '8px' }}>
+                                  (Kho: {item.stock})
+                                </span>
+                              )}
+                              <button
+                                className="edit-variant-btn"
+                                style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer', color: '#007bff' }}
+                                onClick={() => {
+                                  setEditingItem(item);
+                                }}
+                                title="Đổi màu/size"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -215,7 +262,11 @@ const CartPage: React.FC = () => {
                         <div className="quantity-box">
                           <button onClick={() => handleDecrease(item)} disabled={(item.quantity ?? 1) <= 1}>-</button>
                           <input type="text" readOnly value={item.quantity ?? 1} />
-                          <button onClick={() => handleIncrease(item)}>+</button>
+                          <button
+                            onClick={() => handleIncrease(item)}
+                            disabled={(item.quantity ?? 1) >= (item.stock ?? 9999)}
+                            style={{ opacity: (item.quantity ?? 1) >= (item.stock ?? 9999) ? 0.5 : 1 }}
+                          >+</button>
                         </div>
                       </td>
 
@@ -280,6 +331,13 @@ const CartPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <EditCartItemDialog
+        open={!!editingItem}
+        item={editingItem}
+        onClose={() => setEditingItem(null)}
+        onSave={handleUpdateVariant}
+      />
     </div>
   );
 };

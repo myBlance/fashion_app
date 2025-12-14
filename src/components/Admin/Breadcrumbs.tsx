@@ -1,21 +1,21 @@
-import React from "react";
+import { Refresh as RefreshIcon } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import CachedIcon from '@mui/icons-material/Cached';
+import DownloadIcon from "@mui/icons-material/Download";
+import HomeIcon from "@mui/icons-material/Home";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import {
+    Box,
+    BoxProps,
     Breadcrumbs,
+    Button,
+    IconButton,
     Link,
     Typography,
-    Box,
-    IconButton,
-    Button,
-    BoxProps,
 } from "@mui/material";
-import { Refresh as RefreshIcon } from "@mui/icons-material";
-import HomeIcon from "@mui/icons-material/Home";
-import AddIcon from "@mui/icons-material/Add";
-import DownloadIcon from "@mui/icons-material/Download";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { SelectColumnsButton, useRefresh, useTranslate } from "react-admin";
-import CachedIcon from '@mui/icons-material/Cached';
-import { useLocation, Link as RouterLink } from "react-router-dom";
+import React from "react";
+import { SelectColumnsButton, useRecordContext, useRefresh, useTranslate } from "react-admin";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 interface CustomBreadcrumbsProps {
     onCreate?: () => void;
@@ -32,6 +32,14 @@ const breadcrumbNameMap: Record<string, string> = {
     "/products/create": "Create",
     "/products/edit": "Edit",
     "/users": "Users",
+    "/vouchers": "Vouchers",
+    "/vouchers/create": "Create",
+    "/vouchers/edit": "Edit",
+    "/reviews": "Reviews",
+    "/reviews/create": "Create",
+    "/reviews/edit": "Edit",
+    "/reviews/show": "Show",
+    "/order-history": "Order History",
 };
 
 const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExport, onRefresh }) => {
@@ -46,8 +54,17 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
     const buildFullPath = (index: number) => `/${pathnames.slice(0, index + 1).join("/")}`;
 
     const lastPath = buildFullPath(pathnames.length - 1);
-    const pageTitleKey = breadcrumbNameMap[lastPath] || pathnames[pathnames.length - 1];
-    const pageTitle = translate(pageTitleKey);
+    const lastSegment = pathnames[pathnames.length - 1];
+    const labelKey = breadcrumbNameMap[lastPath];
+    const commonLabels: Record<string, string> = { show: "Show", edit: "Edit", create: "Create" };
+
+    // Try to resolve name from record context for Page Title
+    const record = useRecordContext();
+    let pageTitle = labelKey ? translate(labelKey) : (commonLabels[lastSegment] || lastSegment);
+
+    if (record && record.id && String(record.id) === lastSegment) {
+        pageTitle = record.username || record.name || record.title || record.code || lastSegment;
+    }
 
     return (
         <Box sx={{ padding: "16px" }}>
@@ -67,8 +84,8 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                             variant="contained"
                             startIcon={<CachedIcon />}
                             onClick={onRefresh}
-                            sx={{ 
-                                marginRight: 1, marginLeft: 1, backgroundColor: "#1c79dc", color: "#fff" ,
+                            sx={{
+                                marginRight: 1, marginLeft: 1, backgroundColor: "#1c79dc", color: "#fff",
                                 borderRadius: "8px",
                             }}
                         >
@@ -90,7 +107,7 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                             variant="contained"
                             startIcon={<DownloadIcon />}
                             onClick={onExport}
-                            sx={{ color: "#fff", backgroundColor: "#1c79dc" , borderRadius: "8px",}}
+                            sx={{ color: "#fff", backgroundColor: "#1c79dc", borderRadius: "8px", }}
                         >
                             Xuất
                         </Button>
@@ -110,7 +127,12 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     const routeTo = buildFullPath(index);
                     const isLast = index === pathnames.length - 1;
                     const labelKey = breadcrumbNameMap[routeTo];
-                    const translatedName = labelKey ? translate(labelKey) : value;
+                    const commonLabels: Record<string, string> = { show: "Show", edit: "Edit", create: "Create" };
+                    let translatedName = labelKey ? translate(labelKey) : (commonLabels[value] || value);
+
+                    if (record && record.id && String(record.id) === value) {
+                        translatedName = record.username || record.name || record.title || record.code || value;
+                    }
 
                     return isLast ? (
                         <Typography key={routeTo} color="text.primary">

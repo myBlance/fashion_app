@@ -113,6 +113,28 @@ export const VoucherList = () => {
                 textAlign: 'center',
                 verticalAlign: 'middle',
               },
+              // 🔹 FORCE SHOW SORT ICON ALWAYS
+              '& .MuiTableSortLabel-icon': {
+                opacity: '1 !important',
+                visibility: 'visible !important',
+                display: 'block !important',
+                color: 'rgba(100, 100, 100, 0.6) !important', // Neutral gray
+                transition: 'transform 0.2s ease-in-out',
+                marginLeft: '4px !important',
+                marginRight: '0 !important',
+              },
+              // 🔹 Ensure arrow is always on the right
+              '& .MuiButtonBase-root.MuiTableSortLabel-root': {
+                flexDirection: 'row !important',
+              },
+              // 🔹 Fix direction for inactive headers (always point down)
+              '& .MuiTableSortLabel-root:not(.Mui-active) .MuiTableSortLabel-icon': {
+                transform: 'rotate(0deg) !important',
+              },
+              '& .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                color: ({ palette }) =>
+                  palette.mode === 'light' ? 'rgba(0, 0, 0, 0.87) !important' : '#ffffff !important',
+              },
               '& .RaDatagrid-rowCell': {
                 py: 2,
                 textAlign: 'center',
@@ -155,24 +177,26 @@ export const VoucherList = () => {
             })}
           >
             {/* <TextField source="id" label="Mã voucher" /> */}
-            <TextField source="code" label="Mã voucher" />
-            <TextField source="name" label="Tên" sx={{ whiteSpace: 'nowrap' }} />
-            <TextField source="description" label="Mô tả" />
+            <TextField source="code" label="Mã voucher" sortable={true} />
+            <TextField source="name" label="Tên" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
+            <TextField source="description" label="Mô tả" sortable={true} />
             <FunctionField
               label="Loại giảm"
+              sortBy="type"
               render={(record: Voucher) => (
                 <Typography variant="body2">
                   {record.type === 'percentage' ? `${record.value ?? 0}%` : `${record.value?.toLocaleString() ?? 0}đ`}
                 </Typography>
               )}
             />
-            <NumberField source="minOrderAmount" label="Giá trị tối thiểu" options={{ style: 'currency', currency: 'VND' }} />
-            <DateField source="validFrom" label="Bắt đầu" />
-            <DateField source="validUntil" label="Kết thúc" />
-            <NumberField source="maxUses" label="SL dùng toàn hệ thống" />
-            <NumberField source="maxUsesPerUser" label="SL dùng mỗi người" />
+            <NumberField source="minOrderAmount" label="Giá trị tối thiểu" options={{ style: 'currency', currency: 'VND' }} sortable={true} />
+            <DateField source="validFrom" label="Bắt đầu" sortable={true} />
+            <DateField source="validUntil" label="Kết thúc" sortable={true} />
+            <NumberField source="maxUses" label="SL dùng toàn hệ thống" sortable={true} />
+            <NumberField source="maxUsesPerUser" label="SL dùng mỗi người" sortable={true} />
             <FunctionField
               label="Trạng thái"
+              sortBy="isActive"
               render={(record: Voucher) => (
                 <Chip
                   label={record.isActive ? 'Hoạt động' : 'Ngừng hoạt động'}
@@ -181,7 +205,7 @@ export const VoucherList = () => {
                 />
               )}
             />
-            <DateField source="createdAt" label="Ngày tạo" />
+            <DateField source="createdAt" label="Ngày tạo" sortable={true} />
             <FunctionField
               label="Hành động"
               cellClassName="sticky-actions"

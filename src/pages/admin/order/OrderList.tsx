@@ -135,28 +135,88 @@ export const OrderList = () => {
           bulkActionButtons={false}
           sx={(theme) => ({
             '& .RaDatagrid-headerCell': {
-              backgroundColor:
-                theme.palette.mode === 'light' ? '#f5f5f5' : '#1e1e1e',
+              backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : '#1e1e1e',
               fontWeight: 'bold',
+              borderTop: '1px solid #ddd',
+              borderBottom: '1px solid #ddd',
               py: 2,
               position: 'sticky',
               top: 0,
               zIndex: 1,
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+              verticalAlign: 'middle',
+            },
+            // 🔹 FORCE SHOW SORT ICON ALWAYS
+            '& .MuiTableSortLabel-icon': {
+              opacity: '1 !important',
+              visibility: 'visible !important',
+              display: 'block !important',
+              color: 'rgba(100, 100, 100, 0.6) !important', // Neutral gray
+              transition: 'transform 0.2s ease-in-out',
+              marginLeft: '4px !important',
+              marginRight: '0 !important',
+            },
+            // 🔹 Ensure arrow is always on the right
+            '& .MuiButtonBase-root.MuiTableSortLabel-root': {
+              flexDirection: 'row !important',
+            },
+            // 🔹 Fix direction for inactive headers (always point down)
+            '& .MuiTableSortLabel-root:not(.Mui-active) .MuiTableSortLabel-icon': {
+              transform: 'rotate(0deg) !important',
+            },
+            '& .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+              color: ({ palette }) =>
+                palette.mode === 'light' ? 'rgba(0, 0, 0, 0.87) !important' : '#ffffff !important',
             },
             '& .RaDatagrid-rowCell': {
               py: 2,
+              textAlign: 'center',
+              verticalAlign: 'middle',
             },
-            '& .RaDatagrid-tableRow:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            '& .RaDatagrid-rowEven': {
+              backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#1e1e1e',
+            },
+            '& .RaDatagrid-rowOdd': {
+              backgroundColor: theme.palette.mode === 'light' ? '#f7f7f7' : '#1e1e1e',
+            },
+            '& .MuiTableRow-root:hover': {
+              backgroundColor: '#edf7ff',
+            },
+            '& .sticky-actions': {
+              position: 'sticky',
+              right: 0,
+              zIndex: 10,
+              whiteSpace: 'nowrap',
+            },
+            '& .sticky-actions.RaDatagrid-rowCell::before, & .sticky-actions.RaDatagrid-headerCell::before': {
+              content: '""',
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: '1px',
+              backgroundColor: theme.palette.divider,
+            },
+            '& .RaDatagrid-rowEven .sticky-actions': {
+              backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : '#1e1e1e',
+            },
+            '& .RaDatagrid-rowOdd .sticky-actions': {
+              backgroundColor: theme.palette.mode === 'light' ? '#f7f7f7' : '#1e1e1e',
+            },
+            '& .sticky-actions.RaDatagrid-headerCell': {
+              backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : '#1e1e1e',
+              zIndex: 11,
             },
           })}
           rowClick="edit"
         >
-          <TextField source="id" label="Mã đơn hàng" />
+          <TextField source="id" label="Mã đơn hàng" sortable={true} />
 
           {/* ✅ Sửa lại để lấy tên người dùng từ trường `user` (ref tới User) */}
           <FunctionField
             label="Khách hàng"
+            sortBy="user.username"
             render={(record: any) => record.user?.name || record.user?.username || record.user?.email || 'Không rõ'}
           />
 
@@ -165,10 +225,12 @@ export const OrderList = () => {
             source="totalPrice"
             label="Tổng tiền"
             options={{ style: 'currency', currency: 'VND' }}
+            sortable={true}
           />
 
           <FunctionField
             label="Vận chuyển"
+            sortBy="shippingMethod"
             render={(record: any) => {
               if (record.shippingMethod === 'express') return 'Nhanh';
               if (record.shippingMethod === 'standard') return 'Tiêu chuẩn';
@@ -179,13 +241,16 @@ export const OrderList = () => {
           {/* ✅ Dùng component StatusChip đã định nghĩa */}
           <FunctionField
             label="Trạng thái"
+            sortBy="status"
             render={() => <StatusChip />}
           />
 
-          <DateField source="createdAt" label="Ngày tạo" sx={{ whiteSpace: 'nowrap' }} />
+          <DateField source="createdAt" label="Ngày tạo" sx={{ whiteSpace: 'nowrap' }} sortable={true} />
 
           <FunctionField
             label="Hành động"
+            cellClassName="sticky-actions"
+            headerClassName="sticky-actions"
             render={(record: any) => (
               <AdminRowActions
                 record={record}

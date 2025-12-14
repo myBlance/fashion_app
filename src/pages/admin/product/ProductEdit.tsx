@@ -28,6 +28,35 @@ import CustomBreadcrumbs from '../../../components/Admin/Breadcrumbs';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import { colorChoices, sizeChoices, styleChoices, typeChoices } from '../../../constants/filterOptions';
 
+// 🔹 Reuse TradingInputWrapper for consistent premium look
+const TradingInputWrapper = ({ children, color = '#1976d2', label, icon }: { children: React.ReactNode, color?: string, label?: string, icon?: React.ReactNode }) => (
+    <Box sx={{ mb: 2, width: '100%' }}>
+        {label && (
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                {icon && <Box component="span" sx={{ mr: 1, display: 'flex', color: color }}>{icon}</Box>}
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: '0.5px' }}>
+                    {label.toUpperCase()}
+                </Typography>
+            </Box>
+        )}
+        <Box sx={{
+            borderLeft: `5px solid ${color}`,
+            pl: 2,
+            backgroundColor: '#ffffff',
+            borderRadius: '0 8px 8px 0',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+            transition: 'all 0.2s',
+            '&:hover': {
+                backgroundColor: '#fafafa',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.08)',
+            },
+            '& .MuiFilledInput-root': { backgroundColor: 'transparent' },
+        }}>
+            {children}
+        </Box>
+    </Box>
+);
+
 const ProductEditForm = () => {
     const record = useRecordContext();
     const notify = useNotify();
@@ -119,6 +148,7 @@ const ProductEditForm = () => {
             formData.append('brand', data.brand || '');
             formData.append('type', data.type || '');
             formData.append('price', data.price || 0);
+            formData.append('importPrice', data.importPrice || 0); // Added importPrice
             formData.append('originalPrice', data.originalPrice || 0);
             formData.append('sold', data.sold || 0);
             formData.append('total', data.total || 0);
@@ -167,40 +197,54 @@ const ProductEditForm = () => {
                 <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'visible', bgcolor: '#fff' }}>
                     <Box sx={{ p: 3 }}>
                         <Box mb={2}>
-                            <Typography variant="h6">Thông tin cơ bản</Typography>
-                            <Divider />
+                            <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 600 }}>Thông tin cơ bản</Typography>
+                            <Divider sx={{ my: 1 }} />
                         </Box>
 
                         <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                             <Box sx={{ flex: 1, minWidth: '150px' }}>
-                                <TextInput source="id" label="Mã sản phẩm" disabled fullWidth variant="outlined" />
+                                <TradingInputWrapper color="#757575" label="Mã sản phẩm">
+                                    <TextInput source="id" disabled fullWidth variant="outlined" label="" />
+                                </TradingInputWrapper>
                             </Box>
                             <Box sx={{ flex: 2, minWidth: '300px' }}>
-                                <TextInput source="name" validate={required()} fullWidth variant="outlined" label="Tên sản phẩm" placeholder="Nhập tên sản phẩm..." />
+                                <TradingInputWrapper color="#00bcd4" label="">
+                                    <TextInput source="name" validate={required()} fullWidth variant="outlined" label="Tên sản phẩm" placeholder="Nhập tên sản phẩm..." />
+                                </TradingInputWrapper>
                             </Box>
                             <Box sx={{ flex: 1, minWidth: '200px' }}>
-                                <TextInput source="brand" fullWidth variant="outlined" label="Thương hiệu" placeholder="Thương hiệu..." />
+                                <TradingInputWrapper color="#673ab7" label="">
+                                    <TextInput source="brand" fullWidth variant="outlined" label="Thương hiệu" placeholder="Thương hiệu..." />
+                                </TradingInputWrapper>
                             </Box>
                         </Box>
-                        <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', mt: 2 }}>
+                        <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                             <Box sx={{ flex: 1 }}>
-                                <SelectInput source="type" choices={typeChoices} fullWidth variant="outlined" label="Danh mục" />
+                                <TradingInputWrapper color="#e91e63" label="Danh mục">
+                                    <SelectInput source="type" choices={typeChoices} fullWidth variant="outlined" label="" />
+                                </TradingInputWrapper>
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <SelectArrayInput
-                                    source="style"
-                                    choices={styleChoices}
-                                    fullWidth
-                                    variant="outlined"
-                                    label="Phong cách"
-                                    optionText="name"
-                                    optionValue="id"
-                                />
+                                <TradingInputWrapper color="#9c27b0" label="Phong cách">
+                                    <SelectArrayInput
+                                        source="style"
+                                        choices={styleChoices}
+                                        fullWidth
+                                        variant="outlined"
+                                        label=""
+                                        optionText="name"
+                                        optionValue="id"
+                                    />
+                                </TradingInputWrapper>
                             </Box>
                         </Box>
-                        <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <TextInput source="description" multiline minRows={2} fullWidth variant="outlined" label="Mô tả ngắn" />
-                            <TextInput source="details" multiline minRows={4} fullWidth variant="outlined" label="Chi tiết sản phẩm" />
+                        <Box sx={{ mt: 1 }}>
+                            <TradingInputWrapper color="#607d8b" label="Mô tả & Chi tiết">
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    <TextInput source="description" multiline minRows={2} fullWidth variant="outlined" label="Mô tả ngắn" />
+                                    <TextInput source="details" multiline minRows={4} fullWidth variant="outlined" label="Chi tiết sản phẩm" />
+                                </Box>
+                            </TradingInputWrapper>
                         </Box>
                     </Box>
                 </Card>
@@ -209,36 +253,51 @@ const ProductEditForm = () => {
                 <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
                     <Box sx={{ p: 3 }}>
                         <Box mb={2}>
-                            <Typography variant="h6">Giá & Kho hàng</Typography>
-                            <Divider />
+                            <Typography variant="h6" sx={{ color: '#2e7d32', fontWeight: 600 }}>Giá & Kho hàng</Typography>
+                            <Divider sx={{ my: 1 }} />
                         </Box>
                         <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="price" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Bán" />
+                                <TradingInputWrapper color="#2e7d32" label="Giá bán (VND)">
+                                    <NumberInput source="price" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="" />
+                                </TradingInputWrapper>
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="originalPrice" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Gốc" />
+                                <TradingInputWrapper color="#c62828" label="Giá nhập (VND)">
+                                    <NumberInput source="importPrice" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="" />
+                                </TradingInputWrapper>
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <NumberInput source="total" fullWidth variant="outlined" min={0} validate={[minValue(0)]} label="Tổng kho" />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <NumberInput source="sold" fullWidth variant="outlined" min={0} validate={[minValue(0)]} label="Đã bán" />
+                                <TradingInputWrapper color="#ff9800" label="Giá gốc (VND)">
+                                    <NumberInput source="originalPrice" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="" />
+                                </TradingInputWrapper>
                             </Box>
                         </Box>
-                        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                            <Box sx={{ width: '250px' }}>
-                                <SelectInput
-                                    source="status"
-                                    label="Trạng thái"
-                                    variant="outlined"
-                                    choices={[
-                                        { id: 'selling', name: 'Đang bán' },
-                                        { id: 'stopped', name: 'Ngừng bán' },
-                                        { id: 'sold_out', name: 'Hết hàng' },
-                                    ]}
-                                    fullWidth
-                                />
+                        <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            <Box sx={{ flex: 1 }}>
+                                <TradingInputWrapper color="#795548" label="Tổng kho">
+                                    <NumberInput source="total" fullWidth variant="outlined" min={0} validate={[minValue(0)]} label="" />
+                                </TradingInputWrapper>
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
+                                <TradingInputWrapper color="#8d6e63" label="Đã bán">
+                                    <NumberInput source="sold" fullWidth variant="outlined" min={0} validate={[minValue(0)]} label="" />
+                                </TradingInputWrapper>
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
+                                <TradingInputWrapper color="#4caf50" label="Trạng thái">
+                                    <SelectInput
+                                        source="status"
+                                        label=""
+                                        variant="outlined"
+                                        choices={[
+                                            { id: 'selling', name: 'Đang bán' },
+                                            { id: 'stopped', name: 'Ngừng bán' },
+                                            { id: 'sold_out', name: 'Hết hàng' },
+                                        ]}
+                                        fullWidth
+                                    />
+                                </TradingInputWrapper>
                             </Box>
                         </Box>
                     </Box>
@@ -248,8 +307,8 @@ const ProductEditForm = () => {
                 <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
                     <Box sx={{ p: 3 }}>
                         <Box mb={2}>
-                            <Typography variant="h6">Phân loại hàng</Typography>
-                            <Divider />
+                            <Typography variant="h6" sx={{ color: '#009688', fontWeight: 600 }}>Phân loại hàng</Typography>
+                            <Divider sx={{ my: 1 }} />
                         </Box>
                         <Box sx={{ display: 'flex', gap: 5 }}>
                             <Box sx={{ flex: 1 }}>
@@ -310,8 +369,8 @@ const ProductEditForm = () => {
                 <Card elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#fff' }}>
                     <Box sx={{ p: 3 }}>
                         <Box mb={2}>
-                            <Typography variant="h6">Hình ảnh sản phẩm</Typography>
-                            <Divider />
+                            <Typography variant="h6" sx={{ color: '#3f51b5', fontWeight: 600 }}>Hình ảnh sản phẩm</Typography>
+                            <Divider sx={{ my: 1 }} />
                         </Box>
                         <Box sx={{ display: 'flex', gap: 4 }}>
                             <Box sx={{ textAlign: 'center', position: 'relative', display: 'inline-block' }}>

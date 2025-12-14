@@ -102,6 +102,28 @@ export const ReviewList = () => {
                 textAlign: 'center',
                 verticalAlign: 'middle',
               },
+              // 🔹 FORCE SHOW SORT ICON ALWAYS
+              '& .MuiTableSortLabel-icon': {
+                opacity: '1 !important',
+                visibility: 'visible !important',
+                display: 'block !important',
+                color: 'rgba(100, 100, 100, 0.6) !important', // Neutral gray
+                transition: 'transform 0.2s ease-in-out',
+                marginLeft: '4px !important',
+                marginRight: '0 !important',
+              },
+              // 🔹 Ensure arrow is always on the right
+              '& .MuiButtonBase-root.MuiTableSortLabel-root': {
+                flexDirection: 'row !important',
+              },
+              // Fix direction for inactive headers (always point down)
+              '& .MuiTableSortLabel-root:not(.Mui-active) .MuiTableSortLabel-icon': {
+                transform: 'rotate(0deg) !important',
+              },
+              '& .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                color: ({ palette }) =>
+                  palette.mode === 'light' ? 'rgba(0, 0, 0, 0.87) !important' : '#ffffff !important',
+              },
               '& .RaDatagrid-rowCell': {
                 py: 2,
                 textAlign: 'center',
@@ -143,9 +165,10 @@ export const ReviewList = () => {
               },
             })}
           >
-            <TextField source="userId.username" label="Người dùng" />
+            <TextField source="userId.username" label="Người dùng" sortable={true} />
             <FunctionField
               label="Mã sản phẩm"
+              sortBy="productCode"
               render={(record: Review) => (
                 <Typography noWrap sx={{ maxWidth: 150 }}>
                   {record.productCode || record.productId}
@@ -154,25 +177,28 @@ export const ReviewList = () => {
             />
             <FunctionField
               label="Tên sản phẩm"
+              sortBy="productName"
               render={(record: Review) => (
                 <Typography noWrap sx={{ maxWidth: 200 }}>
                   {record.productName || record.productId}
                 </Typography>
               )}
             />
-            <TextField source="orderId" label="Mã đơn hàng" />
-            <NumberField source="rating" label="Đánh giá" />
+            <TextField source="orderId" label="Mã đơn hàng" sortable={true} />
+            <NumberField source="rating" label="Đánh giá" sortable={true} />
             <FunctionField
               label="Bình luận"
+              sortBy="comment"
               render={(record: Review) => (
                 <Typography noWrap sx={{ maxWidth: 200 }}>
                   {record.comment.substring(0, 50)}...
                 </Typography>
               )}
             />
-            <DateField source="createdAt" label="Ngày tạo" />
+            <DateField source="createdAt" label="Ngày tạo" sortable={true} />
             <FunctionField
               label="Trạng thái"
+              sortBy="rating"
               render={(record: Review) => (
                 <Chip
                   label={record.rating >= 4 ? "Tốt" : record.rating >= 3 ? "TB" : "Kém"}

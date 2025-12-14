@@ -90,6 +90,7 @@ export const ProductCreate = () => {
             formData.append('brand', data.brand || '');
             formData.append('type', data.type || '');
             formData.append('price', data.price || 0);
+            formData.append('importPrice', data.importPrice || 0); // Added importPrice
             formData.append('originalPrice', data.originalPrice || 0);
             formData.append('sold', data.sold || 0);
             formData.append('total', data.total || 0);
@@ -182,6 +183,9 @@ export const ProductCreate = () => {
                                 <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                                     <Box sx={{ flex: 1 }}>
                                         <NumberInput source="price" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Bán" />
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
+                                        <NumberInput source="importPrice" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Nhập" />
                                     </Box>
                                     <Box sx={{ flex: 1 }}>
                                         <NumberInput source="originalPrice" fullWidth variant="outlined" min={0} validate={[required(), minValue(0)]} label="Giá Gốc" />

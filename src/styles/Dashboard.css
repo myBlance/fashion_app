@@ -45,3 +45,28 @@
 .stat-card-value {
     font-weight: bold !important;
 }
+
+.date-input-field {
+    background-color: #fff;
+}
+
+.date-input-field .MuiOutlinedInput-root {
+    border-radius: 8px;
+}
+
+.date-input-field .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: #1976d2;
+}
+
+.date-input-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #1976d2;
+    border-width: 2px;
+}
+
+.date-input-field .MuiInputLabel-root {
+    font-weight: 500;
+}
+
+.date-input-field .MuiInputLabel-root.Mui-focused {
+    color: #1976d2;
+}

@@ -61,12 +61,36 @@ const ProductDetail: React.FC = () => {
         ? product.thumbnail
         : `${baseURL}/uploads/${product.thumbnail}`;
       setSelectedImage(thumbnailUrl || product.images[0]);
+
+      // Set default size if available
+      if (product.sizes && product.sizes.length > 0) {
+        setSelectedSize(product.sizes[0]);
+      }
     }
   }, [product]);
 
   const isFavorite = product ? wishlist.includes(product.id) : false;
+  const getCurrentStock = () => {
+    if (!product) return 0;
+    const selectedColor = product.colors[selectedColorIndex];
+    if (product.variants && product.variants.length > 0) {
+      const currentVariant = product.variants.find(v => v.color === selectedColor && v.size === selectedSize);
+      return currentVariant ? currentVariant.quantity : 0;
+    }
+    return product.total || 0;
+  }
+
   const decreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
+  const increaseQuantity = () => {
+    const stock = getCurrentStock();
+    setQuantity((prev) => {
+      if (prev >= stock) {
+        showToast("Đã hết sản phẩm bạn chọn", "warning");
+        return prev;
+      }
+      return prev + 1;
+    });
+  };
   const sizes = product?.sizes?.length ? product.sizes : ["S", "M", "L"];
 
   const getImageUrl = (path: string) => {
@@ -195,9 +219,26 @@ const ProductDetail: React.FC = () => {
             </div>
             <div>
               Mã SP: <span className="code">{product.id}</span> |
-              Tình trạng: <span className={`status ${product.status ? "available" : "unavailable"}`}>
-                {product.status ? "Còn hàng" : "Hết hàng"}
-              </span>
+              Tình trạng:
+              {(() => {
+                const selectedColor = product.colors[selectedColorIndex];
+                const currentVariant = product.variants?.find(v => v.color === selectedColor && v.size === selectedSize);
+                const isAvailable = currentVariant ? currentVariant.quantity > 0 : (product.total > 0); // Fallback to total if no variants
+
+                // Global status override
+                if (product.status === 'stopped') {
+                  return <span className="status unavailable">Ngừng kinh doanh</span>;
+                }
+                if (product.status === 'sold_out') {
+                  return <span className="status unavailable">Hết hàng</span>;
+                }
+
+                return (
+                  <span className={`status ${isAvailable ? "available" : "unavailable"}`}>
+                    {isAvailable ? `Còn hàng (${currentVariant ? currentVariant.quantity : product.total})` : "Hết hàng"}
+                  </span>
+                );
+              })()}
             </div>
           </div>
 
@@ -241,16 +282,60 @@ const ProductDetail: React.FC = () => {
                 ))}
               </div>
             </div>
+            {/* Dynamic Status below options */}
+            <div className="option-group">
+
+              <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                {(() => {
+                  const selectedColor = product.colors[selectedColorIndex];
+                  // Strict check: Does product have variants?
+                  const hasVariants = product.variants && product.variants.length > 0;
+
+                  if (hasVariants) {
+                    const currentVariant = product.variants?.find(v => v.color === selectedColor && v.size === selectedSize);
+                    const qty = currentVariant ? currentVariant.quantity : 0;
+                    const isAvailable = qty > 0;
+
+                    return (
+                      <span style={{
+                        color: isAvailable ? '#4caf50' : '#f44336',
+                        fontWeight: 600,
+                        fontSize: '0.95rem'
+                      }}>
+                        {isAvailable ? `Còn hàng (${qty} sản phẩm)` : "Hết hàng"}
+                      </span>
+                    );
+                  }
+
+                  // Legacy fallback (only if no variants array)
+                  if (product.status === 'stopped') return <span className="status unavailable">Ngừng kinh doanh</span>;
+                  if (product.status === 'sold_out') return <span className="status unavailable">Hết hàng</span>;
+                  const isAvailable = product.total > 0;
+                  return (
+                    <span style={{
+                      color: isAvailable ? '#4caf50' : '#f44336',
+                      fontWeight: 600,
+                      fontSize: '0.95rem'
+                    }}>
+                      {isAvailable ? `Còn hàng (${product.total} sản phẩm)` : "Hết hàng"}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
 
             {/* Quantity */}
             <div className="option-group">
               <span className="option-label">Số lượng:</span>
+
               <div className="quantity-controls">
                 <button onClick={decreaseQuantity}>−</button>
                 <input type="text" value={quantity} readOnly />
                 <button onClick={increaseQuantity}>+</button>
               </div>
             </div>
+
+
           </div>
 
           <div className="action-buttons">

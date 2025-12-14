@@ -108,6 +108,10 @@
   transition: color 0.2s;
 }
 
+.product-name-link {
+  cursor: pointer;
+}
+
 .product-name:hover {
   color: var(--color-primary-light);
 }
@@ -115,11 +119,9 @@
 .product-variant span {
   display: block;
   font-size: 13px;
-  color: var(--color-gray-800);
   margin-bottom: 2px;
 }
 
-/* Cột Số lượng */
 /* Cột Số lượng */
 .quantity-box {
   display: flex;
@@ -406,8 +408,6 @@
     display: none;
     /* Ẩn đơn giá trên mobile cho gọn, chỉ hiện thành tiền */
   }
-
-  /* Hiển thị nhãn data-label nếu cần (ở đây mình ẩn cho gọn, chỉ hiện số liệu) */
 
   .col-total {
     margin-top: 8px;

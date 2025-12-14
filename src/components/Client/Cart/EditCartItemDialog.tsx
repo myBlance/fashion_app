@@ -1,8 +1,11 @@
-import { Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as ProductService from '../../../services/productService';
+import '../../../styles/EditCartItemDialog.css';
 import { CartItem } from '../../../types/CartItem';
 import { Product } from '../../../types/Product';
+import { translateColor } from '../../../utils/colorTranslation';
 
 interface EditCartItemDialogProps {
     open: boolean;
@@ -12,6 +15,7 @@ interface EditCartItemDialogProps {
 }
 
 const EditCartItemDialog: React.FC<EditCartItemDialogProps> = ({ open, onClose, item, onSave }) => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [product, setProduct] = useState<Product | null>(null);
     const [selectedColor, setSelectedColor] = useState<string>('');
@@ -70,29 +74,45 @@ const EditCartItemDialog: React.FC<EditCartItemDialogProps> = ({ open, onClose, 
                     <Stack spacing={3}>
                         {/* Product Info */}
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <img src={item.image} alt={item.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: '4px' }} />
+                            <img
+                                src={item.image}
+                                alt={item.name}
+                                style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: '4px', cursor: 'pointer' }}
+                                onClick={() => navigate(`/product/${item.productId}`)}
+                                title="Xem chi tiết sản phẩm"
+                            />
                             <div>
-                                <Typography variant="subtitle1" fontWeight="bold">{item.name}</Typography>
+                                <Typography
+                                    variant="subtitle1"
+                                    fontWeight="bold"
+                                    sx={{ cursor: 'pointer', '&:hover': { color: '#007bff' } }}
+                                    onClick={() => navigate(`/product/${item.productId}`)}
+                                    title="Xem chi tiết sản phẩm"
+                                >
+                                    {item.name}
+                                </Typography>
                                 <Typography variant="body2" color="textSecondary">
-                                    Hiện tại: {item.color}, {item.size}
+                                    Hiện tại: {translateColor(item.color ?? '')}, {item.size}
                                 </Typography>
                             </div>
                         </div>
 
                         {/* Color Selection */}
                         <div>
-                            <Typography variant="subtitle2" gutterBottom>Màu sắc</Typography>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                                Màu sắc: <span style={{ fontWeight: 400, color: '#666' }}>{translateColor(selectedColor)}</span>
+                            </Typography>
+                            <div className="color-list-dialog">
                                 {product.colors && product.colors.length > 0 ? (
                                     product.colors.map((c) => (
-                                        <Chip
+                                        <div
                                             key={c}
-                                            label={c}
-                                            clickable
-                                            color={selectedColor === c ? 'primary' : 'default'}
-                                            variant={selectedColor === c ? 'filled' : 'outlined'}
+                                            className={`color-item-dialog ${selectedColor === c ? 'selected' : ''}`}
                                             onClick={() => setSelectedColor(c)}
-                                        />
+                                            title={translateColor(c)}
+                                        >
+                                            <div style={{ backgroundColor: c }} className="color-circle-dialog" />
+                                        </div>
                                     ))
                                 ) : (
                                     <Typography variant="body2" color="textSecondary">Không có lựa chọn màu</Typography>
@@ -102,24 +122,57 @@ const EditCartItemDialog: React.FC<EditCartItemDialogProps> = ({ open, onClose, 
 
                         {/* Size Selection */}
                         <div>
-                            <Typography variant="subtitle2" gutterBottom>Kích thước</Typography>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                                Kích thước: <span style={{ fontWeight: 400, color: '#666' }}>{selectedSize}</span>
+                            </Typography>
+                            <div className="size-list-dialog">
                                 {product.sizes && product.sizes.length > 0 ? (
                                     product.sizes.map((s) => (
-                                        <Chip
+                                        <button
                                             key={s}
-                                            label={s}
-                                            clickable
-                                            color={selectedSize === s ? 'primary' : 'default'}
-                                            variant={selectedSize === s ? 'filled' : 'outlined'}
+                                            className={`size-btn-dialog ${selectedSize === s ? 'selected' : ''}`}
                                             onClick={() => setSelectedSize(s)}
-                                        />
+                                        >
+                                            {s}
+                                        </button>
                                     ))
                                 ) : (
                                     <Typography variant="body2" color="textSecondary">Không có lựa chọn size</Typography>
                                 )}
                             </div>
                         </div>
+
+                        {/* Stock Availability */}
+                        {selectedColor && selectedSize && (
+                            <div style={{
+                                padding: '12px',
+                                backgroundColor: '#f5f5f5',
+                                borderRadius: '4px',
+                                marginTop: '8px'
+                            }}>
+                                {(() => {
+                                    const currentVariant = product.variants?.find(
+                                        v => v.color === selectedColor && v.size === selectedSize
+                                    );
+                                    const stock = currentVariant ? currentVariant.quantity : 0;
+                                    const isAvailable = stock > 0;
+
+                                    return (
+                                        <Typography
+                                            variant="body2"
+                                            style={{
+                                                color: isAvailable ? '#4caf50' : '#f44336',
+                                                fontWeight: 600
+                                            }}
+                                        >
+                                            {isAvailable
+                                                ? `Còn hàng (${stock} sản phẩm)`
+                                                : `Hết hàng`}
+                                        </Typography>
+                                    );
+                                })()}
+                            </div>
+                        )}
 
                     </Stack>
                 ) : (

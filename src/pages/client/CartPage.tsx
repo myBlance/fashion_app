@@ -1,21 +1,21 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import EditCartItemDialog from '../../components/Client/Cart/EditCartItemDialog';
 import PageHeader from '../../components/Client/Common/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { CartService } from '../../services/cartService';
-import { RootState } from '../../store';
 import { decreaseQuantity, increaseQuantity, loadGuestCart, removeFromCart, setCartItems } from '../../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import '../../styles/CartPage.css';
 import { CartItem } from '../../types/CartItem';
+import { translateColor } from '../../utils/colorTranslation';
 
 const CartPage: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { userId } = useAuth();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const cartItems = useAppSelector((state) => state.cart.items);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
@@ -49,7 +49,7 @@ const CartPage: React.FC = () => {
     const maxStock = item.stock ?? 9999;
 
     if (currentQty >= maxStock) {
-      showToast(`Chỉ còn ${maxStock} sản phẩm trong kho!`, 'warning');
+      showToast('Đã hết sản phẩm bạn chọn', 'warning');
       return;
     }
 
@@ -138,7 +138,7 @@ const CartPage: React.FC = () => {
       return;
     }
     const selectedCartItems = cartItems.filter(item => {
-      const id = `${item.productId}-${item.color}-${item.size}`;
+      const id = `${item.productId} -${item.color} -${item.size} `;
       return selectedItems[id] ?? false;
     });
 
@@ -146,11 +146,19 @@ const CartPage: React.FC = () => {
       showToast('Vui lòng chọn sản phẩm để thanh toán.', 'warning');
       return;
     }
+
+    // Check if any selected items are out of stock
+    const outOfStockItems = selectedCartItems.filter(item => (item.stock ?? 0) === 0);
+    if (outOfStockItems.length > 0) {
+      showToast('Không thể đặt hàng vì có sản phẩm đã hết hàng. Vui lòng bỏ chọn hoặc xóa sản phẩm hết hàng.', 'error');
+      return;
+    }
+
     navigate('/checkout', { state: { selectedCartItems } });
   };
 
   const totalSelectedAmount = cartItems.reduce((acc, item) => {
-    const id = `${item.productId}-${item.color}-${item.size}`;
+    const id = `${item.productId} -${item.color} -${item.size} `;
     if (selectedItems[id]) {
       return acc + (item.price ?? 0) * (item.quantity ?? 1);
     }
@@ -177,7 +185,7 @@ const CartPage: React.FC = () => {
   return (
     <div className="cart-page-wrapper">
       <div className="cart-container">
-        <PageHeader title={`Giỏ hàng (${cartItems.length})`} />
+        <PageHeader title={`Giỏ hàng(${cartItems.length})`} />
 
         <div className="cart-layout">
           {/* Cột trái: Danh sách sản phẩm */}
@@ -190,12 +198,12 @@ const CartPage: React.FC = () => {
                       type="checkbox"
                       className="custom-checkbox"
                       checked={cartItems.length > 0 && cartItems.every(item =>
-                        selectedItems[`${item.productId}-${item.color}-${item.size}`]
+                        selectedItems[`${item.productId} -${item.color} -${item.size} `]
                       )}
                       onChange={(e) => {
                         const newSelected: Record<string, boolean> = {};
                         cartItems.forEach(item => {
-                          newSelected[`${item.productId}-${item.color}-${item.size}`] = e.target.checked;
+                          newSelected[`${item.productId} -${item.color} -${item.size} `] = e.target.checked;
                         });
                         setSelectedItems(newSelected);
                       }}
@@ -210,7 +218,7 @@ const CartPage: React.FC = () => {
               </thead>
               <tbody>
                 {cartItems.map((item) => {
-                  const itemId = `${item.productId}-${item.color}-${item.size}`;
+                  const itemId = `${item.productId} -${item.color} -${item.size} `;
                   const isChecked = selectedItems[itemId] ?? false;
 
                   return (
@@ -228,27 +236,47 @@ const CartPage: React.FC = () => {
 
                       <td className="col-product" data-label="Sản phẩm">
                         <div className="product-item">
-                          <img src={item.image} alt={item.name} />
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            style={{ width: '80px', height: '80px', cursor: 'pointer' }}
+                            onClick={() => navigate(`/product/${item.productId}`)}
+                            title="Xem chi tiết sản phẩm"
+                          />
                           <div className="product-details">
-                            <div className="product-name">{item.name}</div>
-                            <div className="product-variant">
-                              <span>Màu: {item.color}</span>
-                              <span>Size: {item.size}</span>
+                            <div
+                              className="product-name product-name-link"
+                              onClick={() => navigate(`/product/${item.productId}`)}
+                              title="Xem chi tiết sản phẩm"
+                            >
+                              {item.name}
+                            </div>
+                            <div className="product-variant" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: '13px', color: '#555' }}>Màu: {translateColor(item.color ?? '')}</span>
+                                <button
+                                  className="edit-variant-btn"
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    color: '#007bff',
+                                    padding: '2px',
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                  }}
+                                  onClick={() => setEditingItem(item)}
+                                  title="Đổi màu/size"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                </button>
+                              </div>
+                              <span style={{ fontSize: '13px', color: '#555', textAlign: 'left' }}>Size: {item.size}</span>
                               {item.stock !== undefined && (
-                                <span style={{ fontSize: '12px', color: '#666', marginLeft: '8px' }}>
+                                <span style={{ fontSize: '12px', color: '#888', textAlign: 'left' }}>
                                   (Kho: {item.stock})
                                 </span>
                               )}
-                              <button
-                                className="edit-variant-btn"
-                                style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer', color: '#007bff' }}
-                                onClick={() => {
-                                  setEditingItem(item);
-                                }}
-                                title="Đổi màu/size"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                              </button>
                             </div>
                           </div>
                         </div>

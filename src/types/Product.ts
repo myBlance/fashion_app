@@ -19,4 +19,10 @@ export interface Product {
     description?: string;
     details?: string;
     rating?: number;
+    variants?: {
+        color: string;
+        size: string;
+        quantity: number;
+        sold?: number;
+    }[];
 }

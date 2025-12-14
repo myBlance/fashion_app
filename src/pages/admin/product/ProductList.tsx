@@ -321,9 +321,6 @@ export const ProductList = () => {
                                 textAlign: 'center',
                                 verticalAlign: 'middle',
                             },
-                            // Force sort icons to be visible
-                            // 🔹 FORCE SHOW SORT ICON ALWAYS
-                            // 🔹 FORCE SHOW SORT ICON ALWAYS
                             '& .MuiTableSortLabel-icon': {
                                 opacity: '1 !important',
                                 visibility: 'visible !important',
@@ -500,6 +497,6 @@ export const ProductList = () => {
                     </DatagridConfigurable>
                 </Box>
             </List>
-        </Card>
+        </Card >
     );
 };

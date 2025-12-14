@@ -1,6 +1,6 @@
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Box, Button, Container, Skeleton, Typography } from '@mui/material';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
@@ -8,82 +8,77 @@ import PageHeader from '../../components/Client/Common/PageHeader';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProducts } from '../../services/productService';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { fetchWishlist, loadGuestWishlist } from '../../store/wishlistSlice';
+import { WishlistService } from '../../services/wishlistService';
 import { Product } from "../../types/Product";
 
 const WishlistPage: React.FC = () => {
     const { userId } = useAuth();
-    const dispatch = useAppDispatch(); // ✅ Dùng useAppDispatch
     const navigate = useNavigate();
 
-    // ✅ Dùng useAppSelector
-    const { items: wishlistIds, loading: wishlistLoading, error: wishlistError } = useAppSelector(
-        (state) => state.wishlist
-    );
     const [products, setProducts] = React.useState<Product[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<string | null>(null);
 
-    //  Sử dụng useMemo để tạo stable string từ wishlistIds
-    const wishlistIdsStr = useMemo(() => wishlistIds.join(','), [wishlistIds.length, wishlistIds.join(',')]);
-
+    // Single useEffect to handle everything
     useEffect(() => {
-        if (userId) {
-            //  Fetch wishlist từ Redux store cho logged-in users
-            dispatch(fetchWishlist(userId));
-        } else {
-            // Load guest wishlist from localStorage
-            dispatch(loadGuestWishlist());
-        }
-    }, [userId, dispatch]);
+        let isCancelled = false;
 
-    //  Khi wishlistIds thay đổi (sau khi fetch thành công), cập nhật products
-    useEffect(() => {
-        const loadProducts = async () => {
-            //  Chỉ load khi không đang loading và không có error
-            if (wishlistLoading) return;
-
-            if (wishlistError) {
-                setError('Không thể tải sản phẩm yêu thích.');
-                setLoading(false);
-                return;
-            }
-
-            //  Nếu wishlist rỗng, set products rỗng ngay và return
-            if (wishlistIds.length === 0) {
-                setProducts([]);
-                setLoading(false);
-                return;
-            }
-
+        const fetchAndLoadProducts = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
-                // 1️ Lấy tất cả sản phẩm
-                const { data } = await getProducts(0, 1000);
+                // Step 1: Fetch wishlist
+                let fetchedWishlistIds: string[] = [];
+                if (userId) {
+                    // For logged-in users, fetch from API
+                    const wishlistData = await WishlistService.getWishlist(userId);
+                    fetchedWishlistIds = wishlistData;
+                } else {
+                    // For guest users, get directly from localStorage
+                    const { getLocalWishlist } = await import('../../utils/wishlistStorage');
+                    fetchedWishlistIds = getLocalWishlist();
+                }
 
-                // 2️ Lọc theo danh sách yêu thích từ Redux
-                const favoriteProducts = data.filter((p) => wishlistIds.includes(p.id));
+                if (isCancelled) return;
+
+                // Step 2: If empty, set empty products
+                if (fetchedWishlistIds.length === 0) {
+                    setProducts([]);
+                    setLoading(false);
+                    return;
+                }
+
+                // Step 3: Fetch all products and filter
+                const { data } = await getProducts(0, 1000);
+                if (isCancelled) return;
+
+                const favoriteProducts = data.filter((p) => fetchedWishlistIds.includes(p.id));
                 setProducts(favoriteProducts);
             } catch (err) {
-                console.error('Lỗi khi lấy sản phẩm:', err);
-                setError('Không thể tải danh sách sản phẩm.');
+                if (!isCancelled) {
+                    console.error('Lỗi khi tải wishlist:', err);
+                    setError('Không thể tải danh sách sản phẩm yêu thích.');
+                }
             } finally {
-                setLoading(false);
+                if (!isCancelled) {
+                    setLoading(false);
+                }
             }
         };
 
-        loadProducts();
-        //  Dùng stable string từ useMemo thay vì JSON.stringify trực tiếp
-    }, [wishlistIdsStr, wishlistLoading, wishlistError]);
+        fetchAndLoadProducts();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [userId]); // Only depend on userId - this prevents infinite loop!
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <PageHeader title="Sản phẩm yêu thích" />
 
-            {(loading || wishlistLoading) && (
+            {loading && (
                 <Box
                     display="grid"
                     gridTemplateColumns={{
@@ -104,11 +99,11 @@ const WishlistPage: React.FC = () => {
                 </Box>
             )}
 
-            {!loading && !wishlistLoading && error && (
+            {!loading && error && (
                 <Typography variant="body1" color="error" textAlign="center">{error}</Typography>
             )}
 
-            {!loading && !wishlistLoading && !error && products.length === 0 && (
+            {!loading && !error && products.length === 0 && (
                 <Box textAlign="center" py={8}>
                     <FavoriteBorderIcon sx={{ fontSize: 80, color: '#e0e0e0', mb: 2 }} />
                     <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -128,7 +123,7 @@ const WishlistPage: React.FC = () => {
                 </Box>
             )}
 
-            {!loading && !wishlistLoading && !error && products.length > 0 && (
+            {!loading && !error && products.length > 0 && (
                 <Box
                     display="grid"
                     gridTemplateColumns={{

@@ -7,9 +7,14 @@ import {
 } from '@mui/icons-material';
 import {
   Box,
+  Button,
   Card,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Paper,
   Table,
   TableBody,
@@ -17,6 +22,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
   useMediaQuery,
   useTheme
@@ -37,6 +43,7 @@ interface DashboardStats {
   ordersByStatus: { [key: string]: number };
   revenueByDate: Array<{ _id: string; revenue: number; profit: number; orders: number }>; // Added profit
   topProducts: Array<{ productId: string; name: string; image: string; soldQuantity: number }>;
+  topProfitProducts: Array<{ productId: string; name: string; image: string; totalProfit: number; soldQuantity: number }>;
 
   recentOrders: Array<{
     id: string;
@@ -63,16 +70,35 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState<'7days' | 'month' | 'year' | 'all' | 'custom'>('7days');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [openDateModal, setOpenDateModal] = useState(false);
+  const [tempStartDate, setTempStartDate] = useState<string>('');
+  const [tempEndDate, setTempEndDate] = useState<string>('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
-    fetchDashboardStats();
-  }, []);
+    // Only fetch if not custom, or if custom with both dates selected
+    if (timeRange !== 'custom' || (startDate && endDate)) {
+      fetchDashboardStats();
+    }
+  }, [timeRange, startDate, endDate]); // Refetch when timeRange or dates change
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/admin/dashboard/stats`);
+      const params: any = { timeRange };
+
+      // Add custom date parameters if custom range is selected
+      if (timeRange === 'custom' && startDate && endDate) {
+        params.startDate = startDate;
+        params.endDate = endDate;
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/api/admin/dashboard/stats`, {
+        params
+      });
       if (response.data.success) {
         setStats(response.data.data);
       }
@@ -80,6 +106,46 @@ const Dashboard: React.FC = () => {
       console.error('Error fetching dashboard stats:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenDateModal = () => {
+    setTempStartDate(startDate);
+    setTempEndDate(endDate);
+    setOpenDateModal(true);
+  };
+
+  const handleCloseDateModal = () => {
+    setOpenDateModal(false);
+  };
+
+  const handleApplyDateRange = async () => {
+    if (tempStartDate && tempEndDate) {
+      setStartDate(tempStartDate);
+      setEndDate(tempEndDate);
+      setTimeRange('custom');
+      setOpenDateModal(false);
+
+      // Fetch immediately with the new dates to avoid state batching issues
+      setLoading(true);
+      try {
+        const params: any = {
+          timeRange: 'custom',
+          startDate: tempStartDate,
+          endDate: tempEndDate
+        };
+
+        const response = await axios.get(`${API_BASE_URL}/api/admin/dashboard/stats`, {
+          params
+        });
+        if (response.data.success) {
+          setStats(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -144,9 +210,49 @@ const Dashboard: React.FC = () => {
     <Card className="dashboard-card">
       <Box className="dashboard-card-content">
         <CustomAppBar />
-        <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight="bold" mb={{ xs: 2, sm: 3 }} mt={2}>
-          Dashboard
-        </Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2} mb={3} mt={2}>
+          <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight="bold">
+            Dashboard
+          </Typography>
+          <Box display="flex" gap={1} flexWrap="wrap">
+            <Button
+              variant={timeRange === '7days' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setTimeRange('7days')}
+            >
+              7 ngày
+            </Button>
+            <Button
+              variant={timeRange === 'month' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setTimeRange('month')}
+            >
+              Tháng này
+            </Button>
+            <Button
+              variant={timeRange === 'year' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setTimeRange('year')}
+            >
+              Năm nay
+            </Button>
+            <Button
+              variant={timeRange === 'all' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setTimeRange('all')}
+            >
+              Tất cả
+            </Button>
+            <Button
+              variant={timeRange === 'custom' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={handleOpenDateModal}
+            >
+              Tùy chỉnh
+            </Button>
+
+          </Box>
+        </Box>
 
         {/* Stats Cards */}
         <Box display="flex" gap={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }} flexWrap="wrap">
@@ -197,7 +303,14 @@ const Dashboard: React.FC = () => {
           {/* Revenue Chart */}
           <Box flex="2" minWidth={{ xs: '100%', md: '300px' }}>
             <Paper elevation={2} className="chart-paper">
-              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Doanh thu & Lợi nhuận 7 ngày qua</Typography>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>
+                Doanh thu & Lợi nhuận {
+                  timeRange === '7days' ? '7 ngày qua' :
+                    timeRange === 'month' ? 'tháng này' :
+                      timeRange === 'year' ? 'năm nay' :
+                        'tất cả thời gian'
+                }
+              </Typography>
               <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <LineChart data={revenueChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -242,10 +355,11 @@ const Dashboard: React.FC = () => {
 
         {/* Tables */}
         <Box display="flex" gap={{ xs: 2, sm: 3 }} flexWrap="wrap">
-          {/* Top Products */}
-          <Box flex="1" minWidth={{ xs: '100%', md: '350px' }}>
+          {/* Left Column: Top Products */}
+          <Box flex="1" minWidth={{ xs: '100%', md: '350px' }} display="flex" flexDirection="column" gap={{ xs: 2, sm: 3 }}>
+            {/* Top Selling Products */}
             <Paper elevation={2} className="chart-paper">
-              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Top 5 sản phẩm bán chạy</Typography>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Top 10 sản phẩm bán chạy</Typography>
               <TableContainer sx={{ overflowX: 'auto' }}>
                 <Table size="small">
                   <TableHead>
@@ -272,9 +386,52 @@ const Dashboard: React.FC = () => {
                 </Table>
               </TableContainer>
             </Paper>
+
+            {/* Top Profit Products */}
+            <Paper elevation={2} className="chart-paper">
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>
+                Top 10 sản phẩm lợi nhuận cao nhất
+              </Typography>
+              <TableContainer sx={{ overflowX: 'auto' }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Sản phẩm</TableCell>
+                      <TableCell align="right">Lợi nhuận</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {stats.topProfitProducts.map((product) => (
+                      <TableRow key={product.productId}>
+                        <TableCell>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="table-product-image"
+                              style={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40 }}
+                            />
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                              {product.name}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Chip
+                            label={formatCurrency(product.totalProfit)}
+                            color="success"
+                            size="small"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           </Box>
 
-          {/* Recent Orders */}
+          {/* Right Column: Recent Orders */}
           <Box flex="1" minWidth={{ xs: '100%', md: '350px' }}>
             <Paper elevation={2} className="chart-paper">
               <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Đơn hàng gần đây</Typography>
@@ -317,6 +474,51 @@ const Dashboard: React.FC = () => {
           </Box>
         </Box>
       </Box>
+
+      {/* Custom Date Range Modal */}
+      <Dialog
+        open={openDateModal}
+        onClose={handleCloseDateModal}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Chọn khoảng thời gian</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+            <TextField
+              label="Từ ngày"
+              type="date"
+              value={tempStartDate}
+              onChange={(e) => setTempStartDate(e.target.value)}
+              fullWidth
+              className="date-input-field"
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              label="Đến ngày"
+              type="date"
+              value={tempEndDate}
+              onChange={(e) => setTempEndDate(e.target.value)}
+              inputProps={{ min: tempStartDate || undefined }}
+              fullWidth
+              className="date-input-field"
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDateModal} color="inherit">
+            Hủy
+          </Button>
+          <Button
+            onClick={handleApplyDateRange}
+            variant="contained"
+            disabled={!tempStartDate || !tempEndDate}
+          >
+            Áp dụng
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 };

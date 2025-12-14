@@ -1,0 +1,62 @@
+/* EditCartItemDialog.css */
+
+/* Color selection styling */
+.color-list-dialog {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.color-item-dialog {
+    padding: 3px;
+    border: 2px solid #eee;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.color-item-dialog:hover {
+    border-color: #bbb;
+    transform: scale(1.1);
+}
+
+.color-item-dialog.selected {
+    border-color: #333;
+}
+
+.color-circle-dialog {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Size selection styling */
+.size-list-dialog {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.size-btn-dialog {
+    min-width: 55px;
+    height: 40px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.size-btn-dialog:hover {
+    border-color: #333;
+}
+
+.size-btn-dialog.selected {
+    border-color: #007bff;
+    background-color: #007bff;
+    color: #fff;
+    font-weight: 600;
+}

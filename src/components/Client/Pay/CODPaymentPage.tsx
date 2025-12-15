@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../../../styles/CODPayment.css';
 import { CartItem } from '../../../types/CartItem';
 
@@ -74,6 +74,7 @@ const CODPaymentPage: React.FC = () => {
             district: selectedAddress.district || '',
             ward: selectedAddress.ward || ''
           },
+          voucherCode: location.state?.selectedVoucher?.code,
         };
 
         console.log('Đang gửi đơn hàng:', orderPayload);

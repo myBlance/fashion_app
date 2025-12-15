@@ -74,7 +74,13 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   // 3. Derived State & Calculations
   const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
 
-  const isVoucherValid = !!selectedVoucher && totalAmount >= (selectedVoucher.minOrderValue || 0);
+  const isVoucherValid = React.useMemo(() => {
+    if (!selectedVoucher) return false;
+    const min = selectedVoucher.minOrderAmount || (selectedVoucher as any).minOrderValue || 0;
+    const isValid = totalAmount >= min;
+    console.log(`🎫 Validity Check: Code=${selectedVoucher.code}, Min=${min}, Total=${totalAmount}, IsValid=${isValid}`);
+    return isValid;
+  }, [selectedVoucher, totalAmount]);
 
   const calculateDiscount = () => {
     if (!selectedVoucher || !isVoucherValid) return 0;
@@ -103,7 +109,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
     }
 
     if (selectedVoucher && !isVoucherValid) {
-      showToast(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${(selectedVoucher.minOrderValue || 0).toLocaleString()}đ).`, 'warning');
+      showToast(`Voucher ${selectedVoucher.code} không đủ điều kiện áp dụng (cần đơn tối thiểu ${(selectedVoucher.minOrderAmount || 0).toLocaleString()}đ).`, 'warning');
       return;
     }
 
@@ -141,6 +147,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         discountAmount,
         selectedAddress,
         userId,
+        selectedVoucher,
       },
     };
 
@@ -163,6 +170,33 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         addresses={addresses}
         selectedAddress={selectedAddress}
         onSelectAddress={setSelectedAddress}
+        onAddAddress={async (newAddress) => {
+          if (!token) return;
+          try {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/users/addresses`, newAddress, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            showToast('Thêm địa chỉ thành công', 'success');
+
+            // Refetch addresses
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/users/addresses`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const addrList = res.data.data || [];
+            setAddresses(addrList);
+
+            // If it was the first address or marked default, select it?
+            // Actually, let's just select the newly added one if it's the only one or if the user wants.
+            // For now, if no selected address, select the new one.
+            if (!selectedAddress && addrList.length > 0) {
+              setSelectedAddress(addrList[0]);
+            }
+          } catch (err: any) {
+            console.error('Lỗi khi thêm địa chỉ:', err);
+            showToast(err.response?.data?.message || 'Lỗi khi thêm địa chỉ', 'error');
+            throw err; // Re-throw to let AddressSection know it failed
+          }
+        }}
       />
 
       <ProductSection cartItems={cartItems} />
@@ -171,6 +205,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         selectedVoucher={selectedVoucher}
         onSelectVoucher={setSelectedVoucher}
         isVoucherValid={isVoucherValid}
+        totalAmount={totalAmount}
       />
 
       <ShippingSection

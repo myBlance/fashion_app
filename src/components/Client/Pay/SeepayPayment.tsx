@@ -69,6 +69,7 @@ const SeepayPaymentPage: React.FC = () => {
               phone: selectedAddress.phone,
               addressLine: selectedAddress.address,
             },
+            voucherCode: location.state?.selectedVoucher?.code,
           }
         );
 
@@ -211,7 +212,7 @@ const SeepayPaymentPage: React.FC = () => {
           </div>
 
           <div className="buttons">
-            <button onClick={() => navigate('/order-history')} className="btn-primary">
+            <button onClick={() => navigate('/orders')} className="btn-primary">
               Xem lịch sử đơn hàng
             </button>
             <button onClick={handleGoHome} className="btn-secondary">

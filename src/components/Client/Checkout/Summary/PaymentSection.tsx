@@ -39,7 +39,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ selectedPaymentMethod, 
                     />
                     <label htmlFor="seepay">
                         <img src="/assets/images/sepay-820x820-blue-icon.webp" alt="SeePay" className="payment-icon" />
-                        SeePay (Quét QR)
+                        SePay (Quét QR)
                     </label>
                 </div>
                 <div className="payment-method">

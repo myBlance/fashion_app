@@ -4,7 +4,7 @@ export interface Voucher {
   code: string;
   name?: string;
   description?: string;
-  type?: 'fixed' | 'percentage'; 
+  type?: 'fixed' | 'percentage';
   value?: number;
   discountText: string;
   conditionText: string;

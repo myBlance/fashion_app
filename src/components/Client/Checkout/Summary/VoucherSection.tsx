@@ -6,9 +6,10 @@ interface VoucherSectionProps {
     selectedVoucher: Voucher | null;
     onSelectVoucher: (voucher: Voucher | null) => void;
     isVoucherValid: boolean;
+    totalAmount: number;
 }
 
-const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSelectVoucher, isVoucherValid }) => {
+const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSelectVoucher, isVoucherValid, totalAmount }) => {
     // 1. Hooks & State
     const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
 
@@ -28,6 +29,7 @@ const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSele
                 onClose={() => setIsVoucherModalOpen(false)}
                 onSelect={onSelectVoucher}
                 selectedVoucher={selectedVoucher}
+                totalAmount={totalAmount}
             />
 
             <div className="section voucher-section">
@@ -43,13 +45,15 @@ const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSele
 
                 {selectedVoucher && (
                     <div className={`selected-voucher ${isVoucherValid ? 'valid' : 'invalid'}`}>
-                        <div>
-                            <strong>{selectedVoucher.code}</strong> - {getVoucherDisplayText(selectedVoucher)}
-                            {!isVoucherValid && (
-                                <span className="voucher-warning">
-                                    (Không đủ điều kiện)
-                                </span>
-                            )}
+                        <div style={{ flexGrow: 1 }}>
+                            <div className="voucher-info">
+                                <strong>{selectedVoucher.code}</strong> - {getVoucherDisplayText(selectedVoucher)}
+                                {!isVoucherValid && (
+                                    <span style={{ color: '#d32f2f', marginLeft: '8px', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                                        ⚠️ Chưa đủ điều kiện: Cần đơn tối thiểu {(selectedVoucher.minOrderAmount || 0).toLocaleString()}đ
+                                    </span>
+                                )}
+                            </div>
                         </div>
                         <button
                             onClick={() => onSelectVoucher(null)}

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 // ✅ Thay đổi: dùng từ store/hooks thay vì react-redux
 import PageHeader from '../../components/Client/Common/PageHeader';
+import ProductComparisonDialog from '../../components/Client/ProductDetail/ProductComparisonDialog';
 import ProductCard from '../../components/Client/Productcard/ProductCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { getProducts } from '../../services/productService';
@@ -18,6 +19,33 @@ const WishlistPage: React.FC = () => {
     const [products, setProducts] = React.useState<Product[]>([]);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<string | null>(null);
+
+    // Comparison Logic
+    const [selectedProductIds, setSelectedProductIds] = React.useState<string[]>([]);
+    const [comparisonOpen, setComparisonOpen] = React.useState(false);
+
+    // Derived state for selected products full objects
+    const selectedProducts = React.useMemo(() =>
+        products.filter(p => selectedProductIds.includes(p.id)),
+        [products, selectedProductIds]);
+
+    const handleSelectProduct = (productId: string) => {
+        setSelectedProductIds(prev => {
+            if (prev.includes(productId)) {
+                return prev.filter(id => id !== productId);
+            } else {
+                if (prev.length >= 3) {
+                    alert('Bạn chỉ có thể so sánh tối đa 3 sản phẩm'); // Replace with toast later if possible
+                    return prev;
+                }
+                return [...prev, productId];
+            }
+        });
+    };
+
+    const handleRemoveFromComparison = (productId: string) => {
+        setSelectedProductIds(prev => prev.filter(id => id !== productId));
+    };
 
     // Single useEffect to handle everything
     useEffect(() => {
@@ -75,8 +103,48 @@ const WishlistPage: React.FC = () => {
     }, [userId]); // Only depend on userId - this prevents infinite loop!
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
             <PageHeader title="Sản phẩm yêu thích" />
+
+            {/* Action Bar for Comparison */}
+            {selectedProductIds.length > 0 && (
+                <Box
+                    sx={{
+                        position: 'sticky',
+                        top: 80,
+                        zIndex: 100,
+                        bgcolor: 'background.paper',
+                        p: 2,
+                        mb: 2,
+                        borderRadius: 2,
+                        boxShadow: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}
+                >
+                    <Typography variant="body1" fontWeight="bold">
+                        Đã chọn {selectedProductIds.length} sản phẩm
+                    </Typography>
+                    <Box>
+                        <Button color="inherit" onClick={() => setSelectedProductIds([])} sx={{ mr: 1 }}>
+                            Hủy chọn
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={() => setComparisonOpen(true)}
+                            disabled={selectedProductIds.length < 2}
+                            sx={{
+                                bgcolor: '#b11116',
+                                '&:hover': { bgcolor: '#8e0e12' }
+                            }}
+                        >
+                            So sánh ngay
+                        </Button>
+                    </Box>
+                </Box>
+            )}
+
 
             {loading && (
                 <Box
@@ -135,10 +203,45 @@ const WishlistPage: React.FC = () => {
                     gap={3}
                 >
                     {products.map((product) => (
-                        <ProductCard key={product.id} product={product} />
+                        <Box key={product.id} position="relative">
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    top: 12,
+                                    right: 60,
+                                    zIndex: 20,
+                                    bgcolor: 'rgba(255,255,255,0.9)',
+                                    borderRadius: '4px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    p: 0.5,
+                                    cursor: 'pointer' // Add cursor pointer to valid click area
+                                }}
+                                onClick={(e) => e.stopPropagation()} // Stop propagation from the box itself
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={selectedProductIds.includes(product.id)}
+                                    onChange={() => handleSelectProduct(product.id)}
+                                    onClick={(e) => e.stopPropagation()} // Double check stop propagation
+                                    style={{ width: 20, height: 20, cursor: 'pointer' }}
+                                />
+                                <Typography variant="caption" sx={{ ml: 0.5, fontWeight: 'bold', display: { xs: 'none', md: 'block' } }}>So sánh</Typography>
+                            </Box>
+                            <ProductCard product={product} />
+                        </Box>
                     ))}
                 </Box>
             )}
+
+            <ProductComparisonDialog
+                open={comparisonOpen}
+                onClose={() => setComparisonOpen(false)}
+                products={selectedProducts}
+                onRemove={handleRemoveFromComparison}
+                wishlistProducts={products}
+                onSelect={handleSelectProduct}
+            />
         </Container>
     );
 };

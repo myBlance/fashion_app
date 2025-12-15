@@ -21,6 +21,8 @@ import { VoucherCreate } from './voucher/VoucherCreate';
 import { VoucherEdit } from './voucher/VoucherEdit';
 import { VoucherList } from './voucher/VoucherList';
 
+import i18nProvider from '../../i18n/i18nProvider';
+
 const AdminLogin = () => <Navigate to="/auth?tab=login" />;
 
 const AdminApp = () => (
@@ -28,6 +30,7 @@ const AdminApp = () => (
         basename="/admin"
         dataProvider={dataProvider}
         authProvider={authProvider}
+        i18nProvider={i18nProvider}
         loginPage={AdminLogin}
         dashboard={Dashboard}
         layout={AdminLayout}

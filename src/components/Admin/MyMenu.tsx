@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, MenuProps, useLogout } from 'react-admin';
+import { Menu, MenuProps, useLogout, useTranslate } from 'react-admin';
 
 import { Loyalty, MoreVert, Person, Reviews, ShoppingCart, Store } from '@mui/icons-material';
 import {
@@ -92,56 +92,62 @@ const UserMenu = () => {
     );
 };
 
-const MyMenu: React.FC<MenuProps> = (props) => (
-    <Box className="my-menu-container">
-        {/* Logo trên cùng */}
-        <Box className="my-menu-logo-box">
-            <h1 className="my-menu-logo">
-                DolaStyle
-            </h1>
-        </Box>
+const MyMenu: React.FC<MenuProps> = (props) => {
+    const translate = useTranslate();
+    return (
+        <Box className="my-menu-container">
+            {/* Logo trên cùng */}
+            <Box className="my-menu-logo-box">
+                <h1 className="my-menu-logo">
+                    DolaStyle
+                </h1>
+            </Box>
 
-        {/* Menu chính */}
-        <Box className="my-menu-items-box">
-            <Menu {...props}>
-                <Menu.DashboardItem className="my-menu-item" />
-                <Menu.Item
-                    to="/admin/orders"
-                    primaryText="Orders"
-                    leftIcon={<ShoppingCart />}
-                    className="my-menu-item"
-                />
-                <Menu.Item
-                    to="/admin/products"
-                    primaryText="Products"
-                    leftIcon={<Store />}
-                    className="my-menu-item"
-                />
-                <Menu.Item
-                    to="/admin/vouchers"
-                    primaryText="Vouchers"
-                    leftIcon={<Loyalty />}
-                    className="my-menu-item"
-                />
-                <Menu.Item
-                    to="/admin/reviews"
-                    primaryText="Reviews"
-                    leftIcon={<Reviews />}
-                    className="my-menu-item"
-                />
-                <Menu.Item
-                    to="/admin/users"
-                    primaryText="Users"
-                    leftIcon={<Person />}
-                    className="my-menu-item"
-                />
-                {/* Thêm mục menu khác tại đây */}
-            </Menu>
-        </Box>
+            {/* Menu chính */}
+            <Box className="my-menu-items-box">
+                <Menu {...props}>
+                    <Menu.DashboardItem
+                        className="my-menu-item"
+                        primaryText={translate('resources.dashboard.name', { _: 'Bảng điều khiển' })}
+                    />
+                    <Menu.Item
+                        to="/admin/orders"
+                        primaryText={translate('resources.orders.name', { smart_count: 2, _: 'Đơn hàng' })}
+                        leftIcon={<ShoppingCart />}
+                        className="my-menu-item"
+                    />
+                    <Menu.Item
+                        to="/admin/products"
+                        primaryText={translate('resources.products.name', { smart_count: 2, _: 'Sản phẩm' })}
+                        leftIcon={<Store />}
+                        className="my-menu-item"
+                    />
+                    <Menu.Item
+                        to="/admin/vouchers"
+                        primaryText={translate('resources.vouchers.name', { smart_count: 2, _: 'Mã giảm giá' })}
+                        leftIcon={<Loyalty />}
+                        className="my-menu-item"
+                    />
+                    <Menu.Item
+                        to="/admin/reviews"
+                        primaryText={translate('resources.reviews.name', { smart_count: 2, _: 'Đánh giá' })}
+                        leftIcon={<Reviews />}
+                        className="my-menu-item"
+                    />
+                    <Menu.Item
+                        to="/admin/users"
+                        primaryText={translate('resources.users.name', { smart_count: 2, _: 'Người dùng' })}
+                        leftIcon={<Person />}
+                        className="my-menu-item"
+                    />
+                    {/* Thêm mục menu khác tại đây */}
+                </Menu>
+            </Box>
 
-        {/* Thông tin người dùng + More menu */}
-        <UserMenu />
-    </Box>
-);
+            {/* Thông tin người dùng + More menu */}
+            <UserMenu />
+        </Box>
+    );
+};
 
 export default MyMenu;

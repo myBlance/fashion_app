@@ -58,11 +58,11 @@ interface DashboardStats {
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color: string }> = ({ title, value, icon, color }) => (
   <Paper elevation={2} className="stat-card-paper" sx={{ borderLeft: `4px solid ${color}` }}>
     <Box display="flex" justifyContent="space-between" alignItems="center">
-      <Box>
-        <Typography variant="body2" className="stat-card-title">{title}</Typography>
-        <Typography variant="h4" className="stat-card-value">{value}</Typography>
+      <Box sx={{ overflow: 'hidden', mr: 2 }}>
+        <Typography variant="body2" className="stat-card-title" noWrap>{title}</Typography>
+        <Typography variant="h4" className="stat-card-value" sx={{ fontSize: { xs: '1.5rem', md: '2.125rem' }, wordBreak: 'break-word' }}>{value}</Typography>
       </Box>
-      <Box sx={{ color, opacity: 0.8 }}>{icon}</Box>
+      <Box sx={{ color, opacity: 0.8, flexShrink: 0 }}>{icon}</Box>
     </Box>
   </Paper>
 );
@@ -286,7 +286,7 @@ const Dashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <Box display="flex" gap={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }} flexWrap="wrap">
-          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '280px' }}>
             <StatCard
               title="Tổng doanh thu"
               value={formatCurrency(stats.totalRevenue)}
@@ -294,7 +294,7 @@ const Dashboard: React.FC = () => {
               color="#4caf50"
             />
           </Box>
-          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '200px' }}>
+          <Box flex="1" minWidth={{ xs: '100%', sm: '45%', md: '280px' }}>
             <StatCard
               title="Tổng lợi nhuận"
               value={formatCurrency(stats.totalProfit)}

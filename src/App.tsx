@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import './App.css';
 import { useAuth } from './contexts/AuthContext';
 import ClientLayout from './layouts/ClientLayout';
-import LoginPage from './pages/auth/LoginPage';
 import { adminRoutes, clientRoutes } from './routes';
 import PrivateRoute from './routes/PrivateRoute';
 import { loadGuestCart } from './store/cartSlice';
 import { useAppDispatch } from './store/hooks';
 import { loadGuestWishlist } from './store/wishlistSlice';
-import './App.css';
 
 const App: React.FC = () => {
     const { userId, loading } = useAuth();
@@ -24,8 +23,7 @@ const App: React.FC = () => {
 
     return (
         <Routes>
-            {/* Trang đăng nhập */}
-            <Route path="/auth?tab=login" element={<LoginPage />} />
+
 
             {/* Client layout */}
             <Route path="/" element={<ClientLayout />}>

@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { CartService } from '../services/cartService';
 import { WishlistService } from '../services/wishlistService';
 import { clearCart, syncCartAfterLogin } from '../store/cartSlice';
-import { syncWishlistAfterLogin } from '../store/wishlistSlice';
+import { clearWishlist, syncWishlistAfterLogin } from '../store/wishlistSlice';
 import { getLocalCart } from '../utils/cartStorage';
-import { getLocalWishlist } from '../utils/wishlistStorage';
+import { clearLocalWishlist, getLocalWishlist } from '../utils/wishlistStorage';
 import { useAppDispatch } from './../store/hooks';
 
 type Role = 'admin' | 'client' | null;
 
 type AuthContextType = {
   role: Role;
+
   userId: string | null;
   loading: boolean;
   loginAs: (role: Role, userId?: string) => Promise<void>;
@@ -93,15 +94,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // 2. Sync wishlist
         const guestWishlist = getLocalWishlist();
         if (guestWishlist.length > 0) {
-          // Toggle each item in guest wishlist (backend doesn't have bulk sync)
+          // Fetch current backend wishlist first to avoid toggling (removing) existing items
+          const currentBackendWishlist = await WishlistService.getWishlist(newUserId);
+
           for (const productId of guestWishlist) {
-            try {
-              await WishlistService.toggleItem(newUserId, productId);
-            } catch (err) {
-              console.error('Error toggling wishlist item:', productId, err);
+            // Only add if NOT already in backend wishlist
+            if (!currentBackendWishlist.includes(productId)) {
+              try {
+                await WishlistService.toggleItem(newUserId, productId);
+              } catch (err) {
+                console.error('Error syncing wishlist item:', productId, err);
+              }
             }
           }
+
+          // Clear local wishlist after syncing to prevent leaking to next user
+          clearLocalWishlist();
         }
+
         // Fetch final wishlist from backend
         const finalWishlist = await WishlistService.getWishlist(newUserId);
         dispatch(syncWishlistAfterLogin(finalWishlist));
@@ -121,6 +131,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserId(null);
 
     dispatch(clearCart());
+    dispatch(clearWishlist()); // Clear Redux state
+    clearLocalWishlist(); // Clear guest data on logout in storage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 

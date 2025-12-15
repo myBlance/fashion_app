@@ -192,7 +192,26 @@ export const VoucherList = () => {
             <NumberField source="minOrderAmount" label="Giá trị tối thiểu" options={{ style: 'currency', currency: 'VND' }} sortable={true} />
             <DateField source="validFrom" label="Bắt đầu" sortable={true} />
             <DateField source="validUntil" label="Kết thúc" sortable={true} />
-            <NumberField source="maxUses" label="SL dùng toàn hệ thống" sortable={true} />
+            <NumberField source="maxUses" label="Tổng SL" sortable={true} />
+            <FunctionField
+              label="Đã dùng"
+              sortBy="usedCount"
+              render={(record: Voucher) => (
+                <Typography variant="body2">{record.usedCount ?? 0}</Typography>
+              )}
+            />
+            <FunctionField
+              label="Còn lại"
+              sortBy="remaining"
+              render={(record: Voucher) => {
+                const remaining = (record.maxUses ?? 0) - (record.usedCount ?? 0);
+                return (
+                  <Typography variant="body2" fontWeight="bold" color={remaining > 0 ? 'success.main' : 'error.main'}>
+                    {remaining}
+                  </Typography>
+                );
+              }}
+            />
             <NumberField source="maxUsesPerUser" label="SL dùng mỗi người" sortable={true} />
             <FunctionField
               label="Trạng thái"

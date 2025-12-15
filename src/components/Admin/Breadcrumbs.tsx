@@ -26,20 +26,20 @@ interface CustomBreadcrumbsProps {
 
 
 const breadcrumbNameMap: Record<string, string> = {
-    "/": "Home",
-    "/orders": "Orders",
-    "/products": "Products",
-    "/products/create": "Create",
-    "/products/edit": "Edit",
-    "/users": "Users",
-    "/vouchers": "Vouchers",
-    "/vouchers/create": "Create",
-    "/vouchers/edit": "Edit",
-    "/reviews": "Reviews",
-    "/reviews/create": "Create",
-    "/reviews/edit": "Edit",
-    "/reviews/show": "Show",
-    "/order-history": "Order History",
+    "/": "resources.dashboard.name",
+    "/orders": "resources.orders.name",
+    "/products": "resources.products.name",
+    "/products/create": "ra.action.create",
+    "/products/edit": "ra.action.edit",
+    "/users": "resources.users.name",
+    "/vouchers": "resources.vouchers.name",
+    "/vouchers/create": "ra.action.create",
+    "/vouchers/edit": "ra.action.edit",
+    "/reviews": "resources.reviews.name",
+    "/reviews/create": "ra.action.create",
+    "/reviews/edit": "ra.action.edit",
+    "/reviews/show": "ra.action.show",
+    "/order-history": "Lịch sử đơn hàng", // Custom route, hardcoded or needs its own key
 };
 
 const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExport, onRefresh }) => {
@@ -55,12 +55,23 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
 
     const lastPath = buildFullPath(pathnames.length - 1);
     const lastSegment = pathnames[pathnames.length - 1];
-    const labelKey = breadcrumbNameMap[lastPath];
-    const commonLabels: Record<string, string> = { show: "Show", edit: "Edit", create: "Create" };
+
+    // Check if we have a direct map for the full path
+    const directMapKey = breadcrumbNameMap[lastPath];
+
+    // Helper to translate common actions if not in map
+    const commonLabels: Record<string, string> = {
+        show: "ra.action.show",
+        edit: "ra.action.edit",
+        create: "ra.action.create"
+    };
 
     // Try to resolve name from record context for Page Title
     const record = useRecordContext();
-    let pageTitle = labelKey ? translate(labelKey) : (commonLabels[lastSegment] || lastSegment);
+    let pageTitleKeys = directMapKey || commonLabels[lastSegment] || lastSegment;
+
+    // Try to translate it.
+    let pageTitle = translate(pageTitleKeys, { smart_count: 2, _: pageTitleKeys });
 
     if (record && record.id && String(record.id) === lastSegment) {
         pageTitle = record.username || record.name || record.title || record.code || lastSegment;
@@ -128,7 +139,7 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({ onCreate, onExpor
                     const isLast = index === pathnames.length - 1;
                     const labelKey = breadcrumbNameMap[routeTo];
                     const commonLabels: Record<string, string> = { show: "Show", edit: "Edit", create: "Create" };
-                    let translatedName = labelKey ? translate(labelKey) : (commonLabels[value] || value);
+                    let translatedName = labelKey ? translate(labelKey, { smart_count: 2 }) : (commonLabels[value] || value);
 
                     if (record && record.id && String(record.id) === value) {
                         translatedName = record.username || record.name || record.title || record.code || value;

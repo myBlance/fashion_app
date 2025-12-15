@@ -29,7 +29,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CustomAppBar } from '../../../components/Admin/CustomAppBar';
 import '../../../styles/Dashboard.css';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -41,6 +41,7 @@ interface DashboardStats {
   totalProducts: number;
   totalUsers: number;
   ordersByStatus: { [key: string]: number };
+  productsByType: Array<{ name: string; value: number }>; // Added productsByType
   revenueByDate: Array<{ _id: string; revenue: number; profit: number; orders: number }>; // Added profit
   topProducts: Array<{ productId: string; name: string; image: string; soldQuantity: number }>;
   topProfitProducts: Array<{ productId: string; name: string; image: string; totalProfit: number; soldQuantity: number }>;
@@ -328,55 +329,77 @@ const Dashboard: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Charts */}
+        {/* Charts Row 1: Revenue Chart */}
+        <Box mb={{ xs: 3, sm: 4 }}>
+          <Paper elevation={2} className="chart-paper">
+            <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>
+              Doanh thu & Lợi nhuận {
+                timeRange === '7days' ? '7 ngày qua' :
+                  timeRange === 'month' ? 'tháng này' :
+                    timeRange === 'year' ? 'năm nay' :
+                      'tất cả thời gian'
+              }
+            </Typography>
+            <ResponsiveContainer width="100%" height={isMobile ? 250 : 350}>
+              <LineChart data={revenueChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                <YAxis tick={{ fontSize: isMobile ? 10 : 12 }} />
+                <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                {!isMobile && <Legend />}
+                <Line type="monotone" dataKey="revenue" stroke="#4caf50" strokeWidth={2} name="Doanh thu" />
+                <Line type="monotone" dataKey="profit" stroke="#ff9800" strokeWidth={2} name="Lợi nhuận" />
+              </LineChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Box>
+
+        {/* Charts Row 2: Status & Types */}
         <Box display="flex" gap={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }} flexWrap="wrap">
-          {/* Revenue Chart */}
-          <Box flex="2" minWidth={{ xs: '100%', md: '300px' }}>
+          {/* Bar Chart: Order Status */}
+          <Box flex="1" minWidth={{ xs: '100%', md: '300px' }}>
             <Paper elevation={2} className="chart-paper">
-              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>
-                Doanh thu & Lợi nhuận {
-                  timeRange === '7days' ? '7 ngày qua' :
-                    timeRange === 'month' ? 'tháng này' :
-                      timeRange === 'year' ? 'năm nay' :
-                        'tất cả thời gian'
-                }
-              </Typography>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Trạng thái đơn hàng</Typography>
               <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
-                <LineChart data={revenueChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: isMobile ? 10 : 12 }} />
-                  <YAxis tick={{ fontSize: isMobile ? 10 : 12 }} />
-                  <Tooltip formatter={(value: any) => formatCurrency(value)} />
-                  {!isMobile && <Legend />}
-                  <Line type="monotone" dataKey="revenue" stroke="#4caf50" strokeWidth={2} name="Doanh thu" />
-                  <Line type="monotone" dataKey="profit" stroke="#ff9800" strokeWidth={2} name="Lợi nhuận" />
-                </LineChart>
+                <BarChart
+                  data={orderStatusPieData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: isMobile ? 10 : 12 }} />
+                  <Tooltip cursor={{ fill: 'transparent' }} />
+                  <Legend />
+                  <Bar dataKey="value" name="Số lượng" barSize={isMobile ? 20 : 30} radius={[4, 4, 0, 0]}>
+                    {orderStatusPieData.map((_entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             </Paper>
           </Box>
 
-          {/* Pie Chart */}
-          <Box flex="1" minWidth={{ xs: '100%', md: '280px' }}>
+          {/* New Pie Chart: Product Types */}
+          <Box flex="1" minWidth={{ xs: '100%', md: '300px' }}>
             <Paper elevation={2} className="chart-paper">
-              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Trạng thái đơn hàng</Typography>
+              <Typography variant={isMobile ? 'body1' : 'h6'} fontWeight="bold" mb={2}>Các loại sản phẩm</Typography>
               <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
                 <PieChart>
                   <Pie
-                    data={orderStatusPieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={isMobile ? false : ({ name, percent }: any) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={isMobile ? 60 : 80}
-                    fill="#8884d8"
+                    data={stats.productsByType}
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    cornerRadius={5}
                     dataKey="value"
                   >
-                    {orderStatusPieData.map((_entry, index) => (
+                    {stats.productsByType.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
-                  {isMobile && <Legend />}
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </Paper>
@@ -501,12 +524,12 @@ const Dashboard: React.FC = () => {
                 </Table>
               </TableContainer>
             </Paper>
-          </Box>
-        </Box>
-      </Box>
+          </Box >
+        </Box >
+      </Box >
 
       {/* Custom Date Range Modal */}
-      <Dialog
+      < Dialog
         open={openDateModal}
         onClose={handleCloseDateModal}
         maxWidth="xs"
@@ -548,8 +571,8 @@ const Dashboard: React.FC = () => {
             Áp dụng
           </Button>
         </DialogActions>
-      </Dialog>
-    </Card>
+      </Dialog >
+    </Card >
   );
 };
 

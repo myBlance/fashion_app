@@ -116,13 +116,15 @@ const AddressSection: React.FC<AddressSectionProps> = ({ addresses, selectedAddr
 
             <div className="section address-section">
                 <div className="section-header">
-                    <span className="icon">📍</span>
-                    <h3>Địa Chỉ Nhận Hàng</h3>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span className="icon"></span>
+                        <h3 style={{ textAlign: 'left', margin: 0 }}>Địa Chỉ Nhận Hàng</h3>
+                    </div>
                     <button className="change-btn" onClick={() => setIsModalOpen(true)}>
                         Thay đổi
                     </button>
                 </div>
-                <div className="address-info">
+                <div className="address-info" style={{ textAlign: 'left' }}>
                     {selectedAddress ? (
                         <>
                             <strong>{selectedAddress.name} (+84) {selectedAddress.phone}</strong>

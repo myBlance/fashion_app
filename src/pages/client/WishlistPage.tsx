@@ -23,6 +23,7 @@ const WishlistPage: React.FC = () => {
     // Comparison Logic
     const [selectedProductIds, setSelectedProductIds] = React.useState<string[]>([]);
     const [comparisonOpen, setComparisonOpen] = React.useState(false);
+    const [isSelectionMode, setIsSelectionMode] = React.useState(false);
 
     // Derived state for selected products full objects
     const selectedProducts = React.useMemo(() =>
@@ -45,6 +46,17 @@ const WishlistPage: React.FC = () => {
 
     const handleRemoveFromComparison = (productId: string) => {
         setSelectedProductIds(prev => prev.filter(id => id !== productId));
+    };
+
+    const toggleSelectionMode = () => {
+        if (isSelectionMode) {
+            // Exit selection mode: clear selection
+            setIsSelectionMode(false);
+            setSelectedProductIds([]);
+        } else {
+            // Enter selection mode
+            setIsSelectionMode(true);
+        }
     };
 
     // Single useEffect to handle everything
@@ -104,10 +116,21 @@ const WishlistPage: React.FC = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4, position: 'relative' }}>
-            <PageHeader title="Sản phẩm yêu thích" />
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <PageHeader title="Sản phẩm yêu thích" />
+                {products.length > 0 && !isSelectionMode && (
+                    <Button
+                        variant="outlined"
+                        onClick={toggleSelectionMode}
+                        sx={{ borderColor: '#b11116', color: '#b11116', '&:hover': { borderColor: '#8e0e12', bgcolor: 'rgba(177, 17, 22, 0.04)' } }}
+                    >
+                        So sánh
+                    </Button>
+                )}
+            </Box>
 
             {/* Action Bar for Comparison */}
-            {selectedProductIds.length > 0 && (
+            {isSelectionMode && (
                 <Box
                     sx={{
                         position: 'sticky',
@@ -124,11 +147,13 @@ const WishlistPage: React.FC = () => {
                     }}
                 >
                     <Typography variant="body1" fontWeight="bold">
-                        Đã chọn {selectedProductIds.length} sản phẩm
+                        {selectedProductIds.length > 0
+                            ? `Đã chọn ${selectedProductIds.length} sản phẩm`
+                            : 'Chọn sản phẩm để so sánh'}
                     </Typography>
                     <Box>
-                        <Button color="inherit" onClick={() => setSelectedProductIds([])} sx={{ mr: 1 }}>
-                            Hủy chọn
+                        <Button color="inherit" onClick={toggleSelectionMode} sx={{ mr: 1 }}>
+                            Hủy
                         </Button>
                         <Button
                             variant="contained"
@@ -204,30 +229,32 @@ const WishlistPage: React.FC = () => {
                 >
                     {products.map((product) => (
                         <Box key={product.id} position="relative">
-                            <Box
-                                sx={{
-                                    position: 'absolute',
-                                    top: 12,
-                                    right: 60,
-                                    zIndex: 20,
-                                    bgcolor: 'rgba(255,255,255,0.9)',
-                                    borderRadius: '4px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    p: 0.5,
-                                    cursor: 'pointer' // Add cursor pointer to valid click area
-                                }}
-                                onClick={(e) => e.stopPropagation()} // Stop propagation from the box itself
-                            >
-                                <input
-                                    type="checkbox"
-                                    checked={selectedProductIds.includes(product.id)}
-                                    onChange={() => handleSelectProduct(product.id)}
-                                    onClick={(e) => e.stopPropagation()} // Double check stop propagation
-                                    style={{ width: 20, height: 20, cursor: 'pointer' }}
-                                />
-                                <Typography variant="caption" sx={{ ml: 0.5, fontWeight: 'bold', display: { xs: 'none', md: 'block' } }}>So sánh</Typography>
-                            </Box>
+                            {isSelectionMode && (
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        top: 12,
+                                        right: 60,
+                                        zIndex: 20,
+                                        bgcolor: 'rgba(255,255,255,0.9)',
+                                        borderRadius: '4px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        p: 0.5,
+                                        cursor: 'pointer' // Add cursor pointer to valid click area
+                                    }}
+                                    onClick={(e) => e.stopPropagation()} // Stop propagation from the box itself
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedProductIds.includes(product.id)}
+                                        onChange={() => handleSelectProduct(product.id)}
+                                        onClick={(e) => e.stopPropagation()} // Double check stop propagation
+                                        style={{ width: 20, height: 20, cursor: 'pointer' }}
+                                    />
+                                    <Typography variant="caption" sx={{ ml: 0.5, fontWeight: 'bold', display: { xs: 'none', md: 'block' } }}>So sánh</Typography>
+                                </Box>
+                            )}
                             <ProductCard product={product} />
                         </Box>
                     ))}

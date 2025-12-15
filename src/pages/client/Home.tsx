@@ -10,21 +10,54 @@ import NewProducts from '../../components/Client/Home/NewProducts';
 import PolicySection from '../../components/Client/Home/PolicySection';
 import ShirtCollection from '../../components/Client/Home/ShirtCollection';
 import VoucherList from '../../components/Client/Voucher/VoucherList';
+import FadeInSection from '../../components/Common/FadeInSection';
 
 const Home: React.FC = () => {
     return (
         <div>
-            <BannerSlider />
-            <FeaturedCategories />
-            <VoucherList />
-            <HotDeals />
-            <DressCollection />
-            <ShirtCollection />
-            <CategoryBanner />
-            <AboutIntro />
-            <NewProducts />
-            <BestSellers />
-            <PolicySection />
+            <FadeInSection>
+                <BannerSlider />
+            </FadeInSection>
+
+            <FadeInSection delay={0.2}>
+                <FeaturedCategories />
+            </FadeInSection>
+
+            <FadeInSection delay={0.1}>
+                <VoucherList />
+            </FadeInSection>
+
+            <FadeInSection direction="left">
+                <HotDeals />
+            </FadeInSection>
+
+            <FadeInSection direction="right">
+                <DressCollection />
+            </FadeInSection>
+
+            <FadeInSection direction="left">
+                <ShirtCollection />
+            </FadeInSection>
+
+            <FadeInSection>
+                <CategoryBanner />
+            </FadeInSection>
+
+            <FadeInSection delay={0.2}>
+                <AboutIntro />
+            </FadeInSection>
+
+            <FadeInSection direction="up">
+                <NewProducts />
+            </FadeInSection>
+
+            <FadeInSection direction="up" delay={0.1}>
+                <BestSellers />
+            </FadeInSection>
+
+            <FadeInSection>
+                <PolicySection />
+            </FadeInSection>
         </div>
     );
 };

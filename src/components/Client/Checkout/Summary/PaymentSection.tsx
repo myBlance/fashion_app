@@ -24,7 +24,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ selectedPaymentMethod, 
                     />
                     <label htmlFor="shopeepay">
                         <img src="/assets/images/shopee.png" alt="ShopeePay" className="payment-icon" />
-                        Ví ShopeePay (Đang phát triển)
+                        Ví (Đang phát triển)
                     </label>
                 </div>
 

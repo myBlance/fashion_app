@@ -6,10 +6,11 @@ interface VoucherSectionProps {
     selectedVoucher: Voucher | null;
     onSelectVoucher: (voucher: Voucher | null) => void;
     isVoucherValid: boolean;
+    invalidReason?: string | null;
     totalAmount: number;
 }
 
-const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSelectVoucher, isVoucherValid, totalAmount }) => {
+const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSelectVoucher, isVoucherValid, invalidReason, totalAmount }) => {
     // 1. Hooks & State
     const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
 
@@ -50,7 +51,10 @@ const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSele
                                 <strong>{selectedVoucher.code}</strong> - {getVoucherDisplayText(selectedVoucher)}
                                 {!isVoucherValid && (
                                     <span style={{ color: '#d32f2f', marginLeft: '8px', fontStyle: 'italic', fontSize: '0.9rem' }}>
-                                        ⚠️ Chưa đủ điều kiện: Cần đơn tối thiểu {(selectedVoucher.minOrderAmount || 0).toLocaleString()}đ
+                                        {invalidReason === 'usage_limit'
+                                            ? `⚠️ Bạn đã dùng hết ${selectedVoucher.maxUsesPerUser} lượt sử dụng cho voucher này`
+                                            : `⚠️ Chưa đủ điều kiện: Cần đơn tối thiểu ${(selectedVoucher.minOrderAmount || 0).toLocaleString()}đ`
+                                        }
                                     </span>
                                 )}
                             </div>

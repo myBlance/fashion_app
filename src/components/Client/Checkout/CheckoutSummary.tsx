@@ -74,13 +74,29 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
   // 3. Derived State & Calculations
   const shippingFee = shippingMethod === 'express' ? 30000 : 16500;
 
-  const isVoucherValid = React.useMemo(() => {
-    if (!selectedVoucher) return false;
+  const voucherValidity = React.useMemo(() => {
+    if (!selectedVoucher) return { isValid: false, reason: null };
+
+    // Check min order
     const min = selectedVoucher.minOrderAmount || (selectedVoucher as any).minOrderValue || 0;
-    const isValid = totalAmount >= min;
-    console.log(`🎫 Validity Check: Code=${selectedVoucher.code}, Min=${min}, Total=${totalAmount}, IsValid=${isValid}`);
-    return isValid;
+    if (totalAmount < min) {
+      return { isValid: false, reason: 'min_order' };
+    }
+
+    // Check usage limit
+    const usedCount = selectedVoucher.usedCount || 0;
+    const maxUsesPerUser = selectedVoucher.maxUsesPerUser || 1;
+    // Check if maxUsesPerUser is set and usage limits are exceeded
+    // Note: If maxUsesPerUser is 0, it might mean unlimited? Usually 1. Assuming > 0 check.
+    if (maxUsesPerUser > 0 && usedCount >= maxUsesPerUser) {
+      return { isValid: false, reason: 'usage_limit' };
+    }
+
+    return { isValid: true, reason: null };
   }, [selectedVoucher, totalAmount]);
+
+  const isVoucherValid = voucherValidity.isValid;
+  const voucherInvalidReason = voucherValidity.reason;
 
   const calculateDiscount = () => {
     if (!selectedVoucher || !isVoucherValid) return 0;
@@ -205,6 +221,7 @@ const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ cartItems, totalAmoun
         selectedVoucher={selectedVoucher}
         onSelectVoucher={setSelectedVoucher}
         isVoucherValid={isVoucherValid}
+        invalidReason={voucherInvalidReason}
         totalAmount={totalAmount}
       />
 

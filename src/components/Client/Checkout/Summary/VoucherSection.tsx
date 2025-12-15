@@ -52,8 +52,8 @@ const VoucherSection: React.FC<VoucherSectionProps> = ({ selectedVoucher, onSele
                                 {!isVoucherValid && (
                                     <span style={{ color: '#d32f2f', marginLeft: '8px', fontStyle: 'italic', fontSize: '0.9rem' }}>
                                         {invalidReason === 'usage_limit'
-                                            ? `⚠️ Bạn đã dùng hết ${selectedVoucher.maxUsesPerUser} lượt sử dụng cho voucher này`
-                                            : `⚠️ Chưa đủ điều kiện: Cần đơn tối thiểu ${(selectedVoucher.minOrderAmount || 0).toLocaleString()}đ`
+                                            ? ` Bạn đã dùng hết ${selectedVoucher.maxUsesPerUser} lượt sử dụng cho voucher này`
+                                            : ` Chưa đủ điều kiện: Cần đơn tối thiểu ${(selectedVoucher.minOrderAmount || 0).toLocaleString()}đ`
                                         }
                                     </span>
                                 )}

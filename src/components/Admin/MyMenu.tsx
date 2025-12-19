@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout, useTranslate } from 'react-admin';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, MenuProps, useLogout, useTranslate } from 'react-admin';
-// eslint-disable-next-line
+
 import { Loyalty, MoreVert, Person, Reviews, ShoppingCart, Store } from '@mui/icons-material';
 import {
     Avatar,

@@ -14,8 +14,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/MyMenu.css';
 
-// Define your API base URL here or import it from your config
-
 interface UserProfile {
     name: string;
     avatarUrl?: string;
